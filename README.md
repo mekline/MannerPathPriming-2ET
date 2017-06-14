@@ -1,1 +1,6 @@
-A readme for MPP-2ET, and see if I can stop being annelot in the test computer commits!
+#MPP with an eyetracker!
+
+Unlike original MPP, MPP-2ET has been refactored so that common code for psychtoolbox and the Tobii are in a shared library with other extensions (like MPP-Concepts!) The necessary libraries (to put in the RESOURCEFOLDER path) are at:
+
+PTB-Helper: https://github.com/mekline/PTB_HelperFuns
+Tobii-PsychToolBox: https://github.com/mekline/Tobii-PsychToolBox
