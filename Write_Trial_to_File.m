@@ -4,11 +4,7 @@ function Write_Trial_to_File(i,Items)
 %i = OVERALL trialno (not counting warmups)
 %Settings to write header, main items, and ext items
 
-global parameters
-
-if parameters.nowrite
-    return;
-elseif i==0 %Header!
+if i==0 %Header!
     WriteResultFile({'SubjectNo',...
         'Date',...
         'Time',...
