@@ -1,7 +1,8 @@
-function Tobii_calibration_with_psychtoolbox(SubjectID,varargin)
-% This a copy of the basic experiment from that repo. All it needs
-%to do for now is to play that basic sequence, while correctly getting
-%all files from the paths as they are supposed to. 
+function MPP_2ET_Main(SubjectID, Condition, ToExtend, varargin)
+% The new MPP, for eyetracking 2yos. The new excitement is that
+% this version has refactored the common resources for PTB,
+% eyetracking, and common stimuli for easier/more economical
+% iteration of experiments. 
 
 %**************************
 % Preliminaries
@@ -10,18 +11,22 @@ function Tobii_calibration_with_psychtoolbox(SubjectID,varargin)
 %*** Parse the input
 p = inputParser;
 p.addRequired('SubjectID');
+p.addRequired('Condition');
+p.addRequired('ToExtend');
 p.addParamValue('use_eyetracker', 1, @isnumeric); %use 0 for no eyetracker
-p.addParamValue('experiment_name', 'SAMPLEEXP', @isstr);
+p.addParamValue('experiment_name', 'MPPCREATION', @isstr);
 p.addParamValue('eyetracker_name', 'Lion', @isstr); %in case you have multiple eyetrackers in the lab...
-p.addParamValue('calib_version', 'Adult', @isstr); %can replace with 'Kid' for a cooler kid display. 
+p.addParamValue('calib_version', 'Kid', @isstr); %can replace with 'Kid' for a cooler kid display. 
 p.addParamValue('max_calib', 5, @isnumeric); %in case we want to NOT loop on the calibration forever.
 
-p.parse(SubjectID, varargin{:});
+p.parse(SubjectID, Condition, ToExtend, varargin{:});
 inputs = p.Results;
 
 %*** Set global variables
 global EXPERIMENT %String for experiment name
 global SUBJECT %String for subject name
+global CONDITION %Manner, Path, Action, or Effect
+global TOEXTEND %Extend or NoExtend
 global EXPFOLDER %This folder, path generated below
 global DATAFOLDER %Where to save all data
 global RESOURCEFOLDER %Where to find the PTB and Tobii helper fns
@@ -46,6 +51,20 @@ if ~ischar(inputs.SubjectID)
 else
     SUBJECT = inputs.SubjectID;
 end
+CONDITION = inputs.Condition;
+TOEXTEND = inputs.ToExtend;
+
+% Check inputs
+Conditions = {'Manner', 'Path', 'Action', 'Effect'};
+knownCond = strfind(Conditions, CONDITION);
+k = logical(sum(~cellfun(@isempty, knownCond)));
+assert(k, 'Use Manner Path Action or Effect for main exp')
+
+ExtConditions = {'Extend', 'NoExtend'};
+knownCond = strfind(ExtConditions, TOEXTEND);
+k = logical(sum(~cellfun(@isempty, knownCond)));
+assert(k, 'Use NoExtend or Extend for the extension (NoExtend is default)')
+
 
 addpath(genpath('/Applications/TobiiProSDK'));
 addpath(genpath('/Users/snedlab/Desktop/MPP-Common-Resources'));
@@ -72,11 +91,15 @@ KEYBOARD=max(GetKeyboardIndices);
 KEYID.SPACE=KbName('SPACE');
 KEYID.Y = KbName('y');
 KEYID.N = KbName('n');
+KEYID.Z = KbName('z'); %Values MK uses for R and L
+KEYID.C = KbName('c');
 
 
 %****************************
 % Connect to eye tracker
 %****************************
+
+USE_EYETRACKER
 
 if USE_EYETRACKER
     TOBII = EyeTrackingOperations();
@@ -127,12 +150,8 @@ Screen('FillRect',EXPWIN,BLACK);
 Screen(EXPWIN,'Flip');
 disp('Starting simple Experiment');
 
-%---run simple example of experiment loop
-% 2 choices for you here: SimpleExp just puts some text onscreen,
-% while SimpleMov plays some cute movies. 
-
-%SimpleExp
-SimpleMov
+%---And the experiment runs here!
+Do_MPP_trials();
 
 %---Clean up and exit nicely
 Screen('Close',EXPWIN);

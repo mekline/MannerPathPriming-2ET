@@ -2,10 +2,8 @@
 function Do_MPP_Trials()
 
 %We are adapting MPP to the eyetracker, very exciting!
-global EXPERIMENT SUBJECT CONDITION TOEXTEND EXTENDCONDITION
 
-%Create objects to store trial info
-global MAIN_ITEMS EXT_ITEMS STARS
+global EXPERIMENT SUBJECT CONDITION TOEXTEND EXTENDCONDITION
 
 %Some numeric versions of condition names for indexing into tables...
 
@@ -29,6 +27,8 @@ end
 
 fp = AssignDataFile(EXPERIMENT,SUBJECT);
 
+%Create objects to store trial info
+global MAIN_ITEMS EXT_ITEMS %and these ones store trial values
 
 try
 
@@ -36,37 +36,37 @@ try
     %READ IN THE FILENAMES OF VIDEOS FOR TRIALS!!
     
     vidInfo = readtable('MPP_videos.csv');
-    MAIN_ITEMS = vidInfo(vidInfo.List == conditionno,:);
+    mainItems = vidInfo(vidInfo.List == conditionno,:);
     if toExtend %Assign the other-domain set! Since we don't do any learning, arbitrarily get Manner or Action
         if(conditionno == 1 || conditionno == 3) %Start with MannerPath, move to Action
             EXTENDCONDITION = 'Action';
-            EXT_ITEMS = vidInfo(vidInfo.List == 6,:);
+            extItems = vidInfo(vidInfo.List == 6,:);
         elseif (conditionno == 5 || conditionno == 6) %Start with ActionEffect, move to Manner
-            EXTENDCONDITION = 'Manner';
-            EXT_ITEMS = vidInfo(vidInfo.List == 1,:);
+            pEXTENDCONDITION = 'Manner';
+            extItems = vidInfo(vidInfo.List == 1,:);
         end
     end
     
     %Randomize the order of the items
-    MAIN_ITEMS = MAIN_ITEMS(randperm(height(MAIN_ITEMS)), :);
+    mainItems = mainItems(randperm(height(mainItems)), :);
     if toExtend
-        EXT_ITEMS = EXT_ITEMS(randperm(height(EXT_ITEMS)), :);
+        extItems = extItems(randperm(height(extItems)), :);
     end
     
     %Add the star pictures _in order!!!_
-    if TOEXTEND
+    if toExtend
         myStars = dir('stars/longstars*.jpeg');
         myStars = struct2cell(myStars);  
         myStars(1,:) = strcat('stars/',myStars(1,:));
-        STARS.noun = myStars(1,1:3);
-        STARS.main = myStars(1,4:11);
-        STARS.ext = myStars(1,12:19);
+        parameters.nounStars = myStars(1,1:3);
+        parameters.mainStars = myStars(1,4:11);
+        parameters.extStars = myStars(1,12:19);
     else
         myStars = dir('stars/stars*.jpg');
         myStars = struct2cell(myStars);
         myStars(1,:) = strcat('stars/',myStars(1,:));
-        STARS.noun = myStars(1,1:3);
-        STARS.main = myStars(1,4:11);
+        parameters.nounStars = myStars(1,1:3);
+        parameters.mainStars = myStars(1,4:11);
     end
     
     %Randomize the side presentation of the items
@@ -80,21 +80,21 @@ try
     screenside = ['LR';'LR';'LR';'LR';'RL';'RL';'RL';'RL'];
     
     screenside = screenside(randperm(8),:);
-    MAIN_ITEMS.BiasManner = screenside(:,1);
-    MAIN_ITEMS.BiasPath = screenside(:,2);
+    mainItems.BiasManner = screenside(:,1);
+    mainItems.BiasPath = screenside(:,2);
     
     screenside = screenside(randperm(8),:);
-    MAIN_ITEMS.TestManner = screenside(:,1);
-    MAIN_ITEMS.TestPath = screenside(:,2);
+    mainItems.TestManner = screenside(:,1);
+    mainItems.TestPath = screenside(:,2);
     
     if toExtend
         screenside = screenside(randperm(8),:);
-        EXT_ITEMS.BiasManner = screenside(:,1);
-        EXT_ITEMS.BiasPath = screenside(:,2);
+        extItems.BiasManner = screenside(:,1);
+        extItems.BiasPath = screenside(:,2);
         
         screenside = screenside(randperm(8),:);
-        EXT_ITEMS.TestManner = screenside(:,1);
-        EXT_ITEMS.TestPath = screenside(:,2);
+        extItems.TestManner = screenside(:,1);
+        extItems.TestPath = screenside(:,2);
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -149,7 +149,7 @@ try
     
     % How many trials?
     if ~todebug
-        parameters.ntrials = height(MAIN_ITEMS);
+        parameters.ntrials = height(mainItems);
     else
         parameters.ntrials = 2; %For the skeleton, play some short sample trials!
     end
@@ -169,7 +169,7 @@ try
         % Write result file
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        Write_Trial_to_File(i, MAIN_ITEMS);
+        Write_Trial_to_File(i, mainItems);
 
     end
     
@@ -178,7 +178,7 @@ try
         Trial_Extend(i);
         expEnd = GetSecs;
         parameters.totalTime = expEnd - parameters.expStart;
-        Write_Trial_to_File(i, EXT_ITEMS);
+        Write_Trial_to_File(i, extItems);
     end
     
         
