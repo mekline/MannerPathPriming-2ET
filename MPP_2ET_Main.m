@@ -36,22 +36,32 @@ global CALIBVERSION %kid friendliness galore
 global MAXCALIB %Give up after n tries
 global EXPWIN %Psychtoolbox stuff
 global WINDOW_PARAMS %Object for storing standard dimensions for things like movie locations and text size etc.
+global KEYID %Keyboard stuff
 %MPP-specific stuff
 global CONDITION %Manner, Path, Action, or Effect
 global TOEXTEND %Extend or NoExtend
 
-EXPERIMENT = inputs.experiment_name;
-CALIBVERSION = inputs.calib_version;
-MAXCALIB = inputs.max_calib;
-USE_EYETRACKER = inputs.use_eyetracker;
 if ~ischar(inputs.SubjectID)
     SUBJECT = num2str(inputs.SubjectID);
 else
     SUBJECT = inputs.SubjectID;
 end
+
+%Make sure paths are set correctly (your system may need to update these!)
+addpath(genpath('/Applications/TobiiProSDK'));
+addpath(genpath('/Users/snedlab/Desktop/MPP-Common-Resources'));
+RESOURCEFOLDER = '/Users/snedlab/Desktop/MPP-Common-Resources';
+EXPFOLDER = fileparts(which('MPP_2ET_Main.m')); %add this folder to the path too.
+addpath(genpath(EXPFOLDER));
+DATAFOLDER = [EXPFOLDER '/Data'];
+
+EXPERIMENT = inputs.experiment_name;
+CALIBVERSION = inputs.calib_version;
+MAXCALIB = inputs.max_calib;
+USE_EYETRACKER = inputs.use_eyetracker;
 CONDITION = inputs.Condition;
 TOEXTEND = inputs.ToExtend;
-DATAFILE = AssignDataFile(EXPERIMENT,SUBJECT);
+
 
 % Validate inputs
 Conditions = {'Manner', 'Path', 'Action', 'Effect'};
@@ -64,13 +74,7 @@ knownCond = strfind(ExtConditions, TOEXTEND);
 k = logical(sum(~cellfun(@isempty, knownCond)));
 assert(k, 'Use NoExtend or Extend for the extension (NoExtend is default)')
 
-%Make sure paths are set correctly (your system may need to update these!)
-addpath(genpath('/Applications/TobiiProSDK'));
-addpath(genpath('/Users/snedlab/Desktop/MPP-Common-Resources'));
-RESOURCEFOLDER = '/Users/snedlab/Desktop/MPP-Common-Resources';
-EXPFOLDER = fileparts(which('Tobii_calibration_with_psychtoolbox.m')); %add this folder to the path too.
-addpath(genpath(EXPFOLDER));
-DATAFOLDER = [EXPFOLDER '/Data'];
+DATAFILE = AssignDataFile(); %will kick you out if the subjname has been used
 
 %Do psychtoolbox preliminaries to make sure everything's ready!
 %Make PTB less verbose and get basic info about your stim-presenting screen
@@ -86,8 +90,7 @@ PsychPortAudio('Verbosity',0);
 Calib=SetCalibParams('x',[0.5 0.4],'y',[0.1 0.9]);
 
 %And set the boxes that movies and text will play during this experiment!
-WINDOW_PARAMS = SetSpaceParameters(Calib);  %If you wanted to change the look & feel of your exp, create a local version of SetSpaceParams
-
+[WINDOW_PARAMS, KEYID] = SetSpaceParameters(Calib);  %If you wanted to change the look & feel of your exp, create a local version of SetSpaceParams
 %****************************
 % Connect to eye tracker
 %****************************
@@ -139,7 +142,8 @@ end
 
 Screen('FillRect',EXPWIN, WINDOW_PARAMS.BLACK);
 Screen(EXPWIN,'Flip');
-disp('Starting simple Experiment');
+
+disp(strcat('Starting Experiment: ', EXPERIMENT));
 
 %---And the experiment runs here!
 Do_MPP_Exp();

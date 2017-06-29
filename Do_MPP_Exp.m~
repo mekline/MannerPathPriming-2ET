@@ -2,7 +2,7 @@
 function Do_MPP_Exp()
 
 %We are adapting MPP to the eyetracker, very exciting!
-global EXPWIN RESOURCEFOLDER DATAFILE 
+global RESOURCEFOLDER DATAFILE 
 
 %MPP specific objects
 global CONDITION TOEXTEND EXTENDCONDITION MAIN_ITEMS EXT_ITEMS STARS
@@ -29,9 +29,9 @@ end
 
 try
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%
     %READ IN AND RANDOMIZE ALL FILES FOR THE EXPERIMENT!
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     vidInfo = readtable('MPP_videos.csv');
     MAIN_ITEMS = vidInfo(vidInfo.List == conditionno,:);
@@ -95,14 +95,15 @@ try
         EXT_ITEMS.TestPath = screenside(:,2);
     end
     
-    %%%%%%%%%%%%%%%%%%%%%
-    % EXPERIMENT STARTS HERE
-    %%%%%%%%%%%%%%%%%%%%%
-    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Save a header file to the data file so it will be easier to read!
     WriteToDataFile({'header','asdf','putcolumnnameshere', 12}); %use curly braces, ANYthing could be in there!
     
+    %%%%%%%%%%%%%%%%%%%%%
+    % EXPERIMENT STARTS HERE
+    %%%%%%%%%%%%%%%%%%%%%
+ 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     Text_Show('Press spacebar to start experiment.')
@@ -112,21 +113,30 @@ try
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % GET READY....
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_motivation/getready.wav'), 'toBlock');
+    Play_Sound(strcat(RESOURCEFOLDER, '/aa_motivation/getready.wav', 'toBlock');
     Show_Blank();
 
-    Show_Image(strcat(RESOURCEFOLDER, '/', STARS.noun{1}));
-    
+    starImageStart = parameters.nounStars{1}
+
+    imageArray = imread(starImageStart);
+    rect = parameters.scr.rect;
+    winPtr = parameters.scr.winPtr;
+    Screen('PutImage', winPtr , imageArray, rect );
+    Screen('flip',winPtr);
     Take_Response();
     Show_Blank;
 
       
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 2 TRIALS OF NOUN TRAINING
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
-
-    MPP_Noun_Training();
-
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    if ~todebug
+        MPP_Noun_Training();
+    else
+        parameters.noun1TestAns = 'pilot';
+        parameters.noun2TestAns = 'pilot';
+    end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % N TRIALS OF WITHIN-FIELD PRIMING/VERB LEARNING

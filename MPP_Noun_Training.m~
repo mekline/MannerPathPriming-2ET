@@ -8,12 +8,12 @@ global RESOURCEFOLDER
         %%%%%%%%%%%%%%%%%%%%%%
         %FIRST NOUN TRAINING     
         %%%%%%%%%%%%%%%%%%%%%%
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bone1.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bone1.wav', 'toBlock'));
         Show_Blank;
 
         movietoplay_noun_2a = strcat(RESOURCEFOLDER, '/movies/2_noun_2a.mov');
-        movietoplay_noun_2b = strcat(RESOURCEFOLDER, '/movies/2_noun_2b.mov');    
-        movietoplay_noun_2_distr = strcat(RESOURCEFOLDER, '/movies2_noun_2_distractor.mov');
+        movietoplay_noun_2b = strcat(RESOURCEFOLDER, '/movies'Movies/2_noun_2b.mov';    
+        movietoplay_noun_2_distr = 'Movies/2_noun_2_distractor.mov';
         
         Show_Blank;
 
@@ -21,13 +21,13 @@ global RESOURCEFOLDER
 
         Show_Blank;
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bone2.wav'), 'toBlock');
+        Play_Sound('Audio/Finished/aa_nouns/bone2.wav', 'toBlock');
         Show_Blank;
         
-        PlaySideMovies(movietoplay_noun_2_distr,'');
-        PlaySideMovies('',movietoplay_noun_2b); 
+        PlaySideMovies(movietoplay_noun_2_distr,'','caption_left','');
+        PlaySideMovies('',movietoplay_noun_2b,'caption_right',''); 
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/Finished/aa_nouns/bone3.wav'), 'toBlock'); 
+        Play_Sound('Audio/Finished/aa_nouns/bone3.wav', 'toBlock'); 
         
         parameters.noun1TestAns = Take_Response();
        
