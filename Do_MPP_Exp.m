@@ -1,8 +1,8 @@
 
-function Do_MPP_Trials()
+function Do_MPP_Exp()
 
 %We are adapting MPP to the eyetracker, very exciting!
-global RESOURCEFOLDER EXPERIMENT SUBJECT CONDITION TOEXTEND EXTENDCONDITION
+global RESOURCEFOLDER EXPERIMENT SUBJECT DATAFILE CONDITION TOEXTEND EXTENDCONDITION
 
 %Create objects to store trial info
 global MAIN_ITEMS EXT_ITEMS STARS
@@ -26,9 +26,6 @@ switch TOEXTEND
     otherwise
         toExtend = 1;
 end
-
-fp = AssignDataFile(EXPERIMENT,SUBJECT);
-
 
 try
 
@@ -56,7 +53,6 @@ try
     %Add the star pictures _in order!!!_
     if TOEXTEND
         myStars = dir([RESOURCEFOLDER '/stars/longstars*.jpeg']);
-        myStars
         myStars = struct2cell(myStars);  
         myStars(1,:) = strcat('stars/',myStars(1,:));
         STARS.noun = myStars(1,1:3);
@@ -100,9 +96,8 @@ try
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
     %Save a header file to the data file so it will be easier to read!
-    Write_Trial_to_File(fp, 0);
+    Write_Trial_to_File(DATAFILE, 0);
     
     %%%%%%%%%%%%%%%%%%%%%
     % EXPERIMENT STARTS HERE

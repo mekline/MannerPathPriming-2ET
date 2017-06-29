@@ -27,7 +27,6 @@ global EXPERIMENT %String for experiment name
 global SUBJECT %String for subject name
 global EXPFOLDER %This folder, path generated below
 global DATAFOLDER %Where to save all data
-global DATAFILE %File to save behavioral (non eyetracking) data
 global RESOURCEFOLDER %Where to find the PTB and Tobii helper fns, and possibly your media
 global USE_EYETRACKER %boolean
 global TOBII %Tobii mothership object
@@ -35,7 +34,7 @@ global EYETRACKER %will be the Tobii eyetracker object
 global CALIBVERSION %kid friendliness galore
 global MAXCALIB %Give up after n tries
 global EXPWIN %Psychtoolbox stuff
-global WINDOW_PARAMS %Object for storing standard dimensions for things like movie locations and text size etc.
+global 
 %MPP-specific stuff
 global CONDITION %Manner, Path, Action, or Effect
 global TOEXTEND %Extend or NoExtend
@@ -51,7 +50,6 @@ else
 end
 CONDITION = inputs.Condition;
 TOEXTEND = inputs.ToExtend;
-DATAFILE = AssignDataFile(EXPERIMENT,SUBJECT);
 
 % Validate inputs
 Conditions = {'Manner', 'Path', 'Action', 'Effect'};
@@ -83,10 +81,12 @@ PsychPortAudio('Verbosity',0);
 % eyetracking calibration, but should work fine if not connecting to an ET.
 % Alternately, use SetCalibParams_PTB.m for a version local to the PTB
 % helper folder if you're not using the Tobii-Psychtoolbox resources.
-Calib=SetCalibParams('x',[0.5 0.4],'y',[0.1 0.9]);
+Calib=SetCalibParams;
 
-%And set the boxes that movies and text will play during this experiment!
-WINDOW_PARAMS = SetSpaceParameters(Calib);  %If you wanted to change the look & feel of your exp, create a local version of SetSpaceParams
+
+
+
+
 
 %****************************
 % Connect to eye tracker
@@ -137,12 +137,12 @@ end
 % Calibration finished, go on to your experiment 
 %********************
 
-Screen('FillRect',EXPWIN, WINDOW_PARAMS.BLACK);
+Screen('FillRect',EXPWIN,BLACK);
 Screen(EXPWIN,'Flip');
 disp('Starting simple Experiment');
 
 %---And the experiment runs here!
-Do_MPP_Exp();
+Do_MPP_trials();
 
 %---Clean up and exit nicely
 Screen('Close',EXPWIN);
