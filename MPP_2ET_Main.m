@@ -87,7 +87,7 @@ PsychPortAudio('Verbosity',0);
 % eyetracking calibration, but should work fine if not connecting to an ET.
 % Alternately, use SetCalibParams_PTB.m for a version local to the PTB
 % helper folder if you're not using the Tobii-Psychtoolbox resources.
-Calib=SetCalibParams('x',[0.5 0.4],'y',[0.1 0.9]);
+Calib=SetCalibParams('x',[0.9 0.9 0.1 0.1 0.5],'y',[0.1 0.9 0.1 0.9 0.5]);
 
 %And set the boxes that movies and text will play during this experiment!
 [WINDOW_PARAMS, KEYID] = SetSpaceParameters(Calib);  %If you wanted to change the look & feel of your exp, create a local version of SetSpaceParams

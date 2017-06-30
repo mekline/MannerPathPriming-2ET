@@ -147,9 +147,6 @@ try
     for i=1:parameters.ntrials
         Trial_Main(i)
         
-        expEnd = GetSecs;
-        parameters.totalTime = expEnd - parameters.expStart;
-        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Write result file
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
