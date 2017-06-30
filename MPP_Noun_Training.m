@@ -52,19 +52,19 @@ global RESOURCEFOLDER STARS
         PlayCenterMovie(movietoplay_sign);
         Show_Blank;
         
-        Play_Sound((strcat(RESOURCEFOLDER, 'audio/aa_nouns/glorfin2.wav')), 'toBlock');
+        Play_Sound((strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin2.wav')), 'toBlock');
         Show_Blank;
 
         PlaySideMovies(movietoplay_target,'','caption_left','WOWOWOWOW');
         PlaySideMovies('',movietoplay_distractor,'caption_right','WOWOW'); 
 
-        Play_Sound('audio/aa_nouns/glorfin3.wav', 'toBlock');    
+        Play_Sound('/audio/aa_nouns/glorfin3.wav', 'toBlock');    
         
         parameters.noun2TestAns = Take_Response();
         
         Show_Blank;
 
-        Show_Image(strcat(RESOURCEFOLDER, '/', STARS.noun{2}));
+        Show_Image(strcat(RESOURCEFOLDER, '/', STARS.noun{3}));
         
         Take_Response(); %spacebar to go on
         
