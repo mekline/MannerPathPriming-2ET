@@ -19,12 +19,12 @@ global parameters RESOURCEFOLDER STARS
         Show_Blank;
         
         soundtoplay_letsWatchMore = strcat(RESOURCEFOLDER, '/audio/aa_motivation/letswatchmore.wav');
-        movietoplay_practice_1a = 'Movies_Practice/practice_1a.mp4';
-        movietoplay_practice_1b = 'Movies_Practice/practice_1b.mp4';
-        movietoplay_practice_1c = 'Movies_Practice/practice_1c.mp4';
-        movietoplay_practice_1d = 'Movies_Practice/practice_1d.mp4';
-        movietoplay_practice_1e = 'Movies_Practice/practice_1e.mp4';
-        movietoplay_practice_1_distr = 'Movies_Practice/practice_1_distr.mp4';
+        movietoplay_practice_1a = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_1a.mp4');
+        movietoplay_practice_1b = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_1b.mp4');
+        movietoplay_practice_1c = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_1c.mp4');
+        movietoplay_practice_1d = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_1d.mp4');
+        movietoplay_practice_1e = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_1e.mp4');
+        movietoplay_practice_1_distr = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_1_distr.mp4');
         Show_Blank;
 
         PlayCenterMovie(movietoplay_practice_1a);
@@ -111,12 +111,12 @@ global parameters RESOURCEFOLDER STARS
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
         Show_Blank;
 
-        movietoplay_practice_2a = 'Movies_Practice/practice_2a.mp4';
-        movietoplay_practice_2b = 'Movies_Practice/practice_2b.mp4';
-        movietoplay_practice_2c = 'Movies_Practice/practice_2c.mp4';
-        movietoplay_practice_2d = 'Movies_Practice/practice_2d.mp4';
-        movietoplay_practice_2e = 'Movies_Practice/practice_2e.mp4';
-        movietoplay_practice_2_distr = 'Movies_Practice/practice_2_distr.mp4';
+        movietoplay_practice_2a = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_2a.mp4');
+        movietoplay_practice_2b = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_2b.mp4');
+        movietoplay_practice_2c = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_2c.mp4');
+        movietoplay_practice_2d = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_2d.mp4');
+        movietoplay_practice_2e = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_2e.mp4');
+        movietoplay_practice_2_distr = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_2_distr.mp4');
         Show_Blank;
 
         PlayCenterMovie(movietoplay_practice_2a);
@@ -181,6 +181,8 @@ global parameters RESOURCEFOLDER STARS
         
         Show_Image(strcat(RESOURCEFOLDER, '/', STARS.practice{2}));
         
+        Take_Response();
+
         Show_Blank;
         
     %%%%%%%%%%%%%%%%%%%%%
@@ -194,12 +196,12 @@ global parameters RESOURCEFOLDER STARS
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
         Show_Blank;
 
-        movietoplay_practice_3a = 'Movies_Practice/practice_3a.mp4';
-        movietoplay_practice_3b = 'Movies_Practice/practice_3b.mp4';
-        movietoplay_practice_3c = 'Movies_Practice/practice_3c.mp4';
-        movietoplay_practice_3d = 'Movies_Practice/practice_3d.mp4';
-        movietoplay_practice_3e = 'Movies_Practice/practice_3e.mp4';
-        movietoplay_practice_3_distr = 'Movies_Practice/practice_3_distr.mp4';
+        movietoplay_practice_3a = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_3a.mp4');
+        movietoplay_practice_3b = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_3b.mp4');
+        movietoplay_practice_3c = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_3c.mp4');
+        movietoplay_practice_3d = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_3d.mp4');
+        movietoplay_practice_3e = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_3e.mp4');
+        movietoplay_practice_3_distr = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_3_distr.mp4');
         Show_Blank;
 
         PlayCenterMovie(movietoplay_practice_3a);
@@ -263,6 +265,9 @@ global parameters RESOURCEFOLDER STARS
         Show_Blank;
 
         Show_Image(strcat(RESOURCEFOLDER, '/', STARS.practice{3}));
+
+        Take_Response();
+
         Show_Blank;  
         
     %%%%%%%%%%%%%%%%%%%%%
@@ -276,12 +281,12 @@ global parameters RESOURCEFOLDER STARS
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
         Show_Blank;
 
-        movietoplay_practice_4a = 'Movies_Practice/practice_4a.mp4';
-        movietoplay_practice_4b = 'Movies_Practice/practice_4b.mp4';
-        movietoplay_practice_4c = 'Movies_Practice/practice_4c.mp4';
-        movietoplay_practice_4d = 'Movies_Practice/practice_4d.mp4';
-        movietoplay_practice_4e = 'Movies_Practice/practice_4e.mp4';
-        movietoplay_practice_4_distr = 'Movies_Practice/practice_4_distr.mp4';
+        movietoplay_practice_4a = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_4a.mp4');
+        movietoplay_practice_4b = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_4b.mp4');
+        movietoplay_practice_4c = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_4c.mp4');
+        movietoplay_practice_4d = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_4d.mp4');
+        movietoplay_practice_4e = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_4e.mp4');
+        movietoplay_practice_4_distr = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_4_distr.mp4');
         Show_Blank;
 
         PlayCenterMovie(movietoplay_practice_4a);
@@ -346,6 +351,7 @@ global parameters RESOURCEFOLDER STARS
 
         Show_Image(strcat(RESOURCEFOLDER, '/', STARS.practice{4}));
         
+        Take_Response();
         Show_Blank;  
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  

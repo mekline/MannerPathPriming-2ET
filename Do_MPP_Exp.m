@@ -159,6 +159,38 @@ try
     MPP_Practice();
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % 4 TRIALS OF NO-BIAS TEST LEARNING
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
+
+    % How many trials?
+    parameters.ntrials = 4; %For the skeleton, play some short sample trials!
+
+    
+    Text_Show('Ready? Press space to watch the movies.');
+    Take_Response();
+    
+    %And actually play the trials! Data is saved on each round to allow for
+    %partial data collection
+    for i=1:parameters.ntrials
+        Trial_NoBias(i)
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % Write result file
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        Write_Trial_to_File(i, MAIN_ITEMS);
+
+    end
+    
+    %And do the same for the Extension trials, if we're doing that!
+    for i=(parameters.ntrials+1):(2*parameters.ntrials)
+        Trial_Extend(i);
+        expEnd = GetSecs;
+        parameters.totalTime = expEnd - parameters.expStart;
+        Write_Trial_to_File(i, EXT_ITEMS);
+    end
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % N TRIALS OF WITHIN-FIELD PRIMING/VERB LEARNING
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
