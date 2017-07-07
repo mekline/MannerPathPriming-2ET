@@ -5,7 +5,7 @@ function Do_MPP_Exp()
 global EXPWIN RESOURCEFOLDER DATAFILE 
 
 %MPP specific objects
-global CONDITION TOEXTEND EXTENDCONDITION MAIN_ITEMS EXT_ITEMS STARS
+global CONDITION TOEXTEND EXTENDCONDITION MAIN_ITEMS EXT_ITEMS STARS EXTENDPRACTICE
 
 %Some numeric versions of condition names for indexing into tables...
 
@@ -25,6 +25,13 @@ switch TOEXTEND
         toExtend = 0;
     otherwise
         toExtend = 1;
+end
+
+switch EXTENDPRACTICE
+    case 'NoPractice'
+        ExtendPractice = 0;
+    otherwise
+        ExtendPractice = 1;
 end
 
 try
@@ -52,13 +59,31 @@ try
     end
     
     %Add the star pictures _in order!!!_
-    if TOEXTEND
+    if (toExtend == 1) && (ExtendPractice == 0)
         myStars = dir([RESOURCEFOLDER '/stars/longstars*.jpeg']);
         myStars = struct2cell(myStars);  
         myStars(1,:) = strcat('stars/',myStars(1,:));
         STARS.noun = myStars(1,1:3);
         STARS.main = myStars(1,4:11);
         STARS.ext = myStars(1,12:19);
+        
+    elseif (toExtend == 1) && (ExtendPractice == 1)
+        myStars = dir([RESOURCEFOLDER '/stars/longstars_practice*.jpeg']);
+        myStars = struct2cell(myStars);  
+        myStars(1,:) = strcat('stars/',myStars(1,:));
+        STARS.noun = myStars(1,1:3);
+        STARS.practice = myStars(1,4:7);
+        STARS.main = myStars(1,8:15);
+        STARS.ext = myStars(1,16:24);
+    
+    elseif (toExtend == 0) && (ExtendPractice == 1)
+        myStars = dir([RESOURCEFOLDER '/stars/stars_practice*.jpeg']);
+        myStars = struct2cell(myStars);  
+        myStars(1,:) = strcat('stars/',myStars(1,:));
+        STARS.noun = myStars(1,1:3);
+        STARS.practice = myStars(1,4:7);
+        STARS.main = myStars(1,8:15);
+        
     else
         myStars = dir('stars/stars*.jpg');
         myStars = struct2cell(myStars);
@@ -127,6 +152,11 @@ try
 
     MPP_Noun_Training();
 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % 4 TRIALS OF PRACTICE TRAINING
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
+
+    MPP_Practice();
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % N TRIALS OF WITHIN-FIELD PRIMING/VERB LEARNING

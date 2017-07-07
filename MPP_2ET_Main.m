@@ -18,6 +18,7 @@ p.addParamValue('experiment_name', 'MPPCREATION', @isstr);
 p.addParamValue('eyetracker_name', 'Lion', @isstr); %in case you have multiple eyetrackers in the lab...
 p.addParamValue('calib_version', 'Kid', @isstr); %can replace with 'Kid' for a cooler kid display. 
 p.addParamValue('max_calib', 5, @isnumeric); %in case we want to NOT loop on the calibration forever.
+p.addParamValue('ExtendPractice', 1, @isnumeric);
 
 p.parse(SubjectID, Condition, ToExtend, varargin{:});
 inputs = p.Results;
@@ -37,9 +38,10 @@ global MAXCALIB %Give up after n tries
 global EXPWIN %Psychtoolbox stuff
 global WINDOW_PARAMS %Object for storing standard dimensions for things like movie locations and text size etc.
 global KEYID %Keyboard stuff
-%MPP-specific stuff
+%MPP-specific stuff 
 global CONDITION %Manner, Path, Action, or Effect
 global TOEXTEND %Extend or NoExtend
+global EXTENDPRACTICE %ExtendPractice or NoPractice
 
 if ~ischar(inputs.SubjectID)
     SUBJECT = num2str(inputs.SubjectID);
@@ -62,7 +64,7 @@ MAXCALIB = inputs.max_calib;
 USE_EYETRACKER = inputs.use_eyetracker;
 CONDITION = inputs.Condition;
 TOEXTEND = inputs.ToExtend;
-
+EXTENDPRACTICE = inputs.ExtendPractice;
 
 % Validate inputs
 Conditions = {'Manner', 'Path', 'Action', 'Effect'};
