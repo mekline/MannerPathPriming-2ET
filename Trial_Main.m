@@ -87,15 +87,27 @@ global MAIN_ITEMS CONDITION RESOURCEFOLDER EXTENDCONDITION parameters
     %Using the human-interpretable side variables instead...
     if MAIN_ITEMS.BiasManner(trialNo) == 'L'
         PlaySideMovies(movietoplay_manner{1},'');
+        Show_Blank;
         PlaySideMovies('',movietoplay_path{1});
+        Show_Blank;
+        
+        PlaySideMovies(movietoplay_manner{1},movietoplay_path{1});
+        
     elseif MAIN_ITEMS.BiasManner(trialNo) == 'R'
         PlaySideMovies(movietoplay_path{1},'');
+        Show_Blank;
         PlaySideMovies('',movietoplay_manner{1});
+        Show_Blank;
+        
+        PlaySideMovies(movietoplay_path{1},movietoplay_manner{1});
     end
         
     %And take a response
     Play_Sound(soundtoplay_whichOne{1}, 'toBlock');
     MAIN_ITEMS.biasTestAns{trialNo} = Take_Response();
+    
+    WaitSecs(5.00);
+    
     Show_Blank();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -103,8 +115,6 @@ global MAIN_ITEMS CONDITION RESOURCEFOLDER EXTENDCONDITION parameters
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     Play_Sound(soundtoplay_letsWatchMore, 'toBlock');
-    Text_Show('Ready to learn some verbs? Press space.');
-    Take_Response();
     Show_Blank;
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -182,10 +192,6 @@ global MAIN_ITEMS CONDITION RESOURCEFOLDER EXTENDCONDITION parameters
 % READY FOR THE TEST?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    Text_Show('Ready for the test? Press space.');
-    Take_Response();
-    Show_Blank;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PLAY THE TEST MOVIE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -199,14 +205,26 @@ global MAIN_ITEMS CONDITION RESOURCEFOLDER EXTENDCONDITION parameters
     %Using the human-interpretable side variables...
     if MAIN_ITEMS.TestManner(trialNo) == 'L'
         PlaySideMovies(movietoplay_mTest{1},'');
+        Show_Blank;
         PlaySideMovies('',movietoplay_pTest{1});
+        Show_Blank;
+        
+        PlaySideMovies(movietoplay_mTest{1},movietoplay_pTest{1});
+        
     elseif MAIN_ITEMS.TestManner(trialNo) == 'R'
         PlaySideMovies(movietoplay_pTest{1},'');
+        Show_Blank;
         PlaySideMovies('',movietoplay_mTest{1});
+        Show_Blank;
+        
+        PlaySideMovies(movietoplay_pTest{1},movietoplay_mTest{1});
     end
     
      %....and take a response
     Play_Sound(soundtoplay_whichOne{1}, 'toBlock');
+    
+    WaitSecs(5.00);
+    
     MAIN_ITEMS.finalTestAns{trialNo} = Take_Response();
     MAIN_ITEMS.finalTestEnd(trialNo) = GetSecs;
     

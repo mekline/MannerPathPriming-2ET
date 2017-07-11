@@ -165,10 +165,6 @@ global parameters MAIN_ITEMS RESOURCEFOLDER STARS CONDITION TOEXTEND
 % READY FOR THE TEST?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    Text_Show('Ready for the test? Press space.');
-    Take_Response();
-    Show_Blank;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PLAY THE TEST MOVIE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -182,10 +178,19 @@ global parameters MAIN_ITEMS RESOURCEFOLDER STARS CONDITION TOEXTEND
     %Using the human-interpretable side variables...
     if MAIN_ITEMS.TestManner(trialNo) == 'L'
         PlaySideMovies(movietoplay_mTest{1},'');
+        Show_Blank;
         PlaySideMovies('',movietoplay_pTest{1});
+        Show_Blank;
+        
+        PlaySideMovies(movietoplay_mTest{1},movietoplay_pTest{1});
+        
     elseif MAIN_ITEMS.TestManner(trialNo) == 'R'
         PlaySideMovies(movietoplay_pTest{1},'');
+        Show_Blank;
         PlaySideMovies('',movietoplay_mTest{1});
+        Show_Blank;
+        
+        PlaySideMovies(movietoplay_pTest{1},movietoplay_mTest{1});
     end
     
      %....and take a response

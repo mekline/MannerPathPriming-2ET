@@ -54,14 +54,14 @@ trialNo = trialNo - ntrials;
         Play_Sound(soundtoplay_ambigAudioFuture{1}, 'toBlock');
     
         PlayCenterMovie(movietoplay_ambigVid{1});
-%         if strmatch(EXTENDCONDITION, {'Action'}) %need a mask in between or they look super weird!
-%             imageArray = imread(greySquare);
-%             rect =  parameters.centerbox;
-%             winPtr = parameters.scr.winPtr;   
-%             Screen('PutImage', winPtr , imageArray, rect );    
-%             Screen('flip',winPtr)
-%             WaitSecs(0.500);
-%         end
+        if strmatch(EXTENDCONDITION, {'Action'}) %need a mask in between or they look super weird!
+            imageArray = imread(greySquare);
+            rect =  parameters.centerbox;
+            winPtr = parameters.scr.winPtr;   
+            Screen('PutImage', winPtr , imageArray, rect );    
+            Screen('flip',winPtr)
+            WaitSecs(0.500);
+        end
         PlayCenterMovie(movietoplay_ambigVid{1});
         Show_Blank;
 
@@ -71,7 +71,7 @@ trialNo = trialNo - ntrials;
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % BIAS TEST
-% Play the two event movies; movie always plays L then R
+% Play the two event movies separately, then at the same time
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Play_Sound(soundtoplay_letsFind{1}, 'toBlock');
     Show_Blank;      
@@ -79,10 +79,18 @@ trialNo = trialNo - ntrials;
     %Using the human-interpretable side variables instead...
     if EXT_ITEMS.BiasManner(trialNo) == 'L'
         PlaySideMovies(movietoplay_manner{1},'');
+        Show_Blank;
         PlaySideMovies('',movietoplay_path{1});
+        Show_Blank;
+        
+        PlaySideMovies(movietoplay_manner{1},movietoplay_path{1});
     elseif EXT_ITEMS.BiasManner(trialNo) == 'R'
         PlaySideMovies(movietoplay_path{1},'');
+        Show_Blank;
         PlaySideMovies('',movietoplay_manner{1});
+        Show_Blank;
+        
+        PlaySideMovies(movietoplay_path{1},movietoplay_manner{1});
     end
         
     %And take a response

@@ -25,15 +25,11 @@ global parameters RESOURCEFOLDER STARS
         movietoplay_practice_1d = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_1d.mp4');
         movietoplay_practice_1e = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_1e.mp4');
         movietoplay_practice_1_distr = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_1_distr.mp4');
+        movietoplay_recenter = strcat(RESOURCEFOLDER, '/movies/babylaugh.mov');
         Show_Blank;
 
         PlayCenterMovie(movietoplay_practice_1a);
-
-        Show_Blank;
-   
-        Play_Sound(soundtoplay_letsWatchMore, 'toBlock');
-        Text_Show('Ready to learn some verbs? Press space.');
-        Take_Response();
+        PlayCenterMovie(movietoplay_practice_1a);
         Show_Blank;
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -44,7 +40,8 @@ global parameters RESOURCEFOLDER STARS
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_1b);
-        
+        PlayCenterMovie(movietoplay_practice_1b);
+
         Show_Blank;
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -55,7 +52,8 @@ global parameters RESOURCEFOLDER STARS
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_1c);
-        
+        PlayCenterMovie(movietoplay_practice_1c);
+
         Show_Blank;
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -66,29 +64,34 @@ global parameters RESOURCEFOLDER STARS
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_1d);
+        PlayCenterMovie(movietoplay_practice_1d);
         
         Show_Blank;
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %LEARNING TEST
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        Text_Show('Ready for the test? Press space.');
-        Take_Response();
+
         Show_Blank;
         
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bone2.wav'), 'toBlock');
         
         PlaySideMovies(movietoplay_practice_1_distr,'','caption_left','');
+        Show_Blank;
+        
         PlaySideMovies('',movietoplay_practice_1e,'caption_right',''); 
+        Show_Blank;
+        
+        PlaySideMovies(movietoplay_practice_1_distr,movietoplay_practice_1e,'caption_left','');
+        Show_Blank;
         
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bone3.wav'), 'toBlock'); 
         
-        parameters.practice1TestAns = Take_Response();
-       
-        Show_Blank;
-
-        Show_Image(strcat(RESOURCEFOLDER, '/', STARS.practice{1}));
+        WaitSecs(5.00);
+        
+        %parameters.practice1TestAns = Take_Response();
+        
+        %Show_Image(strcat(RESOURCEFOLDER, '/', STARS.practice{1}));
         
 %         starimagenoun1 = STARS.practice{1};
 
@@ -97,7 +100,8 @@ global parameters RESOURCEFOLDER STARS
 %         winPtr = parameters.scr.winPtr;
 %         Screen('PutImage', winPtr , imageArray, rect );
 %         Screen('flip',winPtr)
-        Take_Response();
+        Show_Blank;
+        PlayCenterMovie(movietoplay_recenter);
         Show_Blank; 
         
     %%%%%%%%%%%%%%%%%%%%%
@@ -120,11 +124,8 @@ global parameters RESOURCEFOLDER STARS
         Show_Blank;
 
         PlayCenterMovie(movietoplay_practice_2a);
-        Show_Blank;
-        
-        Play_Sound(soundtoplay_letsWatchMore, 'toBlock');
-        Text_Show('Ready to learn some verbs? Press space.');
-        Take_Response();
+        PlayCenterMovie(movietoplay_practice_2a);
+
         Show_Blank;
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -134,6 +135,7 @@ global parameters RESOURCEFOLDER STARS
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
         Show_Blank;
         
+        PlayCenterMovie(movietoplay_practice_2b);
         PlayCenterMovie(movietoplay_practice_2b);
         
         Show_Blank;
@@ -146,6 +148,7 @@ global parameters RESOURCEFOLDER STARS
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_2c);
+        PlayCenterMovie(movietoplay_practice_2c);
         
         Show_Blank;
         
@@ -157,33 +160,40 @@ global parameters RESOURCEFOLDER STARS
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_2d);
+        PlayCenterMovie(movietoplay_practice_2d);
         
         Show_Blank;
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %LEARNING TEST
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        Text_Show('Ready for the test? Press space.');
-        Take_Response();
+
         Show_Blank;
         
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin2.wav'), 'toBlock');
         Show_Blank;
         
         PlaySideMovies(movietoplay_practice_2e,'','caption_left','');
+        Show_Blank;
+        
         PlaySideMovies('',movietoplay_practice_2_distr,'caption_right',''); 
+        Show_Blank;
+        
+        PlaySideMovies(movietoplay_practice_2e, movietoplay_practice_2_distr,'caption_left','');
 
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin3.wav'), 'toBlock');    
         
-        parameters.practice2TestAns = Take_Response();
+        WaitSecs(5.00);
+        %parameters.practice2TestAns = Take_Response();
         Show_Blank;
         
-        Show_Image(strcat(RESOURCEFOLDER, '/', STARS.practice{2}));
+        %Show_Image(strcat(RESOURCEFOLDER, '/', STARS.practice{2}));
         
-        Take_Response();
-
+        %Take_Response();
+        
         Show_Blank;
+        PlayCenterMovie(movietoplay_recenter);
+        Show_Blank; 
         
     %%%%%%%%%%%%%%%%%%%%%
     %THIRD PRACTICE TRIAL
@@ -205,11 +215,7 @@ global parameters RESOURCEFOLDER STARS
         Show_Blank;
 
         PlayCenterMovie(movietoplay_practice_3a);
-        Show_Blank;
-        
-        Play_Sound(soundtoplay_letsWatchMore, 'toBlock');
-        Text_Show('Ready to learn some verbs? Press space.');
-        Take_Response();
+        PlayCenterMovie(movietoplay_practice_3a);
         Show_Blank;
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -219,6 +225,7 @@ global parameters RESOURCEFOLDER STARS
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
         Show_Blank;
         
+        PlayCenterMovie(movietoplay_practice_3b);
         PlayCenterMovie(movietoplay_practice_3b);
         
         Show_Blank;
@@ -231,6 +238,7 @@ global parameters RESOURCEFOLDER STARS
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_3c);
+        PlayCenterMovie(movietoplay_practice_3c);
         
         Show_Blank;
         
@@ -242,33 +250,38 @@ global parameters RESOURCEFOLDER STARS
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_3d);
+        PlayCenterMovie(movietoplay_practice_3d);
         
         Show_Blank;
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %LEARNING TEST
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        Text_Show('Ready for the test? Press space.');
-        Take_Response();
+
         Show_Blank;
         
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin2.wav'), 'toBlock');
         Show_Blank;
         
         PlaySideMovies(movietoplay_practice_3e,'','caption_left','');
+        Show_Blank;
+        
         PlaySideMovies('',movietoplay_practice_3_distr,'caption_right',''); 
+        Show_Blank;
+        
+        PlaySideMovies(movietoplay_practice_3e,movietoplay_practice_3_distr,'caption_left','');
 
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin3.wav'), 'toBlock');    
         
-        parameters.practice3TestAns = Take_Response();
+        WaitSecs(5.00);
+        %parameters.practice3TestAns = Take_Response();
+
+        %Show_Image(strcat(RESOURCEFOLDER, '/', STARS.practice{3}));
+
         Show_Blank;
-
-        Show_Image(strcat(RESOURCEFOLDER, '/', STARS.practice{3}));
-
-        Take_Response();
-
-        Show_Blank;  
+        PlayCenterMovie(movietoplay_recenter);
+        Show_Blank; 
+        
         
     %%%%%%%%%%%%%%%%%%%%%
     %FOURTH PRACTICE TRIAL
@@ -290,11 +303,8 @@ global parameters RESOURCEFOLDER STARS
         Show_Blank;
 
         PlayCenterMovie(movietoplay_practice_4a);
-        Show_Blank;
+        PlayCenterMovie(movietoplay_practice_4a);
         
-        Play_Sound(soundtoplay_letsWatchMore, 'toBlock');
-        Text_Show('Ready to learn some verbs? Press space.');
-        Take_Response();
         Show_Blank;
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -304,6 +314,7 @@ global parameters RESOURCEFOLDER STARS
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
         Show_Blank;
         
+        PlayCenterMovie(movietoplay_practice_4b);
         PlayCenterMovie(movietoplay_practice_4b);
         
         Show_Blank;
@@ -316,6 +327,7 @@ global parameters RESOURCEFOLDER STARS
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_4c);
+        PlayCenterMovie(movietoplay_practice_4c);
         
         Show_Blank;
         
@@ -327,32 +339,39 @@ global parameters RESOURCEFOLDER STARS
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_4d);
+        PlayCenterMovie(movietoplay_practice_4d);
         
         Show_Blank;
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %LEARNING TEST
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        Text_Show('Ready for the test? Press space.');
-        Take_Response();
+       
         Show_Blank;
         
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin2.wav'), 'toBlock');
         Show_Blank;
         
         PlaySideMovies(movietoplay_practice_4e,'','caption_left','');
+        Show_Blank;
+        
         PlaySideMovies('',movietoplay_practice_4_distr,'caption_right',''); 
+        Show_Blank;
+        
+        PlaySideMovies(movietoplay_practice_4e,movietoplay_practice_4_distr,'caption_left','');
 
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin3.wav'), 'toBlock');    
+        WaitSecs(5.00);
         
-        parameters.practice4TestAns = Take_Response();
+        %parameters.practice4TestAns = Take_Response();
         Show_Blank;
 
-        Show_Image(strcat(RESOURCEFOLDER, '/', STARS.practice{4}));
+        %Show_Image(strcat(RESOURCEFOLDER, '/', STARS.practice{4}));
         
-        Take_Response();
-        Show_Blank;  
+        Show_Blank
+        PlayCenterMovie(movietoplay_recenter);
+        Show_Blank; 
+
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
     % END PRACTICE TRAINING                             
