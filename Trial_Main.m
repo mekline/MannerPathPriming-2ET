@@ -6,51 +6,52 @@ function [response] = Trial_Main(trialNo)
 % Training - Depending on the condition, show either MnP1 or M1Pn movies
 % Final test - take a forced choice response between M1P2 and M2P1 again
 
-global parameters mainItems
+global MAIN_ITEMS CONDITION RESOURCEFOLDER EXTENDCONDITION parameters
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % MOVIES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     %Trial movies
-    movietoplay_ambigVid = strcat('Movies/', mainItems.ambigV(trialNo));
-    movietoplay_path = strcat('Movies/', mainItems.pBiasV(trialNo));    
-    movietoplay_manner = strcat('Movies/', mainItems.mBiasV(trialNo));
-    movietoplay_trainV1 = strcat('Movies/', mainItems.trainV1(trialNo));
-    movietoplay_trainV2 = strcat('Movies/', mainItems.trainV2(trialNo));
-    movietoplay_trainV3 = strcat('Movies/', mainItems.trainV3(trialNo));
-    movietoplay_mTest = strcat('Movies/', mainItems.mTestV(trialNo));
-    movietoplay_pTest = strcat('Movies/', mainItems.pTestV(trialNo));
-    
+    movietoplay_ambigVid = strcat(RESOURCEFOLDER, '/movies/', MAIN_ITEMS.ambigV(trialNo));
+    movietoplay_path = strcat(RESOURCEFOLDER, '/movies/', MAIN_ITEMS.pBiasV(trialNo));    
+    movietoplay_manner = strcat(RESOURCEFOLDER, '/movies/', MAIN_ITEMS.mBiasV(trialNo));
+    movietoplay_trainV1 = strcat(RESOURCEFOLDER, '/movies/', MAIN_ITEMS.trainV1(trialNo));
+    movietoplay_trainV2 = strcat(RESOURCEFOLDER, '/movies/', MAIN_ITEMS.trainV2(trialNo));
+    movietoplay_trainV3 = strcat(RESOURCEFOLDER, '/movies/', MAIN_ITEMS.trainV3(trialNo));
+    movietoplay_mTest = strcat(RESOURCEFOLDER, '/movies/', MAIN_ITEMS.mTestV(trialNo));
+    movietoplay_pTest = strcat(RESOURCEFOLDER, '/movies/', MAIN_ITEMS.pTestV(trialNo));
+    movietoplay_recenter = strcat(RESOURCEFOLDER, '/movies/babylaugh.mov');
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % AUDIO
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    soundtoplay_ambigAudioFuture = strcat('Audio/Finished/', mainItems.ambigAudioFuture(trialNo));
-    soundtoplay_ambigAudioPast = strcat('Audio/Finished/', mainItems.ambigAudioPast(trialNo));
-    soundtoplay_trainAudioFuture1 = strcat('Audio/Finished/', mainItems.trainAudioFuture1(trialNo));
-    soundtoplay_trainAudioPast1 = strcat('Audio/Finished/', mainItems.trainAudioPast1(trialNo));
-    soundtoplay_trainAudioFuture2 = strcat('Audio/Finished/', mainItems.trainAudioFuture2(trialNo));
-    soundtoplay_trainAudioPast2 = strcat('Audio/Finished/', mainItems.trainAudioPast2(trialNo));
-    soundtoplay_trainAudioFuture3 = strcat('Audio/Finished/', mainItems.trainAudioFuture3(trialNo));
-    soundtoplay_trainAudioPast3 = strcat('Audio/Finished/', mainItems.trainAudioPast3(trialNo));
-    soundtoplay_whichOne = strcat('Audio/Finished/', mainItems.whichOneAudio(trialNo));
-    soundtoplay_letsFind = strcat('Audio/Finished/aa_lets_find/', mainItems.letsFindAudio(trialNo));
+    soundtoplay_ambigAudioFuture = strcat(RESOURCEFOLDER, '/audio/', MAIN_ITEMS.ambigAudioFuture(trialNo));
+    soundtoplay_ambigAudioPast = strcat(RESOURCEFOLDER, '/audio/', MAIN_ITEMS.ambigAudioPast(trialNo));
+    soundtoplay_trainAudioFuture1 = strcat(RESOURCEFOLDER, '/audio/', MAIN_ITEMS.trainAudioFuture1(trialNo));
+    soundtoplay_trainAudioPast1 = strcat(RESOURCEFOLDER, '/audio/', MAIN_ITEMS.trainAudioPast1(trialNo));
+    soundtoplay_trainAudioFuture2 = strcat(RESOURCEFOLDER, '/audio/', MAIN_ITEMS.trainAudioFuture2(trialNo));
+    soundtoplay_trainAudioPast2 = strcat(RESOURCEFOLDER, '/audio/', MAIN_ITEMS.trainAudioPast2(trialNo));
+    soundtoplay_trainAudioFuture3 = strcat(RESOURCEFOLDER, '/audio/', MAIN_ITEMS.trainAudioFuture3(trialNo));
+    soundtoplay_trainAudioPast3 = strcat(RESOURCEFOLDER, '/audio/', MAIN_ITEMS.trainAudioPast3(trialNo));
+    soundtoplay_whichOne = strcat(RESOURCEFOLDER, '/audio/', MAIN_ITEMS.whichOneAudio(trialNo));
+    soundtoplay_letsFind = strcat(RESOURCEFOLDER, '/audio/aa_lets_find/', MAIN_ITEMS.letsFindAudio(trialNo));
     
     %these ones are the same every time
-    soundtoplay_letsWatchMore = 'Audio/Finished/aa_motivation/letswatchmore.wav';
-    soundtoplay_getReady = 'Audio/Finished/aa_motivation/getready.wav';
-    soundtoplay_goodJob = 'Audio/Finished/aa_motivation/goodjob.wav';
-    soundtoplay_nowLetsSee = 'Audio/Finished/aa_motivation/nowletssee.wav';
-    soundtoplay_wow = 'Audio/Finished/aa_motivation/wow.wav';
+    soundtoplay_letsWatchMore = strcat(RESOURCEFOLDER, '/audio/aa_motivation/letswatchmore.wav');
+    soundtoplay_getReady = strcat(RESOURCEFOLDER, '/audio/aa_motivation/getready.wav');
+    soundtoplay_goodJob = strcat(RESOURCEFOLDER, '/audio/aa_motivation/goodjob.wav');
+    soundtoplay_nowLetsSee = strcat(RESOURCEFOLDER, '/audio/aa_motivation/nowletssee.wav');
+    soundtoplay_wow = strcat(RESOURCEFOLDER, '/audio/aa_motivation/wow.wav');
      
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % STAR IMAGES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 
-    starImage = parameters.mainStars(trialNo);
-    greySquare = 'stars/grey.jpg';
+%     starImage = parameters.mainStars(trialNo);
+%     greySquare = 'stars/grey.jpg';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PLAY BIAS TEST VIDEO
@@ -61,7 +62,7 @@ global parameters mainItems
         Play_Sound(soundtoplay_ambigAudioFuture{1}, 'toBlock');
     
         PlayCenterMovie(movietoplay_ambigVid{1});
-        if strmatch(parameters.condition, {'Action', 'Effect'}) %these ones need a mask in between or they look super weird!
+        if strmatch(CONDITION, {'Action', 'Effect'}) %these ones need a mask in between or they look super weird!
             imageArray = imread(greySquare);
             rect =  parameters.centerbox;
             winPtr = parameters.scr.winPtr;   
@@ -84,17 +85,17 @@ global parameters mainItems
     Show_Blank;      
       
     %Using the human-interpretable side variables instead...
-    if mainItems.BiasManner(trialNo) == 'L'
+    if MAIN_ITEMS.BiasManner(trialNo) == 'L'
         PlaySideMovies(movietoplay_manner{1},'');
         PlaySideMovies('',movietoplay_path{1});
-    elseif mainItems.BiasManner(trialNo) == 'R'
+    elseif MAIN_ITEMS.BiasManner(trialNo) == 'R'
         PlaySideMovies(movietoplay_path{1},'');
         PlaySideMovies('',movietoplay_manner{1});
     end
         
     %And take a response
     Play_Sound(soundtoplay_whichOne{1}, 'toBlock');
-    mainItems.biasTestAns{trialNo} = Take_Response();
+    MAIN_ITEMS.biasTestAns{trialNo} = Take_Response();
     Show_Blank();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -110,12 +111,12 @@ global parameters mainItems
 % % 111111111111111111111111111111111111111111111111111111111111111111111111
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    mainItems.trainStart(trialNo) = GetSecs;
+    MAIN_ITEMS.trainStart(trialNo) = GetSecs;
 
     Play_Sound(soundtoplay_trainAudioFuture1{1}, 'toBlock');
 
     PlayCenterMovie(movietoplay_trainV1{1}); 
-    if strmatch(parameters.condition, {'Action', 'Effect'}) %these ones need a mask in between or they look super weird!
+    if strmatch(CONDITION, {'Action', 'Effect'}) %these ones need a mask in between or they look super weird!
         imageArray = imread(greySquare);
         rect =  parameters.centerbox;
         winPtr = parameters.scr.winPtr;   
@@ -137,7 +138,7 @@ global parameters mainItems
     Play_Sound(soundtoplay_trainAudioFuture2{1}, 'toBlock');
     
     PlayCenterMovie(movietoplay_trainV2{1});
-    if strmatch(parameters.condition, {'Action', 'Effect'}) %these ones need a mask in between or they look super weird!
+    if strmatch(CONDITION, {'Action', 'Effect'}) %these ones need a mask in between or they look super weird!
         imageArray = imread(greySquare);
         rect =  parameters.centerbox;
         winPtr = parameters.scr.winPtr;   
@@ -159,7 +160,7 @@ global parameters mainItems
     Play_Sound(soundtoplay_trainAudioFuture3{1}, 'toBlock');
 
     PlayCenterMovie(movietoplay_trainV3{1});
-    if strmatch(parameters.condition, {'Action', 'Effect'}) %these ones need a mask in between or they look super weird!
+    if strmatch(CONDITION, {'Action', 'Effect'}) %these ones need a mask in between or they look super weird!
         imageArray = imread(greySquare);
         rect =  parameters.centerbox;
         winPtr = parameters.scr.winPtr;   
@@ -172,7 +173,7 @@ global parameters mainItems
 
     Play_Sound(soundtoplay_trainAudioPast3{1}, 'toBlock');
 
-    mainItems.trainEnd(trialNo) = GetSecs;
+    MAIN_ITEMS.trainEnd(trialNo) = GetSecs;
    
     WaitSecs(1.500);
     Show_Blank;
@@ -189,40 +190,48 @@ global parameters mainItems
 % PLAY THE TEST MOVIE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    mainItems.finalTestStart(trialNo) = GetSecs;
+    MAIN_ITEMS.finalTestStart(trialNo) = GetSecs;
 
     Play_Sound(soundtoplay_letsFind{1}, 'toBlock');
     Show_Blank;      
   
 
     %Using the human-interpretable side variables...
-    if mainItems.TestManner(trialNo) == 'L'
+    if MAIN_ITEMS.TestManner(trialNo) == 'L'
         PlaySideMovies(movietoplay_mTest{1},'');
         PlaySideMovies('',movietoplay_pTest{1});
-    elseif mainItems.TestManner(trialNo) == 'R'
+    elseif MAIN_ITEMS.TestManner(trialNo) == 'R'
         PlaySideMovies(movietoplay_pTest{1},'');
         PlaySideMovies('',movietoplay_mTest{1});
     end
     
      %....and take a response
     Play_Sound(soundtoplay_whichOne{1}, 'toBlock');
-    mainItems.finalTestAns{trialNo} = Take_Response();
-    mainItems.finalTestEnd(trialNo) = GetSecs;
+    MAIN_ITEMS.finalTestAns{trialNo} = Take_Response();
+    MAIN_ITEMS.finalTestEnd(trialNo) = GetSecs;
     
     %%%%%%%%%%%%%%%%%%%%%%
     % SHOW A NICE REWARD PICTURE
     %%%%%%%%%%%%%%%%%%%%%%
-     
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % SHOW ATTENTION-GRAB CENTER
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        Show_Blank;
+        PlayCenterMovie(movietoplay_recenter);
+        resp1 = Take_Response();
+        Show_Blank;
 
     
-    imageArray=imread(char(starImage));
-    rect = parameters.scr.rect;
-    winPtr = parameters.scr.winPtr;   
-    Screen('PutImage', winPtr , imageArray, rect );    
-    Screen('flip',winPtr)
-    resp1 = Take_Response(); %just moving on...
-    Show_Blank;
-    
+%     imageArray=imread(char(starImage));
+%     rect = parameters.scr.rect;
+%     winPtr = parameters.scr.winPtr;   
+%     Screen('PutImage', winPtr , imageArray, rect );    
+%     Screen('flip',winPtr)
+%     resp1 = Take_Response(); %just moving on...
+%     Show_Blank;
+
     
     if resp1 == 'q'
             Closeout_PTool();

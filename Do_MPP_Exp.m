@@ -5,7 +5,7 @@ function Do_MPP_Exp()
 global EXPWIN RESOURCEFOLDER DATAFILE 
 
 %MPP specific objects
-global CONDITION TOEXTEND EXTENDCONDITION MAIN_ITEMS EXT_ITEMS STARS EXTENDPRACTICE
+global expStart expTime CONDITION TOEXTEND EXTENDCONDITION MAIN_ITEMS EXT_ITEMS STARS EXTENDPRACTICE ntrials 
 
 %Some numeric versions of condition names for indexing into tables...
 
@@ -126,13 +126,59 @@ try
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Save a header file to the data file so it will be easier to read!
-    WriteToDataFile({'header','asdf','putcolumnnameshere', 12}); %use curly braces, ANYthing could be in there!
+   % WriteToDataFile({'header','asdf','putcolumnnameshere', 12}); %use curly braces, ANYthing could be in there!
+    
+    WriteToDataFile({'SubjectNo',...
+        'Date',...
+        'Time',...
+        'VerbDomain',...
+        'Condition',...
+        'trialNo',...
+        'itemID',...
+        'verbName',...
+        'verbMeaning',...
+        'mannerSideBias',...
+        'pathSideBias',...
+        'kidResponseBias',...
+        'mannerSideTest',...
+        'pathSideTest',...
+        'kidResponseTest',...
+        'noun1Test',...
+        'noun2Test',...
+        'totalTime',...
+        'xxxxxxxxx',...
+        'expStartTime',...
+        'trainingStartTime',...
+        'trainingEndTime',...
+        'finalTestStart',...
+        'finalTestEnd',...
+        'ambigVid',...
+        'mBiasVid',...
+        'pBiasVid',...
+        'trainVid1',...
+        'trainVid2',...
+        'trainVid3',...
+        'mTestVid',...
+        'pTestVid',...
+        'ambigAudioFuture',...
+        'ambigAudioPast',...
+        'trainAudioFuture1',...
+        'trainAudioPast1',...
+        'trainAudioFuture2',...
+        'trainAudioPast2',...
+        'trainAudioFuture3',...
+        'trainAudioPast3',...
+        'whichOneAudio',...
+        'letsFindAudio'});
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     Text_Show('Press spacebar to start experiment.')
     Take_Response();
     Show_Blank();
+    
+    expStart = GetSecs;
+    disp(expStart);
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % GET READY....
@@ -150,78 +196,68 @@ try
     % 2 TRIALS OF NOUN TRAINING
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
 
-    MPP_Noun_Training();
+    %MPP_Noun_Training();
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 4 TRIALS OF PRACTICE TRAINING
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
 
-    MPP_Practice();
+    %MPP_Practice();
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 4 TRIALS OF NO-BIAS TEST LEARNING
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
-
     % How many trials?
-    parameters.ntrials = 4; %For the skeleton, play some short sample trials!
-
+    ntrials = height(MAIN_ITEMS); %For the skeleton, play some short sample trials!
     
     Text_Show('Ready? Press space to watch the movies.');
     Take_Response();
     
     %And actually play the trials! Data is saved on each round to allow for
     %partial data collection
-    for i=1:parameters.ntrials
+    for i = 1:ntrials/2;
+        disp(i)
         Trial_NoBias(i)
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Write result file
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
+        expTrial = GetSecs;
+        expTime = expTrial - expStart;
+        
         Write_Trial_to_File(i, MAIN_ITEMS);
 
     end
     
-    %And do the same for the Extension trials, if we're doing that!
-    for i=(parameters.ntrials+1):(2*parameters.ntrials)
-        Trial_Extend(i);
-        expEnd = GetSecs;
-        parameters.totalTime = expEnd - parameters.expStart;
-        Write_Trial_to_File(i, EXT_ITEMS);
-    end
-    
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % N TRIALS OF WITHIN-FIELD PRIMING/VERB LEARNING
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    % How many trials?
-    if ~todebug
-        parameters.ntrials = height(MAIN_ITEMS);
-    else
-        parameters.ntrials = 2; %For the skeleton, play some short sample trials!
-    end
     
     Text_Show('Ready? Press space to watch the movies.');
     Take_Response();
     
     %And actually play the trials! Data is saved on each round to allow for
     %partial data collection
-    for i=1:parameters.ntrials
+    for i=5:ntrials
         Trial_Main(i)
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Write result file
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        expTrial = GetSecs;
+        expTime = expTrial - expStart;
         
         Write_Trial_to_File(i, MAIN_ITEMS);
 
     end
     
     %And do the same for the Extension trials, if we're doing that!
-    for i=(parameters.ntrials+1):(2*parameters.ntrials)
+    for i=(ntrials+1):(2*ntrials)
         Trial_Extend(i);
-        expEnd = GetSecs;
-        parameters.totalTime = expEnd - parameters.expStart;
+        expTrial = GetSecs;
+        expTime = expTrial - expStart;
         Write_Trial_to_File(i, EXT_ITEMS);
     end
     
