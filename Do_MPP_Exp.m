@@ -5,7 +5,7 @@ function Do_MPP_Exp()
 global EXPWIN RESOURCEFOLDER DATAFILE 
 
 %MPP specific objects
-global expStart expTime CONDITION TOEXTEND EXTENDCONDITION MAIN_ITEMS EXT_ITEMS STARS EXTENDPRACTICE ntrials 
+global expStart expTime CONDITION TOEXTEND EXTENDCONDITION MAIN_ITEMS EXT_ITEMS STARS EXTENDPRACTICE ntrials TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
 
 %Some numeric versions of condition names for indexing into tables...
 
@@ -180,6 +180,12 @@ try
     expStart = GetSecs;
     disp(expStart);
     
+    timeCell = {'subjectID', 'system_time_stamp', 'point_description'};
+    timeCell(end+1,:) = {SUBJECT,...
+        TOBII.get_system_time_stamp,...
+        'Experiment Start'};
+
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % GET READY....
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -195,7 +201,7 @@ try
     % 4 TRIALS OF PRACTICE TRAINING
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
 
-    MPP_Practice();
+    %MPP_Practice();
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 4 TRIALS OF NO-BIAS TEST LEARNING

@@ -5,7 +5,7 @@ function [response] = Trial_Extend(trialNo)
 %Bias test - show M1P1 movie; take a forced choice response between M1P2
 %and M2P1
 
-global MAIN_ITEMS EXT_ITEMS ntrials RESOURCEFOLDER EXTENDCONDITION parameters
+global MAIN_ITEMS EXT_ITEMS ntrials RESOURCEFOLDER EXTENDCONDITION parameters TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
     
 %This is the extend version, so adjust the global trial number to index
 %into the EXT_ITEMS object
@@ -75,6 +75,12 @@ trialNo = trialNo - ntrials;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Play_Sound(soundtoplay_letsFind{1}, 'toBlock');
     Show_Blank;      
+    
+    GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['Start_Trial ' num2str(trialNo)]}; 
+        disp(['Start Trial: ' num2str(trialNo)])
       
     %Using the human-interpretable side variables instead...
     if EXT_ITEMS.BiasManner(trialNo) == 'L'
@@ -96,10 +102,24 @@ trialNo = trialNo - ntrials;
     %And take a response
     Play_Sound(soundtoplay_whichOne{1}, 'toBlock');
     EXT_ITEMS.biasTestAns{trialNo} = Take_Response();
-    Show_Blank();
+    
+    WaitSecs(5.00);
+    
+    GazeData = EYETRACKER.get_gaze_data;
+    timeCell(end+1,:) = {SUBJECT,...
+        TOBII.get_system_time_stamp,...
+        ['End_Trial ' num2str(trialNo)]};
+    
+    %Save trial data as MAT, and add to the big CSV
+    description = ['All_of_trial_' num2str(trialNo)]; %description of this timeperiod
+    save([DATAFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
+    SaveGazeData(GazeData, description);
     
     %Fill in values for the rest of this item...
     EXT_ITEMS.finalTestEnd(trialNo) = GetSecs;
+    
+    Show_Blank();
+   
   
 %%%%%%%%%%%%%%%%%%%%%%
 % SHOW A NICE REWARD PICTURE
@@ -116,13 +136,13 @@ trialNo = trialNo - ntrials;
 
     Show_Blank;
     PlayCenterMovie(movietoplay_recenter);
-    resp1 = Take_Response();
+    WaitSecs(2.00);
     Show_Blank;
     
     
-    if resp1 == 'q'
-            Closeout_PTool();
-    end
+%     if resp1 == 'q'
+%             Closeout_PTool();
+%     end
     
     
     

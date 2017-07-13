@@ -6,7 +6,8 @@ function [response] = Trial_Main(trialNo)
 % Training - Depending on the condition, show either MnP1 or M1Pn movies
 % Final test - take a forced choice response between M1P2 and M2P1 again
 
-global MAIN_ITEMS CONDITION RESOURCEFOLDER EXTENDCONDITION parameters
+global MAIN_ITEMS CONDITION RESOURCEFOLDER  parameters TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
+
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % MOVIES
@@ -91,6 +92,12 @@ global MAIN_ITEMS CONDITION RESOURCEFOLDER EXTENDCONDITION parameters
         PlaySideMovies('',movietoplay_path{1});
         Show_Blank;
         
+        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['Start_Trial ' num2str(trialNo)]}; 
+        disp(['Start Trial: ' num2str(trialNo)])
+        
         PlaySideMovies(movietoplay_manner{1},movietoplay_path{1});
         
     elseif MAIN_ITEMS.BiasManner(trialNo) == 'R'
@@ -98,6 +105,12 @@ global MAIN_ITEMS CONDITION RESOURCEFOLDER EXTENDCONDITION parameters
         Show_Blank;
         PlaySideMovies('',movietoplay_manner{1});
         Show_Blank;
+        
+        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['Start_Trial ' num2str(trialNo)]}; 
+        disp(['Start Trial: ' num2str(trialNo)])
         
         PlaySideMovies(movietoplay_path{1},movietoplay_manner{1});
     end
@@ -107,6 +120,16 @@ global MAIN_ITEMS CONDITION RESOURCEFOLDER EXTENDCONDITION parameters
     MAIN_ITEMS.biasTestAns{trialNo} = Take_Response();
     
     WaitSecs(5.00);
+    
+    GazeData = EYETRACKER.get_gaze_data;
+    timeCell(end+1,:) = {SUBJECT,...
+        TOBII.get_system_time_stamp,...
+        ['End_Trial ' num2str(trialNo)]};
+    
+    %Save trial data as MAT, and add to the big CSV
+    description = ['All_of_trial_' num2str(trialNo)]; %description of this timeperiod
+    save([DATAFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
+    SaveGazeData(GazeData, description);
     
     Show_Blank();
 
@@ -200,7 +223,6 @@ global MAIN_ITEMS CONDITION RESOURCEFOLDER EXTENDCONDITION parameters
 
     Play_Sound(soundtoplay_letsFind{1}, 'toBlock');
     Show_Blank;      
-  
 
     %Using the human-interpretable side variables...
     if MAIN_ITEMS.TestManner(trialNo) == 'L'
@@ -208,6 +230,12 @@ global MAIN_ITEMS CONDITION RESOURCEFOLDER EXTENDCONDITION parameters
         Show_Blank;
         PlaySideMovies('',movietoplay_pTest{1});
         Show_Blank;
+        
+        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['Start_Trial ' num2str(trialNo)]}; 
+        disp(['Start Trial: ' num2str(trialNo)])
         
         PlaySideMovies(movietoplay_mTest{1},movietoplay_pTest{1});
         
@@ -217,6 +245,12 @@ global MAIN_ITEMS CONDITION RESOURCEFOLDER EXTENDCONDITION parameters
         PlaySideMovies('',movietoplay_mTest{1});
         Show_Blank;
         
+        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['Start_Trial ' num2str(trialNo)]}; 
+        disp(['Start Trial: ' num2str(trialNo)])
+        
         PlaySideMovies(movietoplay_pTest{1},movietoplay_mTest{1});
     end
     
@@ -224,6 +258,16 @@ global MAIN_ITEMS CONDITION RESOURCEFOLDER EXTENDCONDITION parameters
     Play_Sound(soundtoplay_whichOne{1}, 'toBlock');
     
     WaitSecs(5.00);
+    
+    GazeData1 = EYETRACKER.get_gaze_data;
+    timeCell(end+1,:) = {SUBJECT,...
+        TOBII.get_system_time_stamp,...
+        ['End_Trial ' num2str(trialNo)]};
+    
+    %Save trial data as MAT, and add to the big CSV
+    description = ['All_of_trial_' num2str(trialNo)]; %description of this timeperiod
+    save([DATAFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
+    SaveGazeData(GazeData, description);
     
     MAIN_ITEMS.finalTestAns{trialNo} = Take_Response();
     MAIN_ITEMS.finalTestEnd(trialNo) = GetSecs;
@@ -238,7 +282,7 @@ global MAIN_ITEMS CONDITION RESOURCEFOLDER EXTENDCONDITION parameters
 
         Show_Blank;
         PlayCenterMovie(movietoplay_recenter);
-        resp1 = Take_Response();
+        WaitSecs(2.00);
         Show_Blank;
 
     
@@ -251,9 +295,9 @@ global MAIN_ITEMS CONDITION RESOURCEFOLDER EXTENDCONDITION parameters
 %     Show_Blank;
 
     
-    if resp1 == 'q'
-            Closeout_PTool();
-    end
+%     if resp1 == 'q'
+%             Closeout_PTool();
+%     end
     
     
     

@@ -83,7 +83,6 @@ global parameters RESOURCEFOLDER STARS
         Show_Blank;
         
         PlaySideMovies(movietoplay_practice_1_distr,movietoplay_practice_1e,'caption_left','');
-        Show_Blank;
         
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bone3.wav'), 'toBlock'); 
         
@@ -102,6 +101,7 @@ global parameters RESOURCEFOLDER STARS
 %         Screen('flip',winPtr)
         Show_Blank;
         PlayCenterMovie(movietoplay_recenter);
+        WaitSecs(2.00);
         Show_Blank; 
         
     %%%%%%%%%%%%%%%%%%%%%
@@ -193,6 +193,7 @@ global parameters RESOURCEFOLDER STARS
         
         Show_Blank;
         PlayCenterMovie(movietoplay_recenter);
+        WaitSecs(2.00);
         Show_Blank; 
         
     %%%%%%%%%%%%%%%%%%%%%
@@ -280,6 +281,7 @@ global parameters RESOURCEFOLDER STARS
 
         Show_Blank;
         PlayCenterMovie(movietoplay_recenter);
+        WaitSecs(2.00);
         Show_Blank; 
         
         
@@ -370,6 +372,7 @@ global parameters RESOURCEFOLDER STARS
         
         Show_Blank
         PlayCenterMovie(movietoplay_recenter);
+        WaitSecs(2.00);
         Show_Blank; 
 
 
