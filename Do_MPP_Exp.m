@@ -201,7 +201,7 @@ try
     % 4 TRIALS OF PRACTICE TRAINING
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
 
-    %MPP_Practice();
+    MPP_Practice();
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 4 TRIALS OF NO-BIAS TEST LEARNING

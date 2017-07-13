@@ -15,7 +15,7 @@ global parameters RESOURCEFOLDER STARS
         %%%%%%%%%%%%%%%%%%%%%%%%
         %%Input new recording
        
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bone1.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball1.wav'), 'toBlock');
         Show_Blank;
         
         soundtoplay_letsWatchMore = strcat(RESOURCEFOLDER, '/audio/aa_motivation/letswatchmore.wav');
@@ -36,7 +36,7 @@ global parameters RESOURCEFOLDER STARS
         %FIRST DISAMBIGUATING VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bone1.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball1.wav'), 'toBlock');
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_1b);
@@ -48,7 +48,7 @@ global parameters RESOURCEFOLDER STARS
         %SECOND DISAMBIGUATING VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bone1.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball1.wav'), 'toBlock');
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_1c);
@@ -60,7 +60,7 @@ global parameters RESOURCEFOLDER STARS
         %THIRD DISAMBIGUATING VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bone1.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball1.wav'), 'toBlock');
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_1d);
@@ -74,7 +74,7 @@ global parameters RESOURCEFOLDER STARS
 
         Show_Blank;
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bone2.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball2.wav'), 'toBlock');
         
         PlaySideMovies(movietoplay_practice_1_distr,'','caption_left','');
         Show_Blank;
@@ -84,7 +84,7 @@ global parameters RESOURCEFOLDER STARS
         
         PlaySideMovies(movietoplay_practice_1_distr,movietoplay_practice_1e,'caption_left','');
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bone3.wav'), 'toBlock'); 
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball2.wav'), 'toBlock'); 
         
         WaitSecs(5.00);
         
@@ -112,7 +112,7 @@ global parameters RESOURCEFOLDER STARS
         %INITIAL AMBIGUOUS VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/book1.wav'), 'toBlock');
         Show_Blank;
 
         movietoplay_practice_2a = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_2a.mp4');
@@ -132,7 +132,7 @@ global parameters RESOURCEFOLDER STARS
         %FIRST DISAMBIGUATING VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/book1.wav'), 'toBlock');
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_2b);
@@ -144,7 +144,7 @@ global parameters RESOURCEFOLDER STARS
         %SECOND DISAMBIGUATING VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/book1.wav'), 'toBlock');
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_2c);
@@ -156,7 +156,7 @@ global parameters RESOURCEFOLDER STARS
         %THIRD DISAMBIGUATING VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/book1.wav'), 'toBlock');
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_2d);
@@ -170,7 +170,7 @@ global parameters RESOURCEFOLDER STARS
 
         Show_Blank;
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin2.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/book2.wav'), 'toBlock');
         Show_Blank;
         
         PlaySideMovies(movietoplay_practice_2e,'','caption_left','');
@@ -181,7 +181,7 @@ global parameters RESOURCEFOLDER STARS
         
         PlaySideMovies(movietoplay_practice_2e, movietoplay_practice_2_distr,'caption_left','');
 
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin3.wav'), 'toBlock');    
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/book2.wav'), 'toBlock');    
         
         WaitSecs(5.00);
         %parameters.practice2TestAns = Take_Response();
@@ -204,7 +204,7 @@ global parameters RESOURCEFOLDER STARS
         %INITIAL AMBIGUOUS VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bear1.wav'), 'toBlock');
         Show_Blank;
 
         movietoplay_practice_3a = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_3a.mp4');
@@ -223,7 +223,7 @@ global parameters RESOURCEFOLDER STARS
         %FIRST DISAMBIGUATING VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bear1.wav'), 'toBlock');
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_3b);
@@ -235,7 +235,7 @@ global parameters RESOURCEFOLDER STARS
         %SECOND DISAMBIGUATING VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bear1.wav'), 'toBlock');
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_3c);
@@ -247,7 +247,7 @@ global parameters RESOURCEFOLDER STARS
         %THIRD DISAMBIGUATING VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bear1.wav'), 'toBlock');
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_3d);
@@ -261,7 +261,7 @@ global parameters RESOURCEFOLDER STARS
 
         Show_Blank;
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin2.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bear2.wav'), 'toBlock');
         Show_Blank;
         
         PlaySideMovies(movietoplay_practice_3e,'','caption_left','');
@@ -272,7 +272,7 @@ global parameters RESOURCEFOLDER STARS
         
         PlaySideMovies(movietoplay_practice_3e,movietoplay_practice_3_distr,'caption_left','');
 
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin3.wav'), 'toBlock');    
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bear2.wav'), 'toBlock');    
         
         WaitSecs(5.00);
         %parameters.practice3TestAns = Take_Response();
@@ -293,7 +293,7 @@ global parameters RESOURCEFOLDER STARS
         %INITIAL AMBIGUOUS VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/car1.wav'), 'toBlock');
         Show_Blank;
 
         movietoplay_practice_4a = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_4a.mp4');
@@ -313,7 +313,7 @@ global parameters RESOURCEFOLDER STARS
         %FIRST DISAMBIGUATING VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/car1.wav'), 'toBlock');
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_4b);
@@ -325,7 +325,7 @@ global parameters RESOURCEFOLDER STARS
         %SECOND DISAMBIGUATING VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/car1.wav'), 'toBlock');
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_4c);
@@ -337,7 +337,7 @@ global parameters RESOURCEFOLDER STARS
         %THIRD DISAMBIGUATING VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin1.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/car1.wav'), 'toBlock');
         Show_Blank;
         
         PlayCenterMovie(movietoplay_practice_4d);
@@ -351,7 +351,7 @@ global parameters RESOURCEFOLDER STARS
        
         Show_Blank;
         
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin2.wav'), 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/car2.wav'), 'toBlock');
         Show_Blank;
         
         PlaySideMovies(movietoplay_practice_4e,'','caption_left','');
@@ -362,7 +362,7 @@ global parameters RESOURCEFOLDER STARS
         
         PlaySideMovies(movietoplay_practice_4e,movietoplay_practice_4_distr,'caption_left','');
 
-        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/glorfin3.wav'), 'toBlock');    
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/car2.wav'), 'toBlock');    
         WaitSecs(5.00);
         
         %parameters.practice4TestAns = Take_Response();
