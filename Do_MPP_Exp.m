@@ -201,7 +201,7 @@ try
     % 4 TRIALS OF PRACTICE TRAINING
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
 
-    MPP_Practice();
+    %MPP_Practice();
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 4 TRIALS OF NO-BIAS TEST LEARNING
@@ -209,26 +209,26 @@ try
     % How many trials?
     ntrials = height(MAIN_ITEMS); %For the skeleton, play some short sample trials!
     
-    Text_Show('Ready? Press space to watch the movies.');
-    Take_Response();
-    
+%     Text_Show('Ready? Press space to watch the movies.');
+%     Take_Response();
+%     
     %And actually play the trials! Data is saved on each round to allow for
     %partial data collection
-    for i = 1:ntrials/2;
-        disp(i)
-        Trial_NoBias(i)
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % Write result file
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        expTrial = GetSecs;
-        expTime = expTrial - expStart;
-        
-        Write_Trial_to_File(i, MAIN_ITEMS);
-
-    end
-    
+%     for i = 1:ntrials/2;
+%         disp(i)
+%         Trial_NoBias(i)
+%         
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         % Write result file
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         
+%         expTrial = GetSecs;
+%         expTime = expTrial - expStart;
+%         
+%         Write_Trial_to_File(i, MAIN_ITEMS);
+% 
+%     end
+%     
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % N TRIALS OF WITHIN-FIELD PRIMING/VERB LEARNING
@@ -245,10 +245,10 @@ try
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Write result file
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        expTrial = GetSecs;
-        expTime = expTrial - expStart;
-        
-        Write_Trial_to_File(i, MAIN_ITEMS);
+%         expTrial = GetSecs;
+%         expTime = expTrial - expStart;
+%         
+%         Write_Trial_to_File(i, MAIN_ITEMS);
 
     end
     
@@ -257,7 +257,7 @@ try
         Trial_Extend(i);
         expTrial = GetSecs;
         expTime = expTrial - expStart;
-        Write_Trial_to_File(i, EXT_ITEMS);
+        %Write_Trial_to_File(i, EXT_ITEMS);
     end
     
         

@@ -4,7 +4,7 @@ function [response] = Trial_NoBias(trialNo)
 % Training - Depending on the condition, show either MnP1 or M1Pn movies
 % Final test - take a forced choice response between M1P2 and M2P1 again
 
-global parameters MAIN_ITEMS RESOURCEFOLDER STARS CONDITION TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
+global parameters MAIN_ITEMS RESOURCEFOLDER CONDITION TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
 
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -41,21 +41,36 @@ global parameters MAIN_ITEMS RESOURCEFOLDER STARS CONDITION TOBII EYETRACKER EXP
     soundtoplay_goodJob = strcat(RESOURCEFOLDER, '/audio/aa_motivation/goodjob.wav');
     soundtoplay_nowLetsSee = strcat(RESOURCEFOLDER, '/audio/aa_motivation/nowletssee.wav');
     soundtoplay_wow = strcat(RESOURCEFOLDER, '/audio/aa_motivation/wow.wav');
-     
-    
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% STAR IMAGES
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
-
-    starImage = STARS.main(trialNo);
-    greySquare = 'stars/grey.jpg';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PLAY AMBIGUOUS VIDEO
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        %START TRIAL
+        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['Start_Trial ' num2str(trialNo)]}; 
+        disp(['Start Trial: ' num2str(trialNo)])
+        
+        Show_Blank;
+
+        %Save gaze data for audio clip
+        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['ambigAudio_noBias' num2str(trialNo)]}; 
+        disp(['ambigAudio_noBias' num2str(trialNo)])
 
         Play_Sound(soundtoplay_ambigAudioFuture{1}, 'toBlock');
     
+        %Save gaze data for ambiguous video
+        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['ambigVideo_noBias' num2str(trialNo)]}; 
+        disp(['ambigVideo_noBias' num2str(trialNo)])
+        
         PlayCenterMovie(movietoplay_ambigVid{1});
         if strmatch(CONDITION, {'Action', 'Effect'}) %these ones need a mask in between or they look super weird!
             imageArray = imread(greySquare);
@@ -65,20 +80,18 @@ global parameters MAIN_ITEMS RESOURCEFOLDER STARS CONDITION TOBII EYETRACKER EXP
             Screen('flip',winPtr)
             WaitSecs(0.500);
         end
-        PlayCenterMovie(movietoplay_ambigVid{1});
         Show_Blank;
-
+        
+        %Save gaze data for audio clip
+        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['ambigAudio_noBias' num2str(trialNo)]}; 
+        disp(['ambigAudio_noBias' num2str(trialNo)])
+        
         Play_Sound(soundtoplay_ambigAudioPast{1}, 'toBlock');
         
         Show_Blank; 
-        
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % BIAS TEST PLACEHOLDER
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    MAIN_ITEMS.biasManner{trialNo} = 'NA';
-    MAIN_ITEMS.biasPath{trialNo} = 'NA';
-    MAIN_ITEMS.biasTestAns{trialNo} = 'NA';
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 3 TRAINING VIDEOS
@@ -95,8 +108,22 @@ global parameters MAIN_ITEMS RESOURCEFOLDER STARS CONDITION TOBII EYETRACKER EXP
 
     MAIN_ITEMS.trainStart(trialNo) = GetSecs;
 
+    %Save gaze data for audio clip
+        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['trainingAudio_noBias_1' num2str(trialNo)]}; 
+        disp(['trainingAudio_noBias_1' num2str(trialNo)])
+    
     Play_Sound(soundtoplay_trainAudioFuture1{1}, 'toBlock');
-
+    
+    %Save gaze data for video clip
+        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['trainingVideo_noBias_1' num2str(trialNo)]}; 
+        disp(['trainingVideo_noBias_1' num2str(trialNo)])
+        
     PlayCenterMovie(movietoplay_trainV1{1}); 
     if strmatch(CONDITION, {'Action', 'Effect'}) %these ones need a mask in between or they look super weird!
         imageArray = imread(greySquare);
@@ -106,9 +133,15 @@ global parameters MAIN_ITEMS RESOURCEFOLDER STARS CONDITION TOBII EYETRACKER EXP
         Screen('flip',winPtr)
         WaitSecs(0.500);
     end
-    PlayCenterMovie(movietoplay_trainV1{1});
     Show_Blank;
-
+    
+    %Save gaze data for audio clip
+        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['trainingAudio_noBias_1' num2str(trialNo)]}; 
+        disp(['trainingAudio_noBias_1' num2str(trialNo)])
+        
     Play_Sound(soundtoplay_trainAudioPast1{1}, 'toBlock');
 
     WaitSecs(1.500);
@@ -117,7 +150,21 @@ global parameters MAIN_ITEMS RESOURCEFOLDER STARS CONDITION TOBII EYETRACKER EXP
 % % 2222222222222222222222222222222222222222222222222222222222222222222222222
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+    %Save gaze data for audio clip
+        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['trainingAudio_noBias_2' num2str(trialNo)]}; 
+        disp(['trainingAudio_noBias_2' num2str(trialNo)])
+        
     Play_Sound(soundtoplay_trainAudioFuture2{1}, 'toBlock');
+    
+    %Save gaze data for video clip
+        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['trainingVideo_noBias_2' num2str(trialNo)]}; 
+        disp(['trainingVideo_noBias_2' num2str(trialNo)])
     
     PlayCenterMovie(movietoplay_trainV2{1});
     if strmatch(CONDITION, {'Action', 'Effect'}) %these ones need a mask in between or they look super weird!
@@ -128,8 +175,14 @@ global parameters MAIN_ITEMS RESOURCEFOLDER STARS CONDITION TOBII EYETRACKER EXP
         Screen('flip',winPtr)
         WaitSecs(0.500);
     end
-    PlayCenterMovie(movietoplay_trainV2{1});
     Show_Blank;
+    
+    %Save gaze data for audio clip
+        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['trainingAudio_noBias_2' num2str(trialNo)]}; 
+        disp(['trainingAudio_noBias_2' num2str(trialNo)])
 
     Play_Sound(soundtoplay_trainAudioPast2{1}, 'toBlock');
 
@@ -139,8 +192,22 @@ global parameters MAIN_ITEMS RESOURCEFOLDER STARS CONDITION TOBII EYETRACKER EXP
 % % 333333333333333333333333333333333333333333333333333333333333333333333333%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+    %Save gaze data for audio clip
+    GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['trainingAudio_noBias_3' num2str(trialNo)]}; 
+        disp(['trainingAudio_noBias_3' num2str(trialNo)])
+    
     Play_Sound(soundtoplay_trainAudioFuture3{1}, 'toBlock');
-
+    
+    %Save gaze data for video clip
+    GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['trainingVideo_noBias_3' num2str(trialNo)]}; 
+        disp(['trainingVideo_noBias_3' num2str(trialNo)])
+        
     PlayCenterMovie(movietoplay_trainV3{1});
     if strmatch(CONDITION, {'Action', 'Effect'}) %these ones need a mask in between or they look super weird!
         imageArray = imread(greySquare);
@@ -150,9 +217,15 @@ global parameters MAIN_ITEMS RESOURCEFOLDER STARS CONDITION TOBII EYETRACKER EXP
         Screen('flip',winPtr)
         WaitSecs(0.500);
     end
-    PlayCenterMovie(movietoplay_trainV3{1});
     Show_Blank;
-
+    
+    %Save gaze data for audio clip
+    GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['trainingAudio_noBias_3' num2str(trialNo)]}; 
+        disp(['trainingAudio_noBias_3' num2str(trialNo)])
+        
     Play_Sound(soundtoplay_trainAudioPast3{1}, 'toBlock');
 
     MAIN_ITEMS.trainEnd(trialNo) = GetSecs;
@@ -169,84 +242,128 @@ global parameters MAIN_ITEMS RESOURCEFOLDER STARS CONDITION TOBII EYETRACKER EXP
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     MAIN_ITEMS.finalTestStart(trialNo) = GetSecs;
-
+    
+    %Save gaze data for audio clip
+    GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['testAudio_noBias' num2str(trialNo)]}; 
+        disp(['testAudio_noBias' num2str(trialNo)])
+        
     Play_Sound(soundtoplay_letsFind{1}, 'toBlock');
     Show_Blank;      
   
-    
-        
     %Using the human-interpretable side variables...
     if MAIN_ITEMS.TestManner(trialNo) == 'L'
-        PlaySideMovies(movietoplay_mTest{1},'');
-        Show_Blank;
-        PlaySideMovies('',movietoplay_pTest{1});
-        Show_Blank;  z         c           z           c     c        zz
         
+        %Save gaze data for left clip
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['Start_Trial ' num2str(trialNo)]}; 
-        disp(['Start Trial: ' num2str(trialNo)])
+            ['left_testVideo_noBias' num2str(trialNo)]}; 
+        disp(['left_testVideo_noBias' num2str(trialNo)])
+        
+        PlaySideMovies(movietoplay_mTest{1},'');
+        Show_Blank;
+        
+        %Save gaze data for left clip
+        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['left_testVideo_noBias' num2str(trialNo)]}; 
+        disp(['left_testVideo_noBias' num2str(trialNo)])
+        
+        PlaySideMovies('',movietoplay_pTest{1});
+        Show_Blank; 
+        
+        %Save gaze data for right clip
+        GazeData = EYETRACKER.get_gaze_data; 
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['testVideos_noBias ' num2str(trialNo)]}; 
+        disp(['testVideos_noBias ' num2str(trialNo)])
         
         PlaySideMovies(movietoplay_mTest{1},movietoplay_pTest{1});
         
     elseif MAIN_ITEMS.TestManner(trialNo) == 'R'
+        
+        %Save gaze data for left clip
+        GazeData = EYETRACKER.get_gaze_data; 
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['left_testVideo_noBias ' num2str(trialNo)]}; 
+        disp(['left_testVideo_noBias ' num2str(trialNo)])
+        
         PlaySideMovies(movietoplay_pTest{1},'');
         Show_Blank;
+        
+        %Save gaze data for right clip
+        GazeData = EYETRACKER.get_gaze_data; 
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['right_testVideo_noBias ' num2str(trialNo)]}; 
+        disp(['right_testVideo_noBias ' num2str(trialNo)])
+        
         PlaySideMovies('',movietoplay_mTest{1});
         Show_Blank;
         
+        %Save gaze data for sound clip
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['Start_Trial ' num2str(trialNo)]}; 
-        disp(['Start Trial: ' num2str(trialNo)])
+            ['testAudio ' num2str(trialNo)]}; 
+        disp(['testAudio ' num2str(trialNo)])
+        
+        Play_Sound(soundtoplay_whichOne{1}, 'toBlock');
+        
+        %Save gaze data for test trial
+        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['testVideos ' num2str(trialNo)]}; 
+        disp(['testVideos ' num2str(trialNo)])
         
         PlaySideMovies(movietoplay_pTest{1},movietoplay_mTest{1});
     end
-    
-     %....and take a response
-    Play_Sound(soundtoplay_whichOne{1}, 'toBlock');
-    MAIN_ITEMS.finalTestAns{trialNo} = Take_Response();
-    MAIN_ITEMS.finalTestEnd(trialNo) = GetSecs;
     
     GazeData = EYETRACKER.get_gaze_data;
     timeCell(end+1,:) = {SUBJECT,...
         TOBII.get_system_time_stamp,...
         ['End_Trial ' num2str(trialNo)]};
     
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % SHOW ATTENTION-GRAB CENTER
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    Show_Blank;
+    
+    %Save gaze data for attention grabber
+    GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['recenter ' num2str(trialNo)]}; 
+        disp(['recenter ' num2str(trialNo)])
+        
+    PlayCenterMovie(movietoplay_recenter);
+    WaitSecs(2.00);
+    Show_Blank;
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % SAVE THE DATA
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %Save trial data as MAT, and add to the big CSV
     description = ['All_of_trial_' num2str(trialNo)]; %description of this timeperiod
     save([DATAFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
     SaveGazeData(GazeData, description);
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % SHOW ATTENTION-GRAB CENTER
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    Show_Blank;
-    PlayCenterMovie(movietoplay_recenter);
-    WaitSecs(2.00);
-    Show_Blank;
-    
-%     starImage = STARS.main(trialNo);
-%     Show_Image(strcat(RESOURCEFOLDER, '/', starImage));
-%     
-%     imageArray=imread(char(starImage));
-%     rect = parameters.scr.rect;
-%     winPtr = parameters.scr.winPtr;   
-%     Screen('PutImage', winPtr , imageArray, rect );    
-%     Screen('flip',winPtr)
-%     resp1 = Take_Response(); %just moving on...
-%     Show_Blank;
-%     
-    
-%     if resp1 == 'q'
-%             Closeout_PTool();
-%     end
-    
-    
+    %saving timestamps
+    timeTable = cell2table(timeCell(2:end,:));
+    timeTable.Properties.VariableNames = timeCell(1,:);
+    %And save the file!
+    filename = [DATAFOLDER, '/timestamps_' EXPERIMENT '_' SUBJECT '.csv'];
+    writetable(timeTable, filename);
+
     
     
 end
