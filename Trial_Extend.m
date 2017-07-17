@@ -53,19 +53,21 @@ trialNo = trialNo - ntrials;
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['Start_Trial ' num2str(trialNo)]}; 
-        disp(['Start Trial: ' num2str(trialNo)])
+            ['Start_Extend_Trial ' num2str(trialNo)]}; 
         
         Show_Blank;
         
         %Save gaze data for audio clip
-        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        GazeData1 = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['ambigAudio_Extend' num2str(trialNo)]}; 
+            ['ambigAudio_Extend ' num2str(trialNo)]}; 
         disp(['ambigAudio_Extend' num2str(trialNo)])
         
         Play_Sound(soundtoplay_ambigAudioFuture{1}, 'toBlock');
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(GazeData, GazeData1);
         
         %Save gaze data for ambiguous video
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
@@ -75,26 +77,32 @@ trialNo = trialNo - ntrials;
         disp(['ambigVideo_Extend ' num2str(trialNo)])
         
         PlayCenterMovie(movietoplay_ambigVid{1});
-        if strmatch(EXTENDCONDITION, {'Action'}) %need a mask in between or they look super weird!
-            imageArray = imread(greySquare);
-            rect =  parameters.centerbox;
-            winPtr = parameters.scr.winPtr;   
-            Screen('PutImage', winPtr , imageArray, rect );    
-            Screen('flip',winPtr)
-            WaitSecs(0.500);
-        end
+%         if strmatch(EXTENDCONDITION, {'Action'}) %need a mask in between or they look super weird!
+%             imageArray = imread(greySquare);
+%             rect =  parameters.centerbox;
+%             winPtr = parameters.scr.winPtr;   
+%             Screen('PutImage', winPtr , imageArray, rect );    
+%             Screen('flip',winPtr)
+%             WaitSecs(0.500);
+%         end
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
 
         %Save gaze data for audio clip
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['ambigAudio_Extend' num2str(trialNo)]}; 
-        disp(['ambigAudio_Extend' num2str(trialNo)])
+            ['ambigAudio_Extend ' num2str(trialNo)]}; 
         
         Play_Sound(soundtoplay_ambigAudioPast{1}, 'toBlock');
         
         Show_Blank; 
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % BIAS TEST
@@ -105,11 +113,13 @@ trialNo = trialNo - ntrials;
     GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
     timeCell(end+1,:) = {SUBJECT,...
         TOBII.get_system_time_stamp,...
-        ['biasAudio_Extend' num2str(trialNo)]}; 
-    disp(['biasAudio_Extend' num2str(trialNo)])
+        ['biasAudio_Extend ' num2str(trialNo)]}; 
 
     Play_Sound(soundtoplay_letsFind{1}, 'toBlock');
     Show_Blank;      
+    
+    %Concatenate arrays to save gaze data in all one big file
+    C = horzcat(C, GazeData);
       
     %Using the human-interpretable side variables instead...
     if EXT_ITEMS.BiasManner(trialNo) == 'L'
@@ -119,35 +129,44 @@ trialNo = trialNo - ntrials;
             timeCell(end+1,:) = {SUBJECT,...
                 TOBII.get_system_time_stamp,...
                 ['left_biasVideo_Extend ' num2str(trialNo)]}; 
-            disp(['left_biasVideo_Extend' num2str(trialNo)])
-        
+            
+
         PlaySideMovies(movietoplay_manner{1},'');
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
         
          %Save gaze data for video
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
             timeCell(end+1,:) = {SUBJECT,...
                 TOBII.get_system_time_stamp,...
                 ['right_biasVideo_Extend ' num2str(trialNo)]}; 
-            disp(['right_biasVideo_Extend' num2str(trialNo)])
+
         PlaySideMovies('',movietoplay_path{1});
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
         
         %Save gaze data for audio
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
             timeCell(end+1,:) = {SUBJECT,...
                 TOBII.get_system_time_stamp,...
                 ['biasAudio_Extend ' num2str(trialNo)]}; 
-            disp(['biasAudio_Extend' num2str(trialNo)])
             
         Play_Sound(soundtoplay_whichOne{1}, 'toBlock');
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
         
         %Save gaze data for videos
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
             ['biasTest_Extend ' num2str(trialNo)]}; 
-        disp(['biasTest_Extend' num2str(trialNo)])
             
         PlaySideMovies(movietoplay_manner{1},movietoplay_path{1});
         
@@ -158,47 +177,61 @@ trialNo = trialNo - ntrials;
             timeCell(end+1,:) = {SUBJECT,...
                 TOBII.get_system_time_stamp,...
                 ['left_biasVideo_Extend ' num2str(trialNo)]}; 
-            disp(['left_biasVideo_Extend' num2str(trialNo)])
             
         PlaySideMovies(movietoplay_path{1},'');
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
         
         %Save gaze data for video
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
             timeCell(end+1,:) = {SUBJECT,...
                 TOBII.get_system_time_stamp,...
                 ['right_biasVideo_Extend ' num2str(trialNo)]}; 
-            disp(['right_biasVideo_Extend' num2str(trialNo)])
             
         PlaySideMovies('',movietoplay_manner{1});
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
         
         %Save gaze data for audio
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
             timeCell(end+1,:) = {SUBJECT,...
                 TOBII.get_system_time_stamp,...
                 ['biasAudio_Extend ' num2str(trialNo)]}; 
-            disp(['biasAudio_Extend' num2str(trialNo)])
+
         Play_Sound(soundtoplay_whichOne{1}, 'toBlock');
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
         
         %Save gaze data for videos
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
             ['biasTest_Extend ' num2str(trialNo)]}; 
-        disp(['biasTest_Extend' num2str(trialNo)])
 
         PlaySideMovies(movietoplay_path{1},movietoplay_manner{1});
     end
     
     WaitSecs(3.00);
     
+    %Concatenate arrays to save gaze data in all one big file
+    C = horzcat(C, GazeData);
+    
     GazeData = EYETRACKER.get_gaze_data;
     timeCell(end+1,:) = {SUBJECT,...
         TOBII.get_system_time_stamp,...
-        ['End_Trial ' num2str(trialNo)]};
+        ['End_Extend_Trial ' num2str(trialNo)]};
     
     Show_Blank();
+    
+    %Concatenate arrays to save gaze data in all one big file
+    C = horzcat(C, GazeData);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % SHOW ATTENTION-GRAB CENTER
@@ -211,20 +244,21 @@ trialNo = trialNo - ntrials;
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
             ['recenter ' num2str(trialNo)]}; 
-        disp(['recenter ' num2str(trialNo)])
             
     PlayCenterMovie(movietoplay_recenter);
-    WaitSecs(2.00);
     Show_Blank;
+    
+    %Concatenate arrays to save gaze data in all one big file
+    C = horzcat(C, GazeData);
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % SAVE THE DATA
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %Save trial data as MAT, and add to the big CSV
-    description = ['All_of_trial_' num2str(trialNo)]; %description of this timeperiod
+    description = ['All_of_Extend_trial_' num2str(trialNo)]; %description of this timeperiod
     save([DATAFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
-    SaveGazeData(GazeData, description);
+    SaveGazeData(C, description);
     
     %saving timestamps
     timeTable = cell2table(timeCell(2:end,:));

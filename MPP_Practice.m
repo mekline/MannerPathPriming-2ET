@@ -18,13 +18,14 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['Start_Trial ' ]}; 
+            ['Start_Practice_Trial ' ]}; 
         disp(['Start Trial: ' ])
         
         Show_Blank;
         
-        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
-        timeCell(end+1,:) = {SUBJECT,...
+        GazeData1 = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        disp(GazeData)
+        timeCell(end+1,:) = {SUBJECT,... 
             TOBII.get_system_time_stamp,...
             ['ambigAudio_Practice ' ]}; 
         
@@ -41,14 +42,24 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         movietoplay_recenter = strcat(RESOURCEFOLDER, '/movies/babylaugh.mov');
         Show_Blank;
         
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(GazeData, GazeData1);
+        
         %save gaze data for video clip
-        GazeData = EYETRACKER.get_gaze_data; 
+        GazeData1 = EYETRACKER.get_gaze_data; 
+        disp(GazeData1)
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
             ['ambigVideo_Practice ' ]}; 
         
         PlayCenterMovie(movietoplay_practice_1a);
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData1);
+        disp(C)
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %FIRST DISAMBIGUATING VIDEO
@@ -60,10 +71,13 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
             TOBII.get_system_time_stamp,...
             ['ambigAudio_Practice_1_ball' ]}; 
         disp(['ambigAudio_Practice_1_ball' ])
-
+        
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball1.wav'), 'toBlock');
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %Save gaze data for ambiguous video
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
@@ -72,9 +86,13 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         disp(['ambigVideo_Practice_1_ball' ])
         
         PlayCenterMovie(movietoplay_practice_1b);
+        WaitSecs(0.50);
 
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %SECOND DISAMBIGUATING VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -88,6 +106,10 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball1.wav'), 'toBlock');
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
+        
         %Save gaze data for ambiguous video
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
@@ -95,9 +117,13 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
             ['trainingVideo_Practice_1_ball' ]}; 
         
         PlayCenterMovie(movietoplay_practice_1c);
+        WaitSecs(0.50);
 
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %THIRD DISAMBIGUATING VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -111,6 +137,9 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball1.wav'), 'toBlock');
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %Save gaze data for ambiguous video
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
@@ -119,9 +148,13 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         disp(['trainingVideo_Practice_3_ball' ])
         
         PlayCenterMovie(movietoplay_practice_1d);
+        WaitSecs(0.50);
         
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %LEARNING TEST
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -135,9 +168,11 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
             ['testAudio_Practice_ball' ]}; 
         disp(['testAudio_Practice_ball' ])
         
-        
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball2.wav'), 'toBlock');
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
@@ -146,8 +181,12 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         disp(['left_testVideo_Practice_ball' ])
         
         PlaySideMovies(movietoplay_practice_1_distr,'','caption_left','');
+        WaitSecs(0.50);
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
@@ -156,8 +195,12 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         disp(['right_testVideo_Practice_ball' ])
         
         PlaySideMovies('',movietoplay_practice_1e,'caption_right',''); 
+        WaitSecs(0.50);
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
@@ -166,6 +209,9 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball2.wav'), 'toBlock'); 
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
@@ -176,13 +222,19 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         
         WaitSecs(3.00);
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         GazeData = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['End_Trial ' ]};
+            ['End_Practice_Trial_1 ' ]};
 
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %Save gaze data for attention grab
         GazeData = EYETRACKER.get_gaze_data; 
         timeCell(end+1,:) = {SUBJECT,...
@@ -191,29 +243,37 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         disp(['recenter ' ])
         
         PlayCenterMovie(movietoplay_recenter);
-        WaitSecs(2.00);
         Show_Blank; 
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % SAVE THE DATA
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %Save trial data as MAT, and add to the big CSV
-    description = ['All_of_trial_' num2str(trialNo)]; %description of this timeperiod
+    description = ['All_of_Practice_1']; %description of this timeperiod
     save([DATAFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
-    SaveGazeData(GazeData, description);
+    SaveGazeData(C, description);
    
         
     %%%%%%%%%%%%%%%%%%%%%
     %SECOND PRACTICE TRIAL
     %%%%%%%%%%%%%%%%%%%%%
         
+        GazeData = EYETRACKER.get_gaze_data;
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['Start_Practice_Trial_2 ' ]};
+
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%
         %INITIAL AMBIGUOUS VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%
         
         %Save gaze data for audio clip
-        GazeData = EYETRACKER.get_gaze_data;
+        GazeData1 = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
             ['ambigAudio_Practice_book' ]}; 
@@ -229,6 +289,10 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         movietoplay_practice_2_distr = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_2_distr.mp4');
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(GazeData, GazeData1);
+              
+              
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
@@ -236,8 +300,12 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
             ['ambigVideo_Practice_book' ]}; 
         
         PlayCenterMovie(movietoplay_practice_2a);
+        WaitSecs(0.50);
 
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %FIRST DISAMBIGUATING VIDEO
@@ -252,6 +320,9 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/book1.wav'), 'toBlock');
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
@@ -259,9 +330,13 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
             ['trainingVideo_Practice_1_book' ]}; 
         
         PlayCenterMovie(movietoplay_practice_2b);
+        WaitSecs(0.50);
         
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %SECOND DISAMBIGUATING VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -275,6 +350,9 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/book1.wav'), 'toBlock');
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
@@ -282,8 +360,13 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
             ['trainingVideo_Practice_2_book' ]}; 
         
         PlayCenterMovie(movietoplay_practice_2c);
+        WaitSecs(0.50);
         
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %THIRD DISAMBIGUATING VIDEO
@@ -298,6 +381,9 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/book1.wav'), 'toBlock');
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
@@ -305,9 +391,13 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
             ['trainingVideo_Practice_3_book' ]}; 
         
         PlayCenterMovie(movietoplay_practice_2d);
+        WaitSecs(0.50);
         
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %LEARNING TEST
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -319,10 +409,13 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
             ['testAudio_Practice_book' ]}; 
-        disp(['testAudio_Practice_book' ])
         
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/book2.wav'), 'toBlock');
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
          %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data; 
@@ -331,7 +424,12 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
             ['left_testVideo_Practice_book' ]}; 
         
         PlaySideMovies(movietoplay_practice_2e,'','caption_left','');
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data; 
@@ -339,7 +437,12 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
             TOBII.get_system_time_stamp,...
             ['right_testVideo_Practice_book' ]}; 
         PlaySideMovies('',movietoplay_practice_2_distr,'caption_right',''); 
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
         %Save gaze data for test audio
         GazeData = EYETRACKER.get_gaze_data; 
@@ -349,6 +452,9 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/book2.wav'), 'toBlock');    
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %Save gaze data for test clips
         GazeData = EYETRACKER.get_gaze_data; 
         timeCell(end+1,:) = {SUBJECT,...
@@ -361,17 +467,19 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         %parameters.practice2TestAns = Take_Response();
         Show_Blank;
         
-        %Show_Image(strcat(RESOURCEFOLDER, '/', STARS.practice{2}));
-        
-        %Take_Response();
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
         
         GazeData = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['End_Trial ' ]};
+            ['End_Practice_Trial_2 ' ]};
 
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %Save gaze data for attention grab
         GazeData = EYETRACKER.get_gaze_data; 
         timeCell(end+1,:) = {SUBJECT,...
@@ -380,29 +488,37 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         disp(['recenter ' ])
         
         PlayCenterMovie(movietoplay_recenter);
-        WaitSecs(2.00);
         Show_Blank; 
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % SAVE THE DATA
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %Save trial data as MAT, and add to the big CSV
-    description = ['All_of_trial_' num2str(trialNo)]; %description of this timeperiod
+    description = ['All_of_Practice_2']; %description of this timeperiod
     save([DATAFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
-    SaveGazeData(GazeData, description);
+    SaveGazeData(C, description);
 
         
     %%%%%%%%%%%%%%%%%%%%%
     %THIRD PRACTICE TRIAL
     %%%%%%%%%%%%%%%%%%%%%
+    
+        GazeData = EYETRACKER.get_gaze_data;
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['Start_Practice_Trial_3 ' ]};
+
         
         %%%%%%%%%%%%%%%%%%%%%%%%%
         %INITIAL AMBIGUOUS VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%
         
         %Save gaze data for audio clip
-        GazeData = EYETRACKER.get_gaze_data;
+        GazeData1 = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
             ['ambigAudio_Practice_1_bear' ]}; 
@@ -419,6 +535,9 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         movietoplay_practice_3_distr = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_3_distr.mp4');
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(GazeData, GazeData1);
+
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
@@ -427,7 +546,12 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         disp(['ambigVideo_Practice_1_bear' ])
 
         PlayCenterMovie(movietoplay_practice_3a);
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %FIRST DISAMBIGUATING VIDEO
@@ -443,6 +567,10 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bear1.wav'), 'toBlock');
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
+        
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
@@ -451,8 +579,12 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         disp(['trainingVideo_Practice_1_bear' ])
         
         PlayCenterMovie(movietoplay_practice_3b);
-        
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %SECOND DISAMBIGUATING VIDEO
@@ -468,6 +600,9 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bear1.wav'), 'toBlock');
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
@@ -476,8 +611,12 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         disp(['trainingVideo_Practice_2_bear' ])
     
         PlayCenterMovie(movietoplay_practice_3c);
-        
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %THIRD DISAMBIGUATING VIDEO
@@ -493,6 +632,10 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bear1.wav'), 'toBlock');
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
+        
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
@@ -501,8 +644,12 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         disp(['trainingVideo_Practice_3_bear' ])
         
         PlayCenterMovie(movietoplay_practice_3d);
-        
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %LEARNING TEST
@@ -520,6 +667,10 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bear2.wav'), 'toBlock');
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
+        
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
@@ -528,7 +679,12 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         disp(['left_testVideo_Practice_bear' ])
         
         PlaySideMovies(movietoplay_practice_3e,'','caption_left','');
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data;
@@ -536,8 +692,13 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
             TOBII.get_system_time_stamp,...
             ['right_testVideo_Practice_bear' ]}; 
         
-        PlaySideMovies('',movietoplay_practice_3_distr,'caption_right',''); 
+        PlaySideMovies('',movietoplay_practice_3_distr,'caption_right','');
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
         %Save gaze data for audio clip
         GazeData = EYETRACKER.get_gaze_data;
@@ -546,6 +707,10 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
             ['testAudio_Practice_bear' ]}; 
         
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/bear2.wav'), 'toBlock');    
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
         %Save gaze data for both video clips
         GazeData = EYETRACKER.get_gaze_data;
@@ -557,12 +722,20 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         
         WaitSecs(3.00);
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
+        
         GazeData = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['End_Trial ' ]};
+            ['End__Practice_Trial_3 ' ]};
 
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
         %Save gaze data for attention grab
         GazeData = EYETRACKER.get_gaze_data; 
@@ -572,29 +745,38 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         disp(['recenter ' ])
         
         PlayCenterMovie(movietoplay_recenter);
-        WaitSecs(2.00);
         Show_Blank; 
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % SAVE THE DATA
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %Save trial data as MAT, and add to the big CSV
-    description = ['All_of_trial_' num2str(trialNo)]; %description of this timeperiod
+    description = ['All_of_Practice_3' ]; %description of this timeperiod
     save([DATAFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
-    SaveGazeData(GazeData, description);
+    SaveGazeData(C, description);
         
         
     %%%%%%%%%%%%%%%%%%%%%
     %FOURTH PRACTICE TRIAL
     %%%%%%%%%%%%%%%%%%%%%
         
+        GazeData = EYETRACKER.get_gaze_data;
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['Start_Practice_Trial_4 ' ]};
+
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%
         %INITIAL AMBIGUOUS VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%
         
         %Save gaze data for audio clip
-        GazeData = EYETRACKER.get_gaze_data;
+        GazeData1 = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
             ['ambigAudio_Practice_car' ]}; 
@@ -610,6 +792,9 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         movietoplay_practice_4_distr = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_4_distr.mp4');
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(GazeData, GazeData1);
+              
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
@@ -617,8 +802,12 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
             ['ambigVideo_Practice_car' ]}; 
 
         PlayCenterMovie(movietoplay_practice_4a);
-        
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %FIRST DISAMBIGUATING VIDEO
@@ -633,6 +822,9 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/car1.wav'), 'toBlock');
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
@@ -640,9 +832,12 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
             ['trainingVideo_Practice_1_car' ]}; 
         
         PlayCenterMovie(movietoplay_practice_4b);
-        
+        WaitSecs(0.50);
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %SECOND DISAMBIGUATING VIDEO
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -656,6 +851,10 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/car1.wav'), 'toBlock');
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
+        
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
@@ -663,8 +862,12 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
             ['trainingVideo_Practice_2_car' ]}; 
         
         PlayCenterMovie(movietoplay_practice_4c);
-        
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %THIRD DISAMBIGUATING VIDEO
@@ -679,6 +882,10 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/car1.wav'), 'toBlock');
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
+        
         %Save gaze data for video clip
         GazeData = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
@@ -686,8 +893,12 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
             ['trainingVideo_Practice_3_car' ]}; 
         
         PlayCenterMovie(movietoplay_practice_4d);
-        
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%
         %LEARNING TEST
@@ -704,6 +915,10 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/car2.wav'), 'toBlock');
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
+        
         %Save gaze data for left clip
         GazeData = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
@@ -711,7 +926,12 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
             ['left_testVideo_Practice_car' ]}; 
         
         PlaySideMovies(movietoplay_practice_4e,'','caption_left','');
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
         %Save gaze data for right clip
         GazeData = EYETRACKER.get_gaze_data;
@@ -720,7 +940,12 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
             ['right_testVideo_Practice_car' ]}; 
         
         PlaySideMovies('',movietoplay_practice_4_distr,'caption_right',''); 
+        WaitSecs(0.50);
         Show_Blank;
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
         %Save gaze data for audio clip
         GazeData = EYETRACKER.get_gaze_data;
@@ -730,7 +955,9 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/car2.wav'), 'toBlock');    
         
-        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         %Save gaze data for test clips
         GazeData = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
@@ -741,36 +968,41 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         
         WaitSecs(3.00);
 
-        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         GazeData = EYETRACKER.get_gaze_data;
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['End_Trial ' ]};
+            ['End_Practice_Trial_4 ' ]};
 
         Show_Blank;
         
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+
         %Save gaze data for attention grab
         GazeData = EYETRACKER.get_gaze_data; 
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
             ['recenter ' ]}; 
-        disp(['recenter ' ])
         
         PlayCenterMovie(movietoplay_recenter);
-        WaitSecs(2.00);
         Show_Blank; 
+        
+        %Concatenate arrays to save gaze data in all one big file
+        C = horzcat(C, GazeData);
+              
         
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % SAVE THE DATA
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %Save trial data as MAT, and add to the big CSV
-    description = ['All_of_trial_' num2str(trialNo)]; %description of this timeperiod
+    description = ['All_of_Practice_4']; %description of this timeperiod
     save([DATAFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
-    SaveGazeData(GazeData, description);
-        
+    SaveGazeData(C, description);
 
-    
     %saving timestamps
     timeTable = cell2table(timeCell(2:end,:));
     timeTable.Properties.VariableNames = timeCell(1,:);
