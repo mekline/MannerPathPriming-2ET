@@ -23,6 +23,11 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         
         Show_Blank;
         
+        GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['ambigAudio_Practice ' ]}; 
+        
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball1.wav'), 'toBlock');
         Show_Blank;
         
@@ -35,8 +40,13 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
         movietoplay_practice_1_distr = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_1_distr.mp4');
         movietoplay_recenter = strcat(RESOURCEFOLDER, '/movies/babylaugh.mov');
         Show_Blank;
-
-        PlayCenterMovie(movietoplay_practice_1a);
+        
+        %save gaze data for video clip
+        GazeData = EYETRACKER.get_gaze_data; 
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['ambigVideo_Practice ' ]}; 
+        
         PlayCenterMovie(movietoplay_practice_1a);
         Show_Blank;
         
