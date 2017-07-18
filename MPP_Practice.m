@@ -1,6 +1,6 @@
 function [response] = MPP_Practice()
 
-global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
+global parameters SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
         % 4 TRIALS OF NOUN PRACTICE                             
@@ -254,7 +254,8 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
     
     %Save trial data as MAT, and add to the big CSV
     description = ['All_of_Practice_1']; %description of this timeperiod
-    save([DATAFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
+    mkdir([SUBJFOLDER]);
+    save([SUBJFOLDER '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
     SaveGazeData(C, description);
    
         
@@ -499,7 +500,7 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
     
     %Save trial data as MAT, and add to the big CSV
     description = ['All_of_Practice_2']; %description of this timeperiod
-    save([DATAFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
+    save([SUBJFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
     SaveGazeData(C, description);
 
         
@@ -757,7 +758,7 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
     
     %Save trial data as MAT, and add to the big CSV
     description = ['All_of_Practice_3' ]; %description of this timeperiod
-    save([DATAFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
+    save([SUBJFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
     SaveGazeData(C, description);
         
         
@@ -1000,14 +1001,14 @@ global parameters RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER 
     
     %Save trial data as MAT, and add to the big CSV
     description = ['All_of_Practice_4']; %description of this timeperiod
-    save([DATAFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
+    save([SUBJFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
     SaveGazeData(C, description);
 
     %saving timestamps
     timeTable = cell2table(timeCell(2:end,:));
     timeTable.Properties.VariableNames = timeCell(1,:);
     %And save the file!
-    filename = [DATAFOLDER, '/timestamps_' EXPERIMENT '_' SUBJECT '.csv'];
+    filename = [SUBJFOLDER, '/timestamps_' EXPERIMENT '_' SUBJECT '.csv'];
     writetable(timeTable, filename);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  

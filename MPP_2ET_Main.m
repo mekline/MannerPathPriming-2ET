@@ -42,6 +42,7 @@ global KEYID %Keyboard stuff
 global CONDITION %Manner, Path, Action, or Effect
 global TOEXTEND %Extend or NoExtend
 global EXTENDPRACTICE %ExtendPractice or NoPractice
+global SUBJFOLDER %Subject Folder for data
 
 if ~ischar(inputs.SubjectID)
     SUBJECT = num2str(inputs.SubjectID);
@@ -57,7 +58,7 @@ RESOURCEFOLDER = '/Users/snedlab/Desktop/MPP-Common-Resources';
 EXPFOLDER = fileparts(which('MPP_2ET_Main.m')); %add this folder to the path too.
 addpath(genpath(EXPFOLDER));
 DATAFOLDER = [EXPFOLDER '/Data'];
-
+SUBJFOLDER = [DATAFOLDER '/' SUBJECT];
 EXPERIMENT = inputs.experiment_name;
 CALIBVERSION = inputs.calib_version;
 MAXCALIB = inputs.max_calib;

@@ -4,7 +4,7 @@ function [response] = Trial_NoBias(trialNo)
 % Training - Depending on the condition, show either MnP1 or M1Pn movies
 % Final test - take a forced choice response between M1P2 and M2P1 again
 
-global parameters MAIN_ITEMS RESOURCEFOLDER CONDITION TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
+global SUBJFOLDER parameters MAIN_ITEMS RESOURCEFOLDER CONDITION TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
 
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -101,7 +101,15 @@ global parameters MAIN_ITEMS RESOURCEFOLDER CONDITION TOBII EYETRACKER EXPWIN BL
         
         %Concatenate arrays to save gaze data in all one big file
         C = horzcat(C, GazeData);
-              
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % BIAS TEST
+    % Play the two event movies; movie always plays L then R
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
+      
+    %Using the human-interpretable side variables instead...
+    MAIN_ITEMS.BiasManner(trialNo) == 'NA';
+    MAIN_ITEMS.BiasPath(trialNo) == 'NA';
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 3 TRAINING VIDEOS
@@ -403,6 +411,8 @@ global parameters MAIN_ITEMS RESOURCEFOLDER CONDITION TOBII EYETRACKER EXPWIN BL
     PlayCenterMovie(movietoplay_recenter);
     Show_Blank;
     
+    MAIN_ITEMS.finalTestEnd(trialNo) = GetSecs;
+    
      %Concatenate arrays to save gaze data in all one big file
     C = horzcat(C, GazeData);
     
@@ -412,14 +422,14 @@ global parameters MAIN_ITEMS RESOURCEFOLDER CONDITION TOBII EYETRACKER EXPWIN BL
     
     %Save trial data as MAT, and add to the big CSV
     description = ['All_of_noBias_trial_' num2str(trialNo)]; %description of this timeperiod
-    save([DATAFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
+    save([SUBJFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
     SaveGazeData(C, description);
     
     %saving timestamps
     timeTable = cell2table(timeCell(2:end,:));
     timeTable.Properties.VariableNames = timeCell(1,:);
     %And save the file!
-    filename = [DATAFOLDER, '/timestamps_' EXPERIMENT '_' SUBJECT '.csv'];
+    filename = [SUBJFOLDER, '/timestamps_' EXPERIMENT '_' SUBJECT '.csv'];
     writetable(timeTable, filename);
 
     
