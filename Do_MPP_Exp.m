@@ -197,7 +197,7 @@ try
     % 4 TRIALS OF PRACTICE TRAINING
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
 
-    %MPP_Practice();
+    MPP_Practice();
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 4 TRIALS OF NO-BIAS TEST LEARNING
@@ -210,20 +210,20 @@ try
 %     
 %     %And actually play the trials! Data is saved on each round to allow for
 %     %partial data collection
-%     for i = 1:ntrials/2;
-%         disp(i)
-%         Trial_NoBias(i)
-%         
+    for i = 1:ntrials/2;
+        disp(i)
+        Trial_NoBias(i)
+        
 %         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %         % Write result file
 %         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         
-%         expTrial = GetSecs;
-%         expTime = expTrial - expStart;
-%         
-%         Write_Trial_to_File(i, MAIN_ITEMS);
-% 
-%     end
+        
+        expTrial = GetSecs;
+        expTime = expTrial - expStart;
+        
+        Write_Trial_to_File(i, MAIN_ITEMS);
+
+    end
     
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -235,18 +235,18 @@ try
     
     %And actually play the trials! Data is saved on each round to allow for
     %partial data collection
-%     for i=5:ntrials
-%         Trial_Main(i)
+    for i=5:ntrials
+        Trial_Main(i)
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Write result file
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         expTrial = GetSecs;
-%         expTime = expTrial - expStart;
-%         
-%         Write_Trial_to_File(i, MAIN_ITEMS);
-% 
-%     end
+        expTrial = GetSecs;
+        expTime = expTrial - expStart;
+        
+        Write_Trial_to_File(i, MAIN_ITEMS);
+
+    end
     
     %And do the same for the Extension trials, if we're doing that!
     for i=(ntrials+1):(2*ntrials)

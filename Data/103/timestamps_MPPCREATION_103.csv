@@ -1,0 +1,144 @@
+subjectID,system_time_stamp,point_description
+103,1500489077831947,Experiment Start
+103,1500489081671116,Start_Practice_Trial 
+103,1500489081762151,ambigAudio_Practice 
+103,1500489084492388,ambigVideo_Practice 
+103,1500489090097179,ambigAudio_Practice_1_ball
+103,1500489092763243,ambigVideo_Practice_1_ball
+103,1500489099411174,trainingAudio_Practice_1_ball
+103,1500489102087708,trainingVideo_Practice_1_ball
+103,1500489105990721,trainingAudio_Practice_3_ball
+103,1500489108694415,trainingVideo_Practice_3_ball
+103,1500489113902540,testAudio_Practice_ball
+103,1500489116493750,left_testVideo_Practice_ball
+103,1500489121907764,right_testVideo_Practice_ball
+103,1500489126162490,testAudio_Practice_ball
+103,1500489128755620,testVideos_Practice_ball
+103,1500489136888976,End_Practice_Trial_1 
+103,1500489136951619,recenter 
+103,1500489141606577,Start_Practice_Trial_2 
+103,1500489141613446,ambigAudio_Practice_book
+103,1500489144293081,ambigVideo_Practice_book
+103,1500489149315332,trainingAudio_Practice_1_book
+103,1500489151772614,trainingVideo_Practice_1_book
+103,1500489157578950,trainingAudio_Practice_2_book
+103,1500489160041079,trainingVideo_Practice_2_book
+103,1500489165902334,trainingAudio_Practice_3_book
+103,1500489168366329,trainingVideo_Practice_3_book
+103,1500489174248480,testAudio_Practice_book
+103,1500489177104642,left_testVideo_Practice_book
+103,1500489182660322,right_testVideo_Practice_book
+103,1500489187629685,testAudio_Practice_book
+103,1500489190432258,testVideos_Practice_book
+103,1500489198684820,End_Practice_Trial_2 
+103,1500489198732359,recenter 
+103,1500489202950738,Start_Practice_Trial_3 
+103,1500489202956532,ambigAudio_Practice_1_bear
+103,1500489205972869,ambigVideo_Practice_1_bear
+103,1500489207260711,trainingAudio_Practice_1_bear
+103,1500489210094670,trainingVideo_Practice_1_bear
+103,1500489211310154,trainingAudio_Practice_1_bear
+103,1500489214143980,trainingVideo_Practice_2_bear
+103,1500489215493459,trainingAudio_Practice_3_bear
+103,1500489218324532,trainingVideo_Practice_3_bear
+103,1500489219601784,testAudio_Practice_bear
+103,1500489222876768,left_testVideo_Practice_bear
+103,1500489224440222,right_testVideo_Practice_bear
+103,1500489225660634,testAudio_Practice_bear
+103,1500489228879281,testVideos_Practice_bear
+103,1500489233505437,End__Practice_Trial_3 
+103,1500489233540542,recenter 
+103,1500489235257089,Start_Practice_Trial_4 
+103,1500489235260528,ambigAudio_Practice_car
+103,1500489238096382,ambigVideo_Practice_car
+103,1500489239550643,trainingAudio_Practice_1_car
+103,1500489242294340,trainingVideo_Practice_1_car
+103,1500489243945683,trainingAudio_Practice_2_car
+103,1500489246680695,trainingVideo_Practice_2_car
+103,1500489247916736,trainingAudio_Practice_3_car
+103,1500489250654235,trainingVideo_Practice_3_car
+103,1500489251944006,testAudio_Practice_car
+103,1500489254723743,left_testVideo_Practice_car
+103,1500489256692569,right_testVideo_Practice_car
+103,1500489258745189,testAudio_Practice_car
+103,1500489261457348,testVideos_Practice_car
+103,1500489265486772,End_Practice_Trial_4 
+103,1500489265530346,recenter 
+103,1500489267950004,Start_noBias_Trial 1
+103,1500489267963527,ambigAudio_noBias1
+103,1500489271558478,ambigVideo_noBias1
+103,1500489277412157,ambigAudio_noBias1
+103,1500489280750126,trainingAudio_noBias_1 1
+103,1500489284064092,trainingVideo_noBias_1 1
+103,1500489289860305,trainingAudio_noBias_1 1
+103,1500489294281650,trainingAudio_noBias_2 1
+103,1500489297768540,trainingVideo_noBias_21
+103,1500489303578005,trainingAudio_noBias_2 1
+103,1500489308071819,trainingAudio_noBias_3 1
+103,1500489311674814,trainingVideo_noBias_3 1
+103,1500489317488839,trainingAudio_noBias_3 1
+103,1500489322174936,testAudio_noBias1
+103,1500489324637541,left_testVideo_noBias 1
+103,1500489330433682,right_testVideo_noBias 1
+103,1500489336269546,testAudio 1
+103,1500489337986172,testVideos 1
+103,1500489346539676,End_NoBias_Trial 1
+103,1500489346600828,recenter 1
+103,1500489351290654,Start_noBias_Trial 2
+103,1500489351306468,ambigAudio_noBias2
+103,1500489355011679,ambigVideo_noBias2
+103,1500489360826012,ambigAudio_noBias2
+103,1500489363571908,trainingAudio_noBias_1 2
+103,1500489367226776,trainingVideo_noBias_1 2
+103,1500489373035635,trainingAudio_noBias_1 2
+103,1500489377334493,trainingAudio_noBias_2 2
+103,1500489381083341,trainingVideo_noBias_22
+103,1500489386911142,trainingAudio_noBias_2 2
+103,1500489391374790,trainingAudio_noBias_3 2
+103,1500489395145101,trainingVideo_noBias_3 2
+103,1500489400962552,trainingAudio_noBias_3 2
+103,1500489405356380,testAudio_noBias2
+103,1500489407670690,left_testVideo_noBias 2
+103,1500489413475959,right_testVideo_noBias 2
+103,1500489419298926,testAudio 2
+103,1500489421152971,testVideos 2
+103,1500489429582029,End_NoBias_Trial 2
+103,1500489429637513,recenter 2
+103,1500489435309416,Start_noBias_Trial 3
+103,1500489435330885,ambigAudio_noBias3
+103,1500489439095038,ambigVideo_noBias3
+103,1500489444895520,ambigAudio_noBias3
+103,1500489447956208,trainingAudio_noBias_1 3
+103,1500489451958652,trainingVideo_noBias_1 3
+103,1500489457780985,trainingAudio_noBias_1 3
+103,1500489462634204,trainingAudio_noBias_2 3
+103,1500489466399284,trainingVideo_noBias_23
+103,1500489472224561,trainingAudio_noBias_2 3
+103,1500489477021422,trainingAudio_noBias_3 3
+103,1500489480565344,trainingVideo_noBias_3 3
+103,1500489486371143,trainingAudio_noBias_3 3
+103,1500489490892863,testAudio_noBias3
+103,1500489493470162,left_testVideo_noBias 3
+103,1500489499303893,left_testVideo_noBias 3
+103,1500489505104981,testVideos_noBias 3
+103,1500489513533014,End_NoBias_Trial 3
+103,1500489513596772,recenter 3
+103,1500489524794105,Start_noBias_Trial 4
+103,1500489524829628,ambigAudio_noBias4
+103,1500489528849713,ambigVideo_noBias4
+103,1500489534661334,ambigAudio_noBias4
+103,1500489537742225,trainingAudio_noBias_1 4
+103,1500489541315554,trainingVideo_noBias_1 4
+103,1500489547085452,trainingAudio_noBias_1 4
+103,1500489551269398,trainingAudio_noBias_2 4
+103,1500489555029929,trainingVideo_noBias_24
+103,1500489560851568,trainingAudio_noBias_2 4
+103,1500489565233266,trainingAudio_noBias_3 4
+103,1500489568814668,trainingVideo_noBias_3 4
+103,1500489574643112,trainingAudio_noBias_3 4
+103,1500489578988235,testAudio_noBias4
+103,1500489581622201,left_testVideo_noBias 4
+103,1500489587462537,left_testVideo_noBias 4
+103,1500489593299228,testVideos_noBias 4
+103,1500489601737882,End_NoBias_Trial 4
+103,1500489601798062,recenter 4

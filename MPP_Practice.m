@@ -87,7 +87,9 @@ global parameters SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK 
         
         PlayCenterMovie(movietoplay_practice_1b);
         WaitSecs(0.50);
-
+        
+        [x1, y1, z1] = size(movietoplay_practice_1b)
+        
         Show_Blank;
         
         %Concatenate arrays to save gaze data in all one big file
@@ -220,6 +222,8 @@ global parameters SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK 
         
         PlaySideMovies(movietoplay_practice_1_distr,movietoplay_practice_1e,'caption_left','');
         
+        [x1,y1,z1] = size(movietoplay_practice_1_distr)
+        
         WaitSecs(3.00);
         
         %Concatenate arrays to save gaze data in all one big file
@@ -244,6 +248,8 @@ global parameters SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK 
         
         PlayCenterMovie(movietoplay_recenter);
         Show_Blank; 
+        
+        [x1,y1,z1] = size(movietoplay_recenter)
         
         %Concatenate arrays to save gaze data in all one big file
         C = horzcat(C, GazeData);
