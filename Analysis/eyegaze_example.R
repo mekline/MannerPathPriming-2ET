@@ -11,7 +11,7 @@ setwd('/Users/crystallee/Documents/Github/MannerPathPriming-2ET/Data/99')
 
 path = '~/Documents/Github/MannerPathPriming-2ET/Data/99'
 out.file<-""
-file.names <- dir(path, pattern ="gaze*.csv")
+file.names <- dir(path, pattern ="^g+.*.csv")
 for(i in 1:length(file.names)){
   file <- read.table(file.names[i],header=TRUE, sep=";", stringsAsFactors=FALSE)
   out.file <- rbind(out.file, file)
