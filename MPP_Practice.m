@@ -1,6 +1,6 @@
 function [response] = MPP_Practice()
 
-global parameters SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
+global parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
         % 4 TRIALS OF NOUN PRACTICE                             
@@ -54,6 +54,7 @@ global parameters SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK 
             ['ambigVideo_Practice ' ]}; 
         
         PlayCenterMovie(movietoplay_practice_1a);
+        disp(WINDOW_PARAMS.CENTERBOX)
         WaitSecs(0.50);
         Show_Blank;
         
@@ -87,8 +88,6 @@ global parameters SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK 
         
         PlayCenterMovie(movietoplay_practice_1b);
         WaitSecs(0.50);
-        
-        [x1, y1, z1] = size(movietoplay_practice_1b)
         
         Show_Blank;
         
@@ -183,6 +182,7 @@ global parameters SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK 
         disp(['left_testVideo_Practice_ball' ])
         
         PlaySideMovies(movietoplay_practice_1_distr,'','caption_left','');
+        disp(WINDOW_PARAMS.LEFTBOX)
         WaitSecs(0.50);
         Show_Blank;
         
@@ -197,6 +197,7 @@ global parameters SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK 
         disp(['right_testVideo_Practice_ball' ])
         
         PlaySideMovies('',movietoplay_practice_1e,'caption_right',''); 
+        disp(WINDOW_PARAMS.RIGHTBOX)
         WaitSecs(0.50);
         Show_Blank;
         
