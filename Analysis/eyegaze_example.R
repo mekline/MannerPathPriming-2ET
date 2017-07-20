@@ -11,25 +11,32 @@ setwd('/Users/crystallee/Documents/Github/MannerPathPriming-2ET/Data/99')
 
 path = '~/Documents/Github/MannerPathPriming-2ET/Data/99'
 out.file<-""
-file.names <- dir(path, pattern ="^g+.*.csv")
-for(i in 1:length(file.names)){
-  file <- read.table(file.names[i],header=TRUE, sep=";", stringsAsFactors=FALSE)
-  out.file <- rbind(out.file, file)
+
+#Load in practice trials
+file.names <- dir(path, pattern ="gaze_MPPCREATION_99_All_of_Practice_.*.csv")
+for(file in file.names){
+  df_99_practice <-read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
 }
 
-write.table(out.file, file = "gaze_MPPCREATION_99.csv",sep=";", 
-            row.names = FALSE, qmethod = "double",fileEncoding="windows-1252")
+#cleaning up the data to get it in the form I want
+colnames(df_99_practice)[which(names(df_99_practice) == "description")] <- "trial"
+df_99_practice$L_valid <- as.factor(df_99_practice$L_valid)
+df_99_practice$R_valid <- as.factor(df_99_practice$R_valid)
 
-subj99 <- ldply( .data = list.files(pattern="gaze*.csv"),
-                    .fun = read.csv,
-                    header = FALSE,
-                    col.names=c("subjectID", "device_time_stamp", "system_time_stamp", "description", "L_valid", "L_x", "L_y", "R_valid", "R_x", "R_y") )
+#defining a trackloss column
+df_99_practice$Trackloss_column <- as.factor(ifelse(df_99_practice$L_valid == '1' & df_99_practice$R_valid == '1', '1', 
+                                             ifelse(df_99_practice$L_valid == '0' & df_99_practice$R_valid == '1', '0',
+                                             ifelse(df_99_practice$L_valid == '1' & df_99_practice$R_valid == '0', '0',
+                                             ifelse(df_99_practice$L_valid == '0' & df_99_practice$R_valid == '0', '0', 'Error')))))
+#adding an AOI column
+add_aoi(df_99_practice, aoi_dataframe, x_col, y_col, aoi_name, x_min_col = "L",
+        x_max_col = "R", y_min_col = "T", y_max_col = "B")
 
-data <- make_eyetrackingr_data(word_recognition, 
-                               participant_column = "ParticipantName",
-                               trial_column = "Trial",
-                               time_column = "TimeFromTrialOnset",
-                               trackloss_column = "TrackLoss",
+data <- make_eyetrackingr_data(df_99_practice, 
+                               participant_column = "subjectID",
+                               trial_column = "trial",
+                               time_column = "system_time_stamp",
+                               trackloss_column = "TrackLoss_column",
                                aoi_columns = c('Animate','Inanimate'),
                                treat_non_aoi_looks_as_missing = TRUE
 )
