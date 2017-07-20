@@ -555,7 +555,7 @@ global SUBJFOLDER MAIN_ITEMS CONDITION RESOURCEFOLDER  parameters TOBII EYETRACK
                 TOBII.get_system_time_stamp,...
                 ['recenter ' num2str(trialNo)]}; 
             
-        PlayCenterMovie(movietoplay_recenter);
+        PlayCenterMovie(movietoplay_recenter, 'ownsound', 1);
         Show_Blank;
         
         %Concatenate arrays to save gaze data in all one big file
@@ -566,7 +566,7 @@ global SUBJFOLDER MAIN_ITEMS CONDITION RESOURCEFOLDER  parameters TOBII EYETRACK
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %Save trial data as MAT, and add to the big CSV
-    description = ['All_of_trial_' num2str(trialNo)]; %description of this timeperiod
+    description = ['All_of_Main_trial_' num2str(trialNo)]; %description of this timeperiod
     save([SUBJFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
     SaveGazeData(C, description);
     

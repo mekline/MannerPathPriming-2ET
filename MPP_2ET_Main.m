@@ -57,7 +57,7 @@ addpath(genpath('/Users/snedlab/Desktop/MPP-Common-Resources'));
 RESOURCEFOLDER = '/Users/snedlab/Desktop/MPP-Common-Resources';
 EXPFOLDER = fileparts(which('MPP_2ET_Main.m')); %add this folder to the path too.
 addpath(genpath(EXPFOLDER));
-DATAFOLDER = [EXPFOLDER '/Data'];
+DATAFOLDER = [EXPFOLDER '/Data/'];
 SUBJFOLDER = [DATAFOLDER '/' SUBJECT];
 EXPERIMENT = inputs.experiment_name;
 CALIBVERSION = inputs.calib_version;

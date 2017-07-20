@@ -4,7 +4,7 @@ function [response] = Trial_NoBias(trialNo)
 % Training - Depending on the condition, show either MnP1 or M1Pn movies
 % Final test - take a forced choice response between M1P2 and M2P1 again
 
-global SUBJFOLDER parameters MAIN_ITEMS RESOURCEFOLDER CONDITION TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
+global SUBJFOLDER parameters MAIN_ITEMS RESOURCEFOLDER CONDITION TOBII EYETRACKER EXPWIN BLACK SUBJFOLDER EXPERIMENT SUBJECT timeCell
 
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -408,7 +408,7 @@ global SUBJFOLDER parameters MAIN_ITEMS RESOURCEFOLDER CONDITION TOBII EYETRACKE
         ['recenter ' num2str(trialNo)]}; 
     disp(['recenter ' num2str(trialNo)])
         
-    PlayCenterMovie(movietoplay_recenter);
+    PlayCenterMovie(movietoplay_recenter, 'ownsound', 1);
     Show_Blank;
     
     MAIN_ITEMS.finalTestEnd(trialNo) = GetSecs;

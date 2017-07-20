@@ -192,6 +192,7 @@ try
     
     Take_Response();
     Show_Blank;
+    
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 4 TRIALS OF PRACTICE TRAINING

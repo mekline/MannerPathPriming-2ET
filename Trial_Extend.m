@@ -5,7 +5,7 @@ function [response] = Trial_Extend(trialNo)
 %Bias test - show M1P1 movie; take a forced choice response between M1P2
 %and M2P1
 
-global SUBJFOLDER MAIN_ITEMS EXT_ITEMS ntrials RESOURCEFOLDER EXTENDCONDITION parameters TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
+global SUBJFOLDER MAIN_ITEMS EXT_ITEMS ntrials RESOURCEFOLDER EXTENDCONDITION parameters TOBII EYETRACKER EXPWIN BLACK SUBJFOLDER EXPERIMENT SUBJECT timeCell
     
 %This is the extend version, so adjust the global trial number to index
 %into the EXT_ITEMS object
@@ -247,7 +247,7 @@ trialNo = trialNo - ntrials;
             TOBII.get_system_time_stamp,...
             ['recenter ' num2str(trialNo)]}; 
             
-    PlayCenterMovie(movietoplay_recenter);
+    PlayCenterMovie(movietoplay_recenter, 'ownsound', 1);
     Show_Blank;
     
     %Concatenate arrays to save gaze data in all one big file
