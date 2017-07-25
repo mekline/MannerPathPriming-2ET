@@ -244,9 +244,7 @@ data <- make_eyetrackingr_data(df_111_main_aoi,
 )
 
 #aggregating by subjectID to get a proportion of looks to screen by AOI, with only trial 5
-data_summary <- describe_data(data, 
-                              describe_column='Correct', group_columns=c('subjectID'))
-response_window_agg_by_sub <- make_time_window_data(data, aois = c("correctBias", "incorrectBias", "correctTest", "incorrectTest"), summarize_by = "subjectID")
+esponse_window_agg_by_sub <- make_time_window_data(data, aois = c("correctBias", "incorrectBias", "correctTest", "incorrectTest"), summarize_by = "subjectID")
 
 #creating plots
 ggplot(data=response_window_agg_by_sub, aes(x=AOI, y=Prop)) +
