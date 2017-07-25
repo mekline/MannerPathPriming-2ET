@@ -62,7 +62,7 @@ global parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER
         
         timeCell(end+1,:) = {SUBJECT,... 
             TOBII.get_system_time_stamp,...
-            ['ambigVideo_Practice ' ]}; 
+            ['ambigVideo_Practice End' ]}; 
         Show_Blank;
         
         %Concatenate arrays to save gaze data in all one big file
@@ -78,7 +78,6 @@ global parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
             ['ambigAudio_Practice_1_ball' ]}; 
-        disp(['ambigAudio_Practice_1_ball' ])
         
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball1.wav'), 'toBlock');
         
@@ -95,7 +94,6 @@ global parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
             ['ambigVideo_Practice_1_ball' ]}; 
-        disp(['ambigVideo_Practice_1_ball' ])
         
         PlayCenterMovie(movietoplay_practice_1b);
         WaitSecs(0.50);
@@ -123,7 +121,7 @@ global parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER
         
          timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['trainingAudio_Practice_1_ball' ]}; 
+            ['trainingAudio_Practice_1_ball End' ]}; 
         
         Show_Blank;
         
@@ -142,7 +140,7 @@ global parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER
         
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['trainingVideo_Practice_1_ball' ]}; 
+            ['trainingVideo_Practice_1_ball End' ]}; 
         
         Show_Blank;
         
@@ -175,14 +173,13 @@ global parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
             ['trainingVideo_Practice_3_ball' ]}; 
-        disp(['trainingVideo_Practice_3_ball' ])
         
         PlayCenterMovie(movietoplay_practice_1d);
         WaitSecs(0.50);
         
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['trainingVideo_Practice_3_ball' ]}; 
+            ['trainingVideo_Practice_3_ball End' ]}; 
         
         Show_Blank;
         
@@ -200,7 +197,6 @@ global parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
             ['testAudio_Practice_ball' ]}; 
-        disp(['testAudio_Practice_ball' ])
         
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball2.wav'), 'toBlock');
         
@@ -216,7 +212,6 @@ global parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
             ['left_testVideo_Practice_ball' ]}; 
-        disp(['left_testVideo_Practice_ball' ])
         
         PlaySideMovies(movietoplay_practice_1_distr,'','caption_left','');
         WaitSecs(0.50);
@@ -235,11 +230,13 @@ global parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
             ['right_testVideo_Practice_ball' ]}; 
-        disp(['right_testVideo_Practice_ball' ])
         
         PlaySideMovies('',movietoplay_practice_1e,'caption_right',''); 
-        disp(WINDOW_PARAMS.RIGHTBOX)
         WaitSecs(0.50);
+        
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['right_testVideo_Practice_ball End' ]}; 
         Show_Blank;
         
         %Concatenate arrays to save gaze data in all one big file
@@ -253,6 +250,10 @@ global parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER
         
         Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball2.wav'), 'toBlock'); 
         
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['testAudio_Practice_ball End' ]}; 
+        
         %Concatenate arrays to save gaze data in all one big file
         C = horzcat(C, GazeData);
               
@@ -264,9 +265,11 @@ global parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER
         
         PlaySideMovies(movietoplay_practice_1_distr,movietoplay_practice_1e,'caption_left','');
         
-        [x1,y1,z1] = size(movietoplay_practice_1_distr)
-        
         WaitSecs(3.00);
+        
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['testVideos_Practice_ball End' ]}; 
         
         %Concatenate arrays to save gaze data in all one big file
         C = horzcat(C, GazeData);
@@ -286,13 +289,14 @@ global parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
             ['recenter ' ]}; 
-        disp(['recenter ' ])
         
         PlayCenterMovie(movietoplay_recenter, 'ownsound', 1);
+        
+        timeCell(end+1,:) = {SUBJECT,...
+            TOBII.get_system_time_stamp,...
+            ['recenter End' ]}; 
         Show_Blank; 
-        
-        [x1,y1,z1] = size(movietoplay_recenter)
-        
+         
         %Concatenate arrays to save gaze data in all one big file
         C = horzcat(C, GazeData);
               
