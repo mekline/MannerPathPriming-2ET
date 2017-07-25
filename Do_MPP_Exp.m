@@ -5,7 +5,7 @@ function Do_MPP_Exp()
 global EXPWIN RESOURCEFOLDER DATAFILE 
 
 %MPP specific objects
-global expStart PRACTICE_ITEMS expTime CONDITION TOEXTEND EXTENDCONDITION MAIN_ITEMS EXT_ITEMS STARS EXTENDPRACTICE ntrials TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
+global expStart expTime CONDITION TOEXTEND EXTENDCONDITION MAIN_ITEMS EXT_ITEMS STARS EXTENDPRACTICE ntrials TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
 
 %Some numeric versions of condition names for indexing into tables...
 
@@ -120,21 +120,22 @@ try
         EXT_ITEMS.TestPath = screenside(:,2);
     end
     
-    screenside = screenside(randperm(8),:);
-    PRACTICE_ITEMS.BiasManner = screenside(:,1);
-    PRACTICE_ITEMS.BiasPath = screenside(:,2);
-    
-    screenside = screenside(randperm(8),:);
-    PRACTICE_ITEMS.TestManner = screenside(:,1);
-    PRACTICE_ITEMS.TestPath = screenside(:,2);
-    
     %%%%%%%%%%%%%%%%%%
     %READ IN PRACTICE VIDEOS
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     vidInfo = readtable('MPP_Practice_videos.csv');
-    PRACTICE_ITEMS = vidInfo(vidInfo.List == conditionno,:);
-
+    MAIN_ITEMS = vidInfo(vidInfo.List == conditionno,:);
+    if toExtend %Assign the other-domain set! Since we don't do any learning, arbitrarily get Manner or Action
+        if(conditionno == 1 || conditionno == 3) %Start with MannerPath, move to Action
+            EXTENDCONDITION = 'Action';
+            EXT_ITEMS = vidInfo(vidInfo.List == 6,:);
+        elseif (conditionno == 5 || conditionno == 6) %Start with ActionEffect, move to Manner
+            EXTENDCONDITION = 'Manner';
+            EXT_ITEMS = vidInfo(vidInfo.List == 1,:);
+        end
+    end
+    
     %%%%%%%%%%%%%%%%%%%%%
     % EXPERIMENT STARTS HERE
     %%%%%%%%%%%%%%%%%%%%%
@@ -213,10 +214,7 @@ try
     % 4 TRIALS OF PRACTICE TRAINING
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
 
-    xtrials = height(PRACTICE_ITEMS);
-    
-    for i=1:xtrials
-        MPP_Practice();
+    MPP_Practice();
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 4 TRIALS OF NO-BIAS TEST LEARNING
@@ -229,7 +227,7 @@ try
 %     
 %     %And actually play the trials! Data is saved on each round to allow for
 %     %partial data collection
-    for i = 1:ntrials/2
+    for i = 1:ntrials/2;
         disp(i)
         Trial_NoBias(i)
         
@@ -290,6 +288,5 @@ catch
 end
 
 end
-
 
      
