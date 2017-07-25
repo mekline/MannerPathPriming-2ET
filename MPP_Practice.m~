@@ -1,6 +1,6 @@
 function [response] = MPP_Practice(trialNo)
 
-global PRACTICE_ITEMS parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK SUBJFOLDER EXPERIMENT SUBJECT timeCell
+global parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK SUBJFOLDER EXPERIMENT SUBJECT timeCell
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
         % 4 TRIALS OF NOUN PRACTICE                             
@@ -10,20 +10,20 @@ global PRACTICE_ITEMS parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS T
 % MOVIES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    movietoplay_practice_1a = strcat(RESOURCEFOLDER,'/Movies_Practice/', PRACTICE_ITEMS.ambigV(trialNo));
-    movietoplay_practice_1b = strcat(RESOURCEFOLDER,'/Movies_Practice/', PRACTICE_ITEMS.trainV1(trialNo));
-    movietoplay_practice_1c = strcat(RESOURCEFOLDER,'/Movies_Practice/', PRACTICE_ITEMS.trainV2(trialNo));
-    movietoplay_practice_1d = strcat(RESOURCEFOLDER,'/Movies_Practice/', PRACTICE_ITEMS.trainV3trialNo));
-    movietoplay_practice_1e = strcat(RESOURCEFOLDER,'/Movies_Practice/', PRACTICE_ITEMS.mTestV(trialNo));
-    movietoplay_practice_1_distr = strcat(RESOURCEFOLDER,'/Movies_Practice/', PRACTICE_ITEMS.pTestV(trialNo));
+    movietoplay_practice_1a = strcat(RESOURCEFOLDER,'/Movies_Practice/', MAIN_ITEMS.ambigV(trialNo));
+    movietoplay_practice_1b = strcat(RESOURCEFOLDER,'/Movies_Practice/', MAIN_ITEMS.trainV1(trialNo));
+    movietoplay_practice_1c = strcat(RESOURCEFOLDER,'/Movies_Practice/', MAIN_ITEMS.trainV2(trialNo));
+    movietoplay_practice_1d = strcat(RESOURCEFOLDER,'/Movies_Practice/', MAIN_ITEMS.trainV3trialNo));
+    movietoplay_practice_1e = strcat(RESOURCEFOLDER,'/Movies_Practice/', MAIN_ITEMS.mTestV(trialNo));
+    movietoplay_practice_1_distr = strcat(RESOURCEFOLDER,'/Movies_Practice/', MAIN_ITEMS.pTestV(trialNo));
     movietoplay_recenter = strcat(RESOURCEFOLDER, '/movies/babylaugh.mov');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % AUDIO
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    soundtoplay_audio1 = strcat(RESOURCEFOLDER, '/audio/aa_motivation/', PRACTICE_ITEMS.audio1(trialNo));
-    soundtoplay_audio2 = strcat(RESOURCEFOLDER, '/audio/aa_motivation', PRACTICE_ITEMS.audio2(trialNo));
+    soundtoplay_audio1 = strcat(RESOURCEFOLDER, '/audio/aa_motivation/', MAIN_ITEMS.audio1(trialNo));
+    soundtoplay_audio2 = strcat(RESOURCEFOLDER, '/audio/aa_motivation', MAIN_ITEMS.audio2(trialNo));
 
     %%%%%%%%%%%%%%%%%%%%%
     %FIRST PRACTICE TRIAL
@@ -47,7 +47,7 @@ global PRACTICE_ITEMS parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS T
             TOBII.get_system_time_stamp,...
             ['ambigAudio_Practice ' num2str(trialNo) ]}; 
         
-        Play_Sound(soundtoplay_audio1{1}, 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball1.wav'), 'toBlock');
         
         timeCell(end+1,:) = {SUBJECT,... 
             TOBII.get_system_time_stamp,...
@@ -71,7 +71,7 @@ global PRACTICE_ITEMS parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS T
         
         timeCell(end+1,:) = {SUBJECT,... 
             TOBII.get_system_time_stamp,...
-            ['ambigVideo_Practice End ' num2str(trialNo) ]}; 
+            ['ambigVideo_Practice End' num2str(trialNo) ]}; 
         Show_Blank;
         
         %Concatenate arrays to save gaze data in all one big file
@@ -86,13 +86,13 @@ global PRACTICE_ITEMS parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS T
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['ambigAudio_Practice_1 ' num2str(trialNo) ]}; 
+            ['ambigAudio_Practice_1' num2str(trialNo) ]}; 
         
-        Play_Sound(soundtoplay_audio1{1}, 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball1.wav'), 'toBlock');
         
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['ambigAudio_Practice_1 End ' num2str(trialNo) ]};  
+            ['ambigAudio_Practice_1 End' num2str(trialNo) ]};  
         Show_Blank;
         
         %Concatenate arrays to save gaze data in all one big file
@@ -102,14 +102,14 @@ global PRACTICE_ITEMS parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS T
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['ambigVideo_Practice_1 ' num2str(trialNo) ]}; 
+            ['ambigVideo_Practice_1' num2str(trialNo) ]}; 
         
         PlayCenterMovie(movietoplay_practice_1b);
         WaitSecs(0.50);
         
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['ambigVideo_Practice_1 End ' num2str(trialNo) ]}; 
+            ['ambigVideo_Practice_1 End' num2str(trialNo) ]}; 
         
         Show_Blank;
         
@@ -124,13 +124,13 @@ global PRACTICE_ITEMS parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS T
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['trainingAudio_Practice_2 ' num2str(trialNo)]}; 
+            ['trainingAudio_Practice_2' num2str(trialNo)]}; 
 
-        Play_Sound(soundtoplay_audio1{1}, 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball1.wav'), 'toBlock');
         
          timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['trainingAudio_Practice_2 End ' num2str(trialNo)]}; 
+            ['trainingAudio_Practice_2 End' num2str(trialNo)]}; 
         
         Show_Blank;
         
@@ -142,14 +142,14 @@ global PRACTICE_ITEMS parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS T
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['trainingVideo_Practice_2 ' num2str(trialNo) ]}; 
+            ['trainingVideo_Practice_2' num2str(trialNo) ]}; 
         
         PlayCenterMovie(movietoplay_practice_1c);
         WaitSecs(0.50);
         
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['trainingVideo_Practice_2 End ' num2str(trialNo) ]}; 
+            ['trainingVideo_Practice_2 End' num2str(trialNo) ]}; 
         
         Show_Blank;
         
@@ -164,9 +164,9 @@ global PRACTICE_ITEMS parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS T
         GazeData = EYETRACKER.get_gaze_data; %dummy call to make sure we clear & collect new data
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['trainingAudio_Practice_3 ' num2str(trialNo)]}; 
+            ['trainingAudio_Practice_3' num2str(trialNo)]}; 
         
-        Play_Sound(soundtoplay_audio1{1}, 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball1.wav'), 'toBlock');
         
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
@@ -207,11 +207,11 @@ global PRACTICE_ITEMS parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS T
             TOBII.get_system_time_stamp,...
             ['testAudio_Practice ' num2str(trialNo) ]};  
         
-        Play_Sound(soundtoplay_audio2{1}, 'toBlock');
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball2.wav'), 'toBlock');
         
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['testAudio_Practice End ' num2str(trialNo)]}; 
+            ['testAudio_Practice End' num2str(trialNo)]}; 
         
         %Concatenate arrays to save gaze data in all one big file
         C = horzcat(C, GazeData);
@@ -257,7 +257,7 @@ global PRACTICE_ITEMS parameters WINDOW_PARAMS SUBJFOLDER RESOURCEFOLDER STARS T
             TOBII.get_system_time_stamp,...
             ['testAudio_Practice ' num2str(trialNo) ]}; 
         
-        Play_Sound(soundtoplay_audio2{1}, 'toBlock'); 
+        Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_nouns/ball2.wav'), 'toBlock'); 
         
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
