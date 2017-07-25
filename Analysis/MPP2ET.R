@@ -18,12 +18,18 @@ library("Matrix")
 
 setwd('/Users/crystallee/Documents/Github/MannerPathPriming-2ET/Data/Melissa_111')
 
+
+# Getting files ready
+file.names_practice <- dir(path, pattern ="gaze_MPPCREATION_Melissa_111_All_of_Practice_.*.csv")
+file.names_main <- dir(path, pattern ="gaze_MPPCREATION_Melissa_111_All_of_Main_trial_.*.csv")
+file.names_extend <- dir(path, pattern ="gaze_MPPCREATION_Melissa_111_All_of_Extend_trial_.*.csv")
+
+dat_table <- read.delim("~/Documents/Github/MannerPathPriming-2ET/Data/MPPCREATION_Melissa_111.dat", 
+                        header=TRUE, sep=",")
+
 path = '~/Documents/Github/MannerPathPriming-2ET/Data/Melissa_111'
 out.file<-""
 
-#read in data table for condition
-dat_table <- read.delim("~/Documents/Github/MannerPathPriming-2ET/Data/MPPCREATION_Melissa_111.dat", 
-                        header=TRUE, sep=",")
 
 ###declaring my real function####
 trial_time <- function(x) {
@@ -64,12 +70,11 @@ trial_time <- function(x) {
 ############################
 # LOOKING AT PRACTICE TRIALS
 ############################
-file.names <- dir(path, pattern ="gaze_MPPCREATION_Melissa_111_All_of_Practice_.*.csv")
 df_111_practice <- data.frame(Date=as.Date(character()),
                              File=character(), 
                              User=character(), 
                              stringsAsFactors=FALSE) 
-for(file in file.names){
+for(file in file.names_practice){
   temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
   df_111_practice <-rbind(df_111_practice, temp)
 }
@@ -159,12 +164,11 @@ ggsave("trial5_melissa_path.png")
 # LOOKING AT MAIN TRIALS
 ############################
 
-file.names <- dir(path, pattern ="gaze_MPPCREATION_Melissa_111_All_of_Main_trial_.*.csv")
 df_111_main <- data.frame(Date=as.Date(character()),
                               File=character(), 
                               User=character(), 
                               stringsAsFactors=FALSE) 
-for(file in file.names){
+for(file in file.names_main){
   temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
   df_111_main <-rbind(df_111_main, temp)
 }
@@ -262,12 +266,11 @@ ggsave("melissa_path_main_trials.png")
 ##########################
 
 #reading in extend trial CSVs
-file.names <- dir(path, pattern ="gaze_MPPCREATION_Melissa_111_All_of_Extend_trial_.*.csv")
 df_111_extend <- data.frame(Date=as.Date(character()),
                           File=character(), 
                           User=character(), 
                           stringsAsFactors=FALSE) 
-for(file in file.names){
+for(file in file.names_extend){
   temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
   df_111_extend <-rbind(df_111_extend, temp)
 }
