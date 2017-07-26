@@ -1,3 +1,8 @@
+# This script is looking at the eyetracking data of MPP2ET. We're going to read 
+# in each participant's trials one by one, append them to each specific phase
+# (Practice, Main, Extend), and then append them all to a dataframe. We're going
+# to loop through each participant. 
+
 install.packages("devtools")
 devtools::install_github("jwdink/eyetrackingR")
 library("eyetrackingR")
@@ -7,12 +12,7 @@ library("lme4")
 library("ggplot2")
 library("Matrix")
 
-# This script is looking at the eyetracking data of MPP2ET. We're going to read 
-# in each participant's trials one by one, append them to each specific phase
-# (Practice, Main, Extend), and then append them all to a dataframe. We're going
-# to loop through each participant. 
-
-setwd('/Users/crystallee/Documents/Github/MannerPathPriming-2ET/Data/')
+setwd('/Users/crystallee/Documents/Github/MannerPathPriming-2ET/Data')
 
 
 ############################
@@ -28,7 +28,10 @@ allData <- data.frame(Date=as.Date(character()),
                               User=character(), 
                               stringsAsFactors=FALSE) 
 
-
+df_data_table <- data.frame(Date=as.Date(character()),
+                            File=character(), 
+                            User=character(), 
+                            stringsAsFactors=FALSE) 
 
 ###declaring my real function####
 trial_time1 <- function(x) {
@@ -63,156 +66,195 @@ trial_time <- function(x) {
   return(z)
 }
 
-
-##THIS IS WHERE THE FOR LOOP STARTS
-
-
-############################
-# Importing files specific to participant
-############################
-
-file.names_practice <- dir(path, pattern ="gaze_MPPCREATION_Melissa_111_All_of_Practice_.*.csv")
-file.names_main <- dir(path, pattern ="gaze_MPPCREATION_Melissa_111_All_of_Main_trial_.*.csv")
-file.names_extend <- dir(path, pattern ="gaze_MPPCREATION_Melissa_111_All_of_Extend_trial_.*.csv")
-
-#read in timestamps
-df_timestamps <- read.csv("~/Documents/Github/MannerPathPriming-2ET/Data/Melissa_111/timestamps_MPPCREATION_Melissa_111.csv", header = TRUE, stringsAsFactors=FALSE, fileEncoding = "latin1")
-df_timestamps$subjectID <- as.factor(df_timestamps$subjectID)
-df_timestamps$system_time_stamp <- df_timestamps[,2] - 1500000000000000
-
-dat_table <- read.delim("~/Documents/Github/MannerPathPriming-2ET/Data/MPPCREATION_Melissa_111.dat", 
-                        header=TRUE, sep=",")
-
-path = '~/Documents/Github/MannerPathPriming-2ET/Data/Melissa_111'
-out.file<-""
+# Declaring empty variables
+subj.folders <- list.dirs(full.names = TRUE)
+file.names_practice <- NULL
+file.names_main <- NULL
+file.names_extend <- NULL
+counter = 0 # Counter to load in dataframes for timestamps, probably will be unneeded in the future
 
 ############################
-# LOOKING AT PRACTICE TRIALS
+# LOOPING THROUGH ALL THE SUBJECTS (1 subject at a time)
 ############################
-subjData <- data.frame(Date=as.Date(character()),
-                       File=character(), 
-                       User=character(), 
-                       stringsAsFactors=FALSE) 
 
-df_practice <- data.frame(Date=as.Date(character()),
-                             File=character(), 
-                             User=character(), 
-                             stringsAsFactors=FALSE) 
-for(file in file.names_practice){
-  temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
-  df_practice <-rbind(df_practice, temp)
+for(i in subj.folders){
+
+  ############################
+  # Importing files specific to participant
+  ############################
+  
+  # Gettting all the practice trials for 1 subject
+  file.names_practice_temp <- list.files(i, pattern = ".*\\Practice_.*.csv")
+  file.names_practice <- c(file.names_practice, file.names_practice_temp)
+
+  # Getting all the main trials for 1 subject
+  file.names_main_temp <- list.files(i, all.files = FALSE, pattern = ".*(Main|noBias)_.*\\.csv$")
+  x = (file.names_main_temp)
+  if(identical(x,character(0))) {
+    NULL
+  }
+  else {
+    file.names_main <- c(file.names_main, file.names_main_temp)
+  }
+  
+  # Getting all the extend trials for 1 subject
+  file.names_extend_temp <- list.files(i, pattern = ".*\\Extend_.*.csv")
+  file.names_extend <- c(file.names_extend, file.names_extend_temp)
+  
+  # Importing timestamps
+  timestamps <- list.files(recursive = TRUE,pattern="^timestamps.*\\.csv", full.names = TRUE )
+  print(timestamps)
+  
+  if(identical(timestamps,character(0))) {
+    NULL
+  }
+  else {
+    timestamps <- as.list(timestamps)
+    counter = counter + 1
+    df_timestamps <- read.csv(as.character(timestamps[counter]), header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
+  }
+  
+  # Making timestamps more readable
+  df_timestamps$subjectID <- as.factor(df_timestamps$subjectID)
+  df_timestamps$system_time_stamp <- df_timestamps[,2] - 1500000000000000
+  
+  # Reading in data table
+  data_table <- list.files(pattern=".*\\.dat")
+  data_table <- as.list(data_table)
+  for(z in 1:length(data_table)){}
+    temp <- read.delim(as.character(data_table[z]), header=TRUE, sep=",")
+    print(temp)
+    df_data_table <- rbind(df_data_table, temp)
+  }
+  
+  ############################
+  # LOOKING AT PRACTICE TRIALS
+  ############################
+  
+  subjData <- data.frame(Date=as.Date(character()),
+                         File=character(), 
+                         User=character(), 
+                         stringsAsFactors=FALSE) 
+  
+  df_practice <- data.frame(Date=as.Date(character()),
+                            File=character(), 
+                            User=character(), 
+                            stringsAsFactors=FALSE)
+  
+  for(file in file.names_practice){
+    temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
+    df_practice <-rbind(df_practice, temp)
+  }
 }
-
-
-#cleaning up the data to get it in the form I want
-colnames(df_practice)[which(names(df_practice) == "description")] <- "trialNo"
-df_practice$L_valid <- as.factor(df_practice$L_valid)
-df_practice$R_valid <- as.factor(df_practice$R_valid)
-df_practice$system_time_stamp <- df_practice$system_time_stamp - 1500000000000000
-df_practice$phase <- 'Practice'
-
-#defining a trackloss column
-df_practice$Trackloss_column <- ifelse(df_practice$L_valid == '1' & df_practice$R_valid == '1', FALSE, 
-                                    ifelse(df_practice$L_valid == '0' & df_practice$R_valid == '1', TRUE,
-                                    ifelse(df_practice$L_valid == '1' & df_practice$R_valid == '0', TRUE,
-                                    ifelse(df_practice$L_valid == '0' & df_practice$R_valid == '0', TRUE, 'Error'))))
-
-df_practice$Trackloss_column <- as.logical(df_practice$Trackloss_column)
-
-#merging together dat_table and trials to get correctness
-df_practice$trialNo <- as.factor(ifelse(df_practice$trialNo == "All_of_Practice_trial_1", "1", 
-                                     ifelse(df_practice$trialNo == "All_of_Practice_trial_2", "2",
-                                     ifelse(df_practice$trialNo == "All_of_Practice_trial_3", "3",
-                                     ifelse(df_practice$trialNo == "All_of_Practice_trial_4", "4", "Error")))))
-
-subjData <- rbind(subjData, df_practice)
-
-
-
-############################
-# LOOKING AT MAIN TRIALS
-############################
-
-df_main <- data.frame(Date=as.Date(character()),
-                              File=character(), 
-                              User=character(), 
-                              stringsAsFactors=FALSE) 
-for(file in file.names_main){
-  temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
-  df_main <-rbind(df_main, temp)
+  # # Cleaning up the data to get it in the form I want
+  # colnames(df_practice)[which(names(df_practice) == "description")] <- "trialNo"
+  # df_practice$L_valid <- as.factor(df_practice$L_valid)
+  # df_practice$R_valid <- as.factor(df_practice$R_valid)
+  # df_practice$system_time_stamp <- df_practice$system_time_stamp - 1500000000000000
+  # df_practice$phase <- 'Practice'
+  # 
+  # #defining a trackloss column
+  # df_practice$Trackloss_column <- ifelse(df_practice$L_valid == '1' & df_practice$R_valid == '1', FALSE, 
+  #                                        ifelse(df_practice$L_valid == '0' & df_practice$R_valid == '1', TRUE,
+  #                                               ifelse(df_practice$L_valid == '1' & df_practice$R_valid == '0', TRUE,
+  #                                                      ifelse(df_practice$L_valid == '0' & df_practice$R_valid == '0', TRUE, 'Error'))))
+  # 
+  # df_practice$Trackloss_column <- as.logical(df_practice$Trackloss_column)
+  # 
+  # #merging together dat_table and trials to get correctness
+  # df_practice$trialNo <- as.factor(ifelse(df_practice$trialNo == "All_of_Practice_trial_1", "1", 
+  #                                         ifelse(df_practice$trialNo == "All_of_Practice_trial_2", "2",
+  #                                                ifelse(df_practice$trialNo == "All_of_Practice_trial_3", "3",
+  #                                                       ifelse(df_practice$trialNo == "All_of_Practice_trial_4", "4", "Error")))))
+  # 
+  # subjData <- rbind(subjData, df_practice)
+  # 
+  
+  
+#   ############################
+#   # LOOKING AT MAIN TRIALS
+#   ############################
+#   
+#   df_main <- data.frame(Date=as.Date(character()),
+#                         File=character(), 
+#                         User=character(), 
+#                         stringsAsFactors=FALSE) 
+#   for(file in file.names_main){
+#     temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
+#     df_main <-rbind(df_main, temp)
+#   }
+#   
+#   #cleaning up the data to get it in the form I want
+#   colnames(df_main)[which(names(df_main) == "description")] <- "trialNo"
+#   df_main$L_valid <- as.factor(df_main$L_valid)
+#   df_main$R_valid <- as.factor(df_main$R_valid)
+#   df_main$system_time_stamp <- df_main$system_time_stamp - 1500000000000000
+#   df_main$phase <- 'Main'
+#   
+#   #defining a trackloss column
+#   df_main$Trackloss_column <- as.factor(ifelse(df_main$L_valid == '1' & df_main$R_valid == '1', TRUE, 
+#                                         ifelse(df_main$L_valid == '0' & df_main$R_valid == '1', FALSE,
+#                                         ifelse(df_main$L_valid == '1' & df_main$R_valid == '0', FALSE,
+#                                         ifelse(df_main$L_valid == '0' & df_main$R_valid == '0', FALSE, 'Error')))))
+#   
+#   df_main_aoi$Trackloss_column <- as.logical(df_main_aoi$Trackloss_column)
+#   
+#   
+#   #merging together dat_table and trials to get correctness
+#   df_main$trialNo <- as.factor(ifelse(df_main$trialNo == "All_of_noBias_trial_1", "1",
+#                                ifelse(df_main$trialNo == "All_of_noBias_trial_2", "2",
+#                                ifelse(df_main$trialNo == "All_of_noBias_trial_3", "3",
+#                                ifelse(df_main$trialNo == "All_of_noBias_trial_4", "4",
+#                                ifelse(df_main$trialNo == "All_of_Main_trial_5", "5", 
+#                                ifelse(df_main$trialNo == "All_of_Main_trial_6", "6",
+#                                ifelse(df_main$trialNo == "All_of_Main_trial_7", "7",
+#                                ifelse(df_main$trialNo == "All_of_Main_trial_8", "8", "Error")))))))))
+#   
+#   
+#   subjData <- rbind(subjData, df_main)
+#   
+#   
+#   ##########################
+#   # LOOKING AT EXTEND TRIALS
+#   ##########################
+#   
+#   #reading in extend trial CSVs
+#   df_extend <- data.frame(Date=as.Date(character()),
+#                           File=character(), 
+#                           User=character(), 
+#                           stringsAsFactors=FALSE) 
+#   for(file in file.names_extend){
+#     temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
+#     df_extend <-rbind(df_extend, temp)
+#   }
+#   
+#   #cleaning up the data to get it in the form I want
+#   colnames(df_extend)[which(names(df_extend) == "description")] <- "trialNo"
+#   df_extend$L_valid <- as.factor(df_extend$L_valid)
+#   df_extend$R_valid <- as.factor(df_extend$R_valid)
+#   df_extend$system_time_stamp <- df_extend$system_time_stamp - 1500000000000000
+#   df_extend$phase <- 'Extend'
+#   
+#   #defining a trackloss column
+#   df_extend$Trackloss_column <- as.factor(ifelse(df_extend$L_valid == '1' & df_extend$R_valid == '1', TRUE, 
+#                                           ifelse(df_extend$L_valid == '0' & df_extend$R_valid == '1', FALSE,
+#                                           ifelse(df_extend$L_valid == '1' & df_extend$R_valid == '0', FALSE,
+#                                           ifelse(df_extend$L_valid == '0' & df_extend$R_valid == '0', FALSE, 'Error')))))
+#   
+#   
+#   #merging together dat_table and trials to get correctness
+#   df_extend$trialNo <- as.factor(ifelse(df_extend$trialNo == "All_of_Extend_trial_5", "13", 
+#                                  ifelse(df_extend$trialNo == "All_of_Extend_trial_6", "14",
+#                                  ifelse(df_extend$trialNo == "All_of_Extend_trial_7", "7",
+#                                  ifelse(df_extend$trialNo == "All_of_Extend_trial_8", "8",
+#                                  ifelse(df_extend$trialNo == "All_of_Extend_trial_1", "9",
+#                                  ifelse(df_extend$trialNo == "All_of_Extend_trial_2", "10",
+#                                  ifelse(df_extend$trialNo == "All_of_Extend_trial_3", "11",
+#                                  ifelse(df_extend$trialNo == "All_of_Extend_trial_4", "12", "Error")))))))))
+#   
+#   subjData <- rbind(subjData, df_extend)
+#   
 }
-
-#cleaning up the data to get it in the form I want
-colnames(df_main)[which(names(df_main) == "description")] <- "trialNo"
-df_main$L_valid <- as.factor(df_main$L_valid)
-df_main$R_valid <- as.factor(df_main$R_valid)
-df_main$system_time_stamp <- df_main$system_time_stamp - 1500000000000000
-df_main$phase <- 'Main'
-
-#defining a trackloss column
-df_main$Trackloss_column <- as.factor(ifelse(df_main$L_valid == '1' & df_main$R_valid == '1', TRUE, 
-                                         ifelse(df_main$L_valid == '0' & df_main$R_valid == '1', FALSE,
-                                         ifelse(df_main$L_valid == '1' & df_main$R_valid == '0', FALSE,
-                                         ifelse(df_main$L_valid == '0' & df_main$R_valid == '0', FALSE, 'Error')))))
-
-df_main_aoi$Trackloss_column <- as.logical(df_main_aoi$Trackloss_column)
-
-
-#merging together dat_table and trials to get correctness
-df_main$trialNo <- as.factor(ifelse(df_main$trialNo == "All_of_noBias_trial_1", "1",
-                             ifelse(df_main$trialNo == "All_of_noBias_trial_2", "2",
-                             ifelse(df_main$trialNo == "All_of_noBias_trial_3", "3",
-                             ifelse(df_main$trialNo == "All_of_noBias_trial_4", "4",
-                             ifelse(df_main$trialNo == "All_of_Main_trial_5", "5", 
-                             ifelse(df_main$trialNo == "All_of_Main_trial_6", "6",
-                             ifelse(df_main$trialNo == "All_of_Main_trial_7", "7",
-                             ifelse(df_main$trialNo == "All_of_Main_trial_8", "8", "Error")))))))))
-
-
-subjData <- rbind(subjData, df_main)
-
-
-
-##########################
-# LOOKING AT EXTEND TRIALS
-##########################
-
-#reading in extend trial CSVs
-df_extend <- data.frame(Date=as.Date(character()),
-                          File=character(), 
-                          User=character(), 
-                          stringsAsFactors=FALSE) 
-for(file in file.names_extend){
-  temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
-  df_extend <-rbind(df_extend, temp)
-}
-
-#cleaning up the data to get it in the form I want
-colnames(df_extend)[which(names(df_extend) == "description")] <- "trialNo"
-df_extend$L_valid <- as.factor(df_extend$L_valid)
-df_extend$R_valid <- as.factor(df_extend$R_valid)
-df_extend$system_time_stamp <- df_extend$system_time_stamp - 1500000000000000
-df_extend$phase <- 'Extend'
-
-#defining a trackloss column
-df_extend$Trackloss_column <- as.factor(ifelse(df_extend$L_valid == '1' & df_extend$R_valid == '1', TRUE, 
-                                         ifelse(df_extend$L_valid == '0' & df_extend$R_valid == '1', FALSE,
-                                         ifelse(df_extend$L_valid == '1' & df_extend$R_valid == '0', FALSE,
-                                         ifelse(df_extend$L_valid == '0' & df_extend$R_valid == '0', FALSE, 'Error')))))
-
-
-#merging together dat_table and trials to get correctness
-df_extend$trialNo <- as.factor(ifelse(df_extend$trialNo == "All_of_Extend_trial_5", "13", 
-                                ifelse(df_extend$trialNo == "All_of_Extend_trial_6", "14",
-                                ifelse(df_extend$trialNo == "All_of_Extend_trial_7", "7",
-                                ifelse(df_extend$trialNo == "All_of_Extend_trial_8", "8",
-                                ifelse(df_extend$trialNo == "All_of_Extend_trial_1", "9",
-                                ifelse(df_extend$trialNo == "All_of_Extend_trial_2", "10",
-                                ifelse(df_extend$trialNo == "All_of_Extend_trial_3", "11",
-                                ifelse(df_extend$trialNo == "All_of_Extend_trial_4", "12", "Error")))))))))
-
-
-subjData <- rbind(subjData, df_extend)
 
 ############################
 # THIS IS WHERE THE FOR LOOP ENDS
