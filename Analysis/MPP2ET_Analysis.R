@@ -283,32 +283,56 @@ allData$Y <- rowMeans(subset(allData, select = c(7, 10)), na.rm = TRUE)
 a <- lapply(allData$system_time_stamp, trial_time)
 allData$Trial_description <- a
 
+# Adding AOI for Practice
 allData %>%
   group_by(Condition, subjectID, trialNo) %>% 
-  mutate(lookMannerBias = ifelse(pathSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
-                          ifelse(pathSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
-                          ifelse(mannerSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
-                          ifelse(mannerSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(FALSE)))))) %>% 
-  mutate(lookMannerTest = ifelse(pathSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
-                          ifelse(pathSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
-                          ifelse(mannerSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
-                          ifelse(mannerSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(FALSE)))))) -> allData
+  mutate(lookMannerBias = ifelse(phase == "Practice" $ "trialNo" == "1" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(phase == "Practice" $ "trialNo" == "2" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(phase == "Practice" $ "trialNo" == "3" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
+                          ifelse(phase == "Practice" $ "trialNo" == "4" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(NA)))))) -> allData 
+  
+
+# Adding AOI for Manner Bias and Test Bias
+allData %>%
+  group_by(Condition, subjectID, trialNo) %>% 
+  mutate(lookMannerBias = ifelse(VerbDomain == "Motion" & pathSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(VerbDomain == "Motion" &pathSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(VerbDomain == "Motion" &mannerSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
+                          ifelse(VerbDomain == "Motion" &mannerSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(NA)))))) %>% 
+  mutate(lookMannerTest = ifelse(VerbDomain == "Motion" &pathSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(VerbDomain == "Motion" &pathSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(VerbDomain == "Motion" &mannerSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
+                          ifelse(VerbDomain == "Motion" &mannerSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(NA)))))) -> allData
+
+# Adding AOI for Manner Bias and Test Bias
+allData %>%
+  group_by(Condition, subjectID, trialNo) %>% 
+  mutate(lookPathBias = ifelse(VerbDomain == "Motion" & pathSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
+                          ifelse(VerbDomain == "Motion" &pathSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
+                          ifelse(VerbDomain == "Motion" &mannerSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(VerbDomain == "Motion" &mannerSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE), as.logical(NA)))))) %>% 
+  mutate(lookPathTest = ifelse(VerbDomain == "Motion" &pathSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
+                          ifelse(VerbDomain == "Motion" &pathSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
+                          ifelse(VerbDomain == "Motion" &mannerSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(VerbDomain == "Motion" &mannerSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE), as.logical(NA)))))) -> allData
+
+# Adding AOI for Generalization Test
+allData %>%
+  group_by(Condition, subjectID, trialNo) %>% 
+  mutate(lookActionBias = ifelse(VerbDomain == "CoS" & pathSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(VerbDomain == "CoS" & pathSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(VerbDomain == "CoS" & mannerSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
+                          ifelse(VerbDomain == "CoS" & mannerSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(FALSE)))))) -> allData 
 
 ############################
 # CREATING A SUBSET DF OF MAIN TEST TRIALS
 ############################
-df99 <- filter(allMain_test, subjectID=="99")
 
 allMain_test <- filter(allData, phase=="Main")
 allMain_test <- allMain_test[grep("testVideos|biasTest", allMain_test$Trial_description),]
 
 # IDK IF THIS IS KOSHER OR NOT
 allMain_test <- allMain_test[!duplicated(allMain_test),]
-
-# Making sure they're looking at the correct video or not
-
-allMain_test$lookMannerBias <- as.logical(allMain_test$lookMannerBias)
-allMain_test$lookMannerTest <- as.logical(allMain_test$lookMannerTest)
 
 # Starting to use eyetrackingR
 data <- make_eyetrackingr_data(allMain_test, 
@@ -317,12 +341,48 @@ data <- make_eyetrackingr_data(allMain_test,
                                item_columns = "itemID",
                                time_column = "system_time_stamp",
                                trackloss_column = "Trackloss_column",
-                               aoi_columns = c("lookMannerBias", "lookMannerTest"),
+                               aoi_columns = c("lookMannerBias", "lookMannerTest", "lookPathBias", "lookPathTest"),
                                treat_non_aoi_looks_as_missing = FALSE
 )
 
 # Aggregating by subjectID to get a proportion of looks to screen by AOI
-response_window_agg_by_sub <- make_time_window_data(data, aois = c("lookMannerBias", "lookMannerTest"), summarize_by = c("subjectID"))
+response_window_agg_by_sub <- make_time_window_data(data, aois = c("lookMannerBias", "lookMannerTest", "lookPathBias", "lookPathTest"), summarize_by = c("subjectID"))
+response_window_agg_by_sub$phase <- ifelse(response_window_agg_by_sub$AOI == "lookMannerBias" | response_window_agg_by_sub$AOI == "lookPathBias", "Bias Test", 
+                                    ifelse(response_window_agg_by_sub$AOI == "lookMannerTest" | response_window_agg_by_sub$AOI == "lookPathTest", "Verb Test", "Error"))
+# Creating plots
+ggplot(data=response_window_agg_by_sub, aes(x=subjectID, y=Prop, fill=AOI)) +
+  geom_bar(stat="identity", position=position_dodge(), colour="black") + 
+  ylab("Proportion of looks to screen") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold")) +
+  facet_wrap(~phase)
+ggsave("maintrials_path.png")
+
+
+############################
+# CREATING A SUBSET DF OF GENERALIZATION TEST TRIALS
+############################
+allExtend <- filter(allData, phase=="Extend")
+allExtend <- allExtend[grep("biasTest_Extend", allExtend$Trial_description),]
+
+# IDK IF THIS IS KOSHER OR NOT
+allExtend <- allExtend[!duplicated(allExtend),]
+
+# Starting to use eyetrackingR
+data <- make_eyetrackingr_data(allExtend, 
+                               participant_column = "subjectID",
+                               trial_column = "trialNo",
+                               item_columns = "itemID",
+                               time_column = "system_time_stamp",
+                               trackloss_column = "Trackloss_column",
+                               aoi_columns = c("lookActionBias"),
+                               treat_non_aoi_looks_as_missing = FALSE
+)
+
+# Aggregating by subjectID to get a proportion of looks to screen by AOI
+response_window_agg_by_sub <- make_time_window_data(data, aois = c("lookActionBias"), summarize_by = c("subjectID"))
 
 # Creating plots
 ggplot(data=response_window_agg_by_sub, aes(x=subjectID, y=Prop, fill=AOI)) +
@@ -332,6 +392,4 @@ ggplot(data=response_window_agg_by_sub, aes(x=subjectID, y=Prop, fill=AOI)) +
         axis.text.x  = element_text(size=18),
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
-ggsave("extendtrials_melissa_path.png")
-
-
+ggsave("extendtrials.png")
