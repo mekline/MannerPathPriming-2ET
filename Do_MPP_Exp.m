@@ -120,22 +120,6 @@ try
         EXT_ITEMS.TestPath = screenside(:,2);
     end
     
-    %%%%%%%%%%%%%%%%%%
-    %READ IN PRACTICE VIDEOS
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    vidInfo = readtable('MPP_Practice_videos.csv');
-    MAIN_ITEMS = vidInfo(vidInfo.List == conditionno,:);
-    if toExtend %Assign the other-domain set! Since we don't do any learning, arbitrarily get Manner or Action
-        if(conditionno == 1 || conditionno == 3) %Start with MannerPath, move to Action
-            EXTENDCONDITION = 'Action';
-            EXT_ITEMS = vidInfo(vidInfo.List == 6,:);
-        elseif (conditionno == 5 || conditionno == 6) %Start with ActionEffect, move to Manner
-            EXTENDCONDITION = 'Manner';
-            EXT_ITEMS = vidInfo(vidInfo.List == 1,:);
-        end
-    end
-    
     %%%%%%%%%%%%%%%%%%%%%
     % EXPERIMENT STARTS HERE
     %%%%%%%%%%%%%%%%%%%%%

@@ -5,7 +5,7 @@ function [response] = Trial_Extend(trialNo)
 %Bias test - show M1P1 movie; take a forced choice response between M1P2
 %and M2P1
 
-global SUBJFOLDER MAIN_ITEMS EXT_ITEMS ntrials RESOURCEFOLDER EXTENDCONDITION parameters TOBII EYETRACKER EXPWIN BLACK SUBJFOLDER EXPERIMENT SUBJECT timeCell
+global MAIN_ITEMS EXT_ITEMS ntrials RESOURCEFOLDER EXTENDCONDITION parameters TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
     
 %This is the extend version, so adjust the global trial number to index
 %into the EXT_ITEMS object
@@ -259,14 +259,14 @@ trialNo = trialNo - ntrials;
     
     %Save trial data as MAT, and add to the big CSV
     description = ['All_of_Extend_trial_' num2str(trialNo)]; %description of this timeperiod
-    save([SUBJFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
+    save([DATAFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
     SaveGazeData(C, description);
     
     %saving timestamps
     timeTable = cell2table(timeCell(2:end,:));
     timeTable.Properties.VariableNames = timeCell(1,:);
     %And save the file!
-    filename = [SUBJFOLDER, '/timestamps_' EXPERIMENT '_' SUBJECT '.csv'];
+    filename = [DATAFOLDER, '/timestamps_' EXPERIMENT '_' SUBJECT '.csv'];
     writetable(timeTable, filename);
     
 end
