@@ -33,6 +33,11 @@ df_data_table <- data.frame(Date=as.Date(character()),
                             User=character(), 
                             stringsAsFactors=FALSE) 
 
+df_timestamps <- data.frame(Date=as.Date(character()),
+                            File=character(), 
+                            User=character(), 
+                            stringsAsFactors=FALSE) 
+
 ###declaring my real function####
 trial_time1 <- function(x) {
   
@@ -53,7 +58,6 @@ trial_time1 <- function(x) {
 
 #declaring my PRACTICE function
 trial_time <- function(x) {
-  
   f = df_timestamps$system_time_stamp
   a = x
   maxless <- max(f[f <= a])
@@ -61,13 +65,19 @@ trial_time <- function(x) {
   y = which(f == maxless)
   z = as.character(df_timestamps$point_description[y])
   
-  #x <- cbind(x, newColumn = z2)
-  
-  return(z)
+  if(identical(z,character(0))) {
+    y = min(which(f > a))
+    temp = as.character(df_timestamps$point_description[y])
+    return(temp)
+  } else {
+    return(z)
+    }
 }
+  
+
 
 # Declaring empty variables
-subj.folders <- list.dirs(full.names = TRUE)
+subj.folders <- list.dirs(recursive = FALSE)
 file.names_practice <- NULL
 file.names_main <- NULL
 file.names_extend <- NULL
@@ -78,17 +88,16 @@ counter = 0 # Counter to load in dataframes for timestamps, probably will be unn
 ############################
 
 for(i in subj.folders){
-
   ############################
   # Importing files specific to participant
   ############################
   
   # Gettting all the practice trials for 1 subject
-  file.names_practice_temp <- list.files(i, pattern = ".*\\Practice_.*.csv")
+  file.names_practice_temp <- list.files(path = i, recursive = FALSE, full.names = TRUE, pattern = ".*\\Practice_.*.csv")
   file.names_practice <- c(file.names_practice, file.names_practice_temp)
 
   # Getting all the main trials for 1 subject
-  file.names_main_temp <- list.files(i, all.files = FALSE, pattern = ".*(Main|noBias)_.*\\.csv$")
+  file.names_main_temp <- list.files(path = i, recursive = FALSE, full.names = TRUE, all.files = FALSE, pattern = ".*(Main|noBias)_.*\\.csv$")
   x = (file.names_main_temp)
   if(identical(x,character(0))) {
     NULL
@@ -96,34 +105,32 @@ for(i in subj.folders){
   else {
     file.names_main <- c(file.names_main, file.names_main_temp)
   }
-  
+
   # Getting all the extend trials for 1 subject
-  file.names_extend_temp <- list.files(i, pattern = ".*\\Extend_.*.csv")
+  file.names_extend_temp <- list.files(path = i, full.names = TRUE, recursive = FALSE, pattern = ".*\\Extend_.*.csv")
   file.names_extend <- c(file.names_extend, file.names_extend_temp)
   
   # Importing timestamps
-  timestamps <- list.files(recursive = TRUE,pattern="^timestamps.*\\.csv", full.names = TRUE )
+  timestamps <- list.files(path = i, pattern="^timestamps.*\\.csv", full.names = TRUE )
   print(timestamps)
-  
+ 
   if(identical(timestamps,character(0))) {
     NULL
   }
   else {
-    timestamps <- as.list(timestamps)
-    counter = counter + 1
-    df_timestamps <- read.csv(as.character(timestamps[counter]), header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
+    temp <- read.csv(timestamps, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
+    df_timestamps <- rbind(df_timestamps, temp)
   }
-  
-  # Making timestamps more readable
-  df_timestamps$subjectID <- as.factor(df_timestamps$subjectID)
-  df_timestamps$system_time_stamp <- df_timestamps[,2] - 1500000000000000
-  
+}
+
+for(i in subj.folders){
   # Reading in data table
-  data_table <- list.files(pattern=".*\\.dat")
-  data_table <- as.list(data_table)
-  for(z in 1:length(data_table)){}
-    temp <- read.delim(as.character(data_table[z]), header=TRUE, sep=",")
-    print(temp)
+  data_table <- list.files(path = i, pattern=".*\\.dat", full.names=TRUE)
+  if(identical(data_table, character(0))) {
+    NULL
+  }
+  else {
+    temp <- read.delim(data_table, header=TRUE, sep=",")
     df_data_table <- rbind(df_data_table, temp)
   }
   
@@ -145,115 +152,97 @@ for(i in subj.folders){
     temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
     df_practice <-rbind(df_practice, temp)
   }
+
+  # Cleaning up the data to get it in the form I want
+  colnames(df_practice)[which(names(df_practice) == "description")] <- "trialNo"
+  df_practice$L_valid <- as.factor(df_practice$L_valid)
+  df_practice$R_valid <- as.factor(df_practice$R_valid)
+  df_practice$system_time_stamp <- df_practice$system_time_stamp - 1500000000000000
+  df_practice$phase <- 'Practice'
+
+  # Merging together dat_table and trials to get correctness
+  df_practice$trialNo <- as.factor(ifelse(df_practice$trialNo == "All_of_Practice_1", "1",
+                                          ifelse(df_practice$trialNo == "All_of_Practice_2", "2",
+                                                 ifelse(df_practice$trialNo == "All_of_Practice_3", "3",
+                                                        ifelse(df_practice$trialNo == "All_of_Practice_4", "4", "Error")))))
+
+  subjData <- rbind(subjData, df_practice)
 }
-  # # Cleaning up the data to get it in the form I want
-  # colnames(df_practice)[which(names(df_practice) == "description")] <- "trialNo"
-  # df_practice$L_valid <- as.factor(df_practice$L_valid)
-  # df_practice$R_valid <- as.factor(df_practice$R_valid)
-  # df_practice$system_time_stamp <- df_practice$system_time_stamp - 1500000000000000
-  # df_practice$phase <- 'Practice'
-  # 
-  # #defining a trackloss column
-  # df_practice$Trackloss_column <- ifelse(df_practice$L_valid == '1' & df_practice$R_valid == '1', FALSE, 
-  #                                        ifelse(df_practice$L_valid == '0' & df_practice$R_valid == '1', TRUE,
-  #                                               ifelse(df_practice$L_valid == '1' & df_practice$R_valid == '0', TRUE,
-  #                                                      ifelse(df_practice$L_valid == '0' & df_practice$R_valid == '0', TRUE, 'Error'))))
-  # 
-  # df_practice$Trackloss_column <- as.logical(df_practice$Trackloss_column)
-  # 
-  # #merging together dat_table and trials to get correctness
-  # df_practice$trialNo <- as.factor(ifelse(df_practice$trialNo == "All_of_Practice_trial_1", "1", 
-  #                                         ifelse(df_practice$trialNo == "All_of_Practice_trial_2", "2",
-  #                                                ifelse(df_practice$trialNo == "All_of_Practice_trial_3", "3",
-  #                                                       ifelse(df_practice$trialNo == "All_of_Practice_trial_4", "4", "Error")))))
-  # 
-  # subjData <- rbind(subjData, df_practice)
-  # 
   
+for(i in subj.folders){
+  ############################
+  # LOOKING AT MAIN TRIALS
+  ############################
+
+  df_main <- data.frame(Date=as.Date(character()),
+                        File=character(),
+                        User=character(),
+                        stringsAsFactors=FALSE)
   
-#   ############################
-#   # LOOKING AT MAIN TRIALS
-#   ############################
-#   
-#   df_main <- data.frame(Date=as.Date(character()),
-#                         File=character(), 
-#                         User=character(), 
-#                         stringsAsFactors=FALSE) 
-#   for(file in file.names_main){
-#     temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
-#     df_main <-rbind(df_main, temp)
-#   }
-#   
-#   #cleaning up the data to get it in the form I want
-#   colnames(df_main)[which(names(df_main) == "description")] <- "trialNo"
-#   df_main$L_valid <- as.factor(df_main$L_valid)
-#   df_main$R_valid <- as.factor(df_main$R_valid)
-#   df_main$system_time_stamp <- df_main$system_time_stamp - 1500000000000000
-#   df_main$phase <- 'Main'
-#   
-#   #defining a trackloss column
-#   df_main$Trackloss_column <- as.factor(ifelse(df_main$L_valid == '1' & df_main$R_valid == '1', TRUE, 
-#                                         ifelse(df_main$L_valid == '0' & df_main$R_valid == '1', FALSE,
-#                                         ifelse(df_main$L_valid == '1' & df_main$R_valid == '0', FALSE,
-#                                         ifelse(df_main$L_valid == '0' & df_main$R_valid == '0', FALSE, 'Error')))))
-#   
-#   df_main_aoi$Trackloss_column <- as.logical(df_main_aoi$Trackloss_column)
-#   
-#   
-#   #merging together dat_table and trials to get correctness
-#   df_main$trialNo <- as.factor(ifelse(df_main$trialNo == "All_of_noBias_trial_1", "1",
-#                                ifelse(df_main$trialNo == "All_of_noBias_trial_2", "2",
-#                                ifelse(df_main$trialNo == "All_of_noBias_trial_3", "3",
-#                                ifelse(df_main$trialNo == "All_of_noBias_trial_4", "4",
-#                                ifelse(df_main$trialNo == "All_of_Main_trial_5", "5", 
-#                                ifelse(df_main$trialNo == "All_of_Main_trial_6", "6",
-#                                ifelse(df_main$trialNo == "All_of_Main_trial_7", "7",
-#                                ifelse(df_main$trialNo == "All_of_Main_trial_8", "8", "Error")))))))))
-#   
-#   
-#   subjData <- rbind(subjData, df_main)
-#   
-#   
-#   ##########################
-#   # LOOKING AT EXTEND TRIALS
-#   ##########################
-#   
-#   #reading in extend trial CSVs
-#   df_extend <- data.frame(Date=as.Date(character()),
-#                           File=character(), 
-#                           User=character(), 
-#                           stringsAsFactors=FALSE) 
-#   for(file in file.names_extend){
-#     temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
-#     df_extend <-rbind(df_extend, temp)
-#   }
-#   
-#   #cleaning up the data to get it in the form I want
-#   colnames(df_extend)[which(names(df_extend) == "description")] <- "trialNo"
-#   df_extend$L_valid <- as.factor(df_extend$L_valid)
-#   df_extend$R_valid <- as.factor(df_extend$R_valid)
-#   df_extend$system_time_stamp <- df_extend$system_time_stamp - 1500000000000000
-#   df_extend$phase <- 'Extend'
-#   
-#   #defining a trackloss column
-#   df_extend$Trackloss_column <- as.factor(ifelse(df_extend$L_valid == '1' & df_extend$R_valid == '1', TRUE, 
-#                                           ifelse(df_extend$L_valid == '0' & df_extend$R_valid == '1', FALSE,
-#                                           ifelse(df_extend$L_valid == '1' & df_extend$R_valid == '0', FALSE,
-#                                           ifelse(df_extend$L_valid == '0' & df_extend$R_valid == '0', FALSE, 'Error')))))
-#   
-#   
-#   #merging together dat_table and trials to get correctness
-#   df_extend$trialNo <- as.factor(ifelse(df_extend$trialNo == "All_of_Extend_trial_5", "13", 
-#                                  ifelse(df_extend$trialNo == "All_of_Extend_trial_6", "14",
-#                                  ifelse(df_extend$trialNo == "All_of_Extend_trial_7", "7",
-#                                  ifelse(df_extend$trialNo == "All_of_Extend_trial_8", "8",
-#                                  ifelse(df_extend$trialNo == "All_of_Extend_trial_1", "9",
-#                                  ifelse(df_extend$trialNo == "All_of_Extend_trial_2", "10",
-#                                  ifelse(df_extend$trialNo == "All_of_Extend_trial_3", "11",
-#                                  ifelse(df_extend$trialNo == "All_of_Extend_trial_4", "12", "Error")))))))))
-#   
-#   subjData <- rbind(subjData, df_extend)
-#   
+  for(file in file.names_main){
+    temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
+    df_main <- rbind(df_main, temp)
+  }
+
+  # Cleaning up the data to get it in the form I want
+  colnames(df_main)[which(names(df_main) == "description")] <- "trialNo"
+  df_main$L_valid <- as.factor(df_main$L_valid)
+  df_main$R_valid <- as.factor(df_main$R_valid)
+  df_main$system_time_stamp <- df_main$system_time_stamp - 1500000000000000
+  df_main$phase <- 'Main'
+
+  # Merging together dat_table and trials to get correctness
+  df_main$trialNo <- as.factor(ifelse(df_main$trialNo == "All_of_noBias_trial_1", "1",
+                               ifelse(df_main$trialNo == "All_of_noBias_trial_2", "2",
+                               ifelse(df_main$trialNo == "All_of_noBias_trial_3", "3",
+                               ifelse(df_main$trialNo == "All_of_noBias_trial_4", "4",
+                               ifelse(df_main$trialNo == "All_of_Main_trial_5", "5",
+                               ifelse(df_main$trialNo == "All_of_Main_trial_6", "6",
+                               ifelse(df_main$trialNo == "All_of_Main_trial_7", "7",
+                               ifelse(df_main$trialNo == "All_of_Main_trial_8", "8", "Error")))))))))
+
+
+  subjData <- rbind(subjData, df_main)
+}
+
+for(i in subj.folders){
+  ##########################
+  # LOOKING AT EXTEND TRIALS
+  ##########################
+
+  # Reading in extend trial CSVs
+  df_extend <- data.frame(Date=as.Date(character()),
+                          File=character(),
+                          User=character(),
+                          stringsAsFactors=FALSE)
+  
+  for(file in file.names_extend){
+    temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
+    if("trialNo" %in% colnames(temp)) {
+      temp <- subset(temp, select=-c(trialNo))
+    }
+    df_extend <-rbind(df_extend, temp)
+  }
+
+  # Cleaning up the data to get it in the form I want
+  colnames(df_extend)[which(names(df_extend) == "description")] <- "trialNo"
+  df_extend$L_valid <- as.factor(df_extend$L_valid)
+  df_extend$R_valid <- as.factor(df_extend$R_valid)
+  df_extend$system_time_stamp <- df_extend$system_time_stamp - 1500000000000000
+  df_extend$phase <- 'Extend'
+
+  # Merging together dat_table and trials to get correctness
+  df_extend$trialNo <- as.factor(ifelse(df_extend$trialNo == "All_of_Extend_trial_5", "13",
+                                 ifelse(df_extend$trialNo == "All_of_Extend_trial_6", "14",
+                                 ifelse(df_extend$trialNo == "All_of_Extend_trial_7", "7",
+                                 ifelse(df_extend$trialNo == "All_of_Extend_trial_8", "8",
+                                 ifelse(df_extend$trialNo == "All_of_Extend_trial_1", "9",
+                                 ifelse(df_extend$trialNo == "All_of_Extend_trial_2", "10",
+                                 ifelse(df_extend$trialNo == "All_of_Extend_trial_3", "11",
+                                 ifelse(df_extend$trialNo == "All_of_Extend_trial_4", "12", "Error")))))))))
+
+  subjData <- rbind(subjData, df_extend)
+
 }
 
 ############################
@@ -262,73 +251,87 @@ for(i in subj.folders){
 
 
 
-
 ############################
 # ANALYSES TO START AFTER EXPORTING ONE GIANT-ASS DF
 ############################
 
+# Reformatting data table
+colnames(df_data_table)[1] <- c("subjectID")
+df_data_table$trialNo <- as.factor(df_data_table$trialNo)
 
-#defining a trackloss column
+# Reformatting timestamps
+df_timestamps$system_time_stamp <- df_timestamps[,2] - 1500000000000000
+
+# Merging data table with allData
+allData <- merge(subjData, df_data_table, by=c("subjectID", "trialNo"))
+
+# Reformatting allData
+allData$subjectID <- as.factor(allData$subjectID)
+
+# Defining a trackloss column
 allData$Trackloss_column <- ifelse(allData$L_valid == '1' & allData$R_valid == '1', FALSE, 
-                                     ifelse(allData$L_valid == '0' & allData$R_valid == '1', TRUE,
-                                            ifelse(allData$L_valid == '1' & allData$R_valid == '0', TRUE,
-                                                   ifelse(allData$L_valid == '0' & allData$R_valid == '0', TRUE, 'Error'))))
+                            ifelse(allData$L_valid == '0' & allData$R_valid == '1', TRUE,
+                            ifelse(allData$L_valid == '1' & allData$R_valid == '0', TRUE,
+                            ifelse(allData$L_valid == '0' & allData$R_valid == '0', TRUE, 'Error'))))
 allData$Trackloss_column <- as.logical(allData$Trackloss_column)
 
-
-#Making sure they're looking at the correct video or not
-allData %>%
-  group_by(Condition, subjectID, trialNo) %>% 
-  mutate(correctBias = ifelse(Condition == 'Path' & pathSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, TRUE,
-                              ifelse(Condition == 'Path' & pathSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, TRUE,
-                                     ifelse(Condition == 'Manner' & mannerSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, TRUE,
-                                            ifelse(Condition == 'Manner' & mannerSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, TRUE, FALSE))))) %>% 
-  mutate(correctTest = ifelse(Condition == 'Path' & pathSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, TRUE,
-                              ifelse(Condition == 'Path' & pathSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, TRUE,
-                                     ifelse(Condition == 'Manner' & mannerSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, TRUE,
-                                            ifelse(Condition == 'Manner' & mannerSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, TRUE, FALSE))))) -> df_main_aoi
-
-#adding an AOI column for Incorrect looks TEST to screen
-allData$incorrectTest <- ifelse(allData$correctTest == TRUE, FALSE,
-                                    ifelse(allData$correctTest == FALSE, TRUE, 'Error'))
-
-allData$incorrectTest <- as.logical(allData$incorrectTest)
-
-
-#applying it to the dataframe for practice trials
-a <- lapply(allData$system_time_stamp, trial_time)
-allData$Trial_description <- a
-
-#averaging together L and R eyes
+# Averaging together L and R eyes
 allData$X <- rowMeans(subset(allData, select = c(6, 9)), na.rm = TRUE)
 allData$Y <- rowMeans(subset(allData, select = c(7, 10)), na.rm = TRUE)
 
-#starting to use eyetrackingR
-data <- make_eyetrackingr_data(allData, 
+# Applying it to the dataframe for  trials
+a <- lapply(allData$system_time_stamp, trial_time)
+allData$Trial_description <- a
+
+allData %>%
+  group_by(Condition, subjectID, trialNo) %>% 
+  mutate(lookMannerBias = ifelse(pathSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(pathSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(mannerSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
+                          ifelse(mannerSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(FALSE)))))) %>% 
+  mutate(lookMannerTest = ifelse(pathSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(pathSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(mannerSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
+                          ifelse(mannerSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(FALSE)))))) -> allData
+
+############################
+# CREATING A SUBSET DF OF MAIN TEST TRIALS
+############################
+df99 <- filter(allMain_test, subjectID=="99")
+
+allMain_test <- filter(allData, phase=="Main")
+allMain_test <- allMain_test[grep("testVideos|biasTest", allMain_test$Trial_description),]
+
+# IDK IF THIS IS KOSHER OR NOT
+allMain_test <- allMain_test[!duplicated(allMain_test),]
+
+# Making sure they're looking at the correct video or not
+
+allMain_test$lookMannerBias <- as.logical(allMain_test$lookMannerBias)
+allMain_test$lookMannerTest <- as.logical(allMain_test$lookMannerTest)
+
+# Starting to use eyetrackingR
+data <- make_eyetrackingr_data(allMain_test, 
                                participant_column = "subjectID",
                                trial_column = "trialNo",
+                               item_columns = "itemID",
                                time_column = "system_time_stamp",
                                trackloss_column = "Trackloss_column",
-                               aoi_columns = c("Correct", "Incorrect"),
-                               treat_non_aoi_looks_as_missing = TRUE
+                               aoi_columns = c("lookMannerBias", "lookMannerTest"),
+                               treat_non_aoi_looks_as_missing = FALSE
 )
 
-#aggregating by subjectID to get a proportion of looks to screen by AOI, with only trial 5
-data_summary <- describe_data(data, 
-                              describe_column='Correct', group_columns=c('subjectID'))
-response_window_agg_by_sub <- make_time_window_data(data, aois = c("Correct", "Incorrect"), summarize_by = "subjectID")
+# Aggregating by subjectID to get a proportion of looks to screen by AOI
+response_window_agg_by_sub <- make_time_window_data(data, aois = c("lookMannerBias", "lookMannerTest"), summarize_by = c("subjectID"))
 
-#creating plots
-ggplot(data=response_window_agg_by_sub, aes(x=AOI, y=Prop)) +
+# Creating plots
+ggplot(data=response_window_agg_by_sub, aes(x=subjectID, y=Prop, fill=AOI)) +
   geom_bar(stat="identity", position=position_dodge(), colour="black") + 
   ylab("Proportion of looks to screen") +
-  ggtitle("Path Condition") +
   theme(axis.title = element_text(size=18),
         axis.text.x  = element_text(size=18),
         axis.text.y = element_text(size=18),
-        plot.title = element_text(size=18, face="bold")) +
-  scale_x_discrete(breaks=c("Correct", "Incorrect"),
-                   labels=c("Outcome", "Action"))
+        plot.title = element_text(size=18, face="bold")) 
 ggsave("extendtrials_melissa_path.png")
 
 
