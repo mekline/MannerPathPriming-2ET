@@ -20,11 +20,11 @@ setwd('/Users/crystallee/Documents/Github/MannerPathPriming-2ET/Data/Melissa_111
 
 
 # Getting files ready
-file.names_practice <- dir(path, pattern ="gaze_MPPCREATION_Melissa_111_All_of_Practice_.*.csv")
-file.names_main <- dir(path, pattern ="gaze_MPPCREATION_Melissa_111_All_of_Main_trial_.*.csv")
-file.names_extend <- dir(path, pattern ="gaze_MPPCREATION_Melissa_111_All_of_Extend_trial_.*.csv")
+file.names_practice <- dir(pattern ="gaze_MPPCREATION_Melissa_111_All_of_Practice_.*.csv")
+file.names_main <- dir(pattern ="gaze_MPPCREATION_Melissa_111_All_of_Main_trial_.*.csv")
+file.names_extend <- dir(pattern ="gaze_MPPCREATION_Melissa_111_All_of_Extend_trial_.*.csv")
 
-dat_table <- read.delim("~/Documents/Github/MannerPathPriming-2ET/Data/MPPCREATION_Melissa_111.dat", 
+dat_table <- read.delim("~/Documents/Github/MannerPathPriming-2ET/Data/Melissa_111/MPPCREATION_Melissa_111.dat", 
                         header=TRUE, sep=",")
 
 path = '~/Documents/Github/MannerPathPriming-2ET/Data/Melissa_111'
@@ -38,6 +38,11 @@ trial_time <- function(x) {
   a = x
   maxless <- max(f[f <= a])
   # find out which value that is
+  
+  if(identical(maxless,character(0))){
+    maxless <- max(f[f>=a])
+  }
+  
   y = which(f == maxless)
   z = as.character(df_timestamps$point_description[y])
   
@@ -51,7 +56,6 @@ trial_time <- function(x) {
 
 #declaring my PRACTICE function
 trial_time <- function(x) {
-  
   f = df_timestamps$system_time_stamp
   a = x
   maxless <- max(f[f <= a])
@@ -59,13 +63,13 @@ trial_time <- function(x) {
   y = which(f == maxless)
   z = as.character(df_timestamps$point_description[y])
   
-  #x <- cbind(x, newColumn = z2)
-  
-  return(z)
+  if(identical(z,character(0))) {
+    y = min(which(f > a))
+    z = as.character(df_timestamps$point_description[y])
+  } else {
+    return(z)
+  }
 }
-
-
-
 
 ############################
 # LOOKING AT PRACTICE TRIALS
@@ -127,7 +131,7 @@ df_111_practice$Incorrect <- ifelse(df_111_practice$Correct == TRUE, FALSE,
 df_111_practice$Incorrect <- as.logical(df_111_practice$Incorrect)
 
 #starting to use eyetrackingR
-data <- make_eyetrackingr_data(df_111_practice_aoi, 
+data <- make_eyetrackingr_data(df_111_practice, 
                                participant_column = "subjectID",
                                trial_column = "trialNo",
                                time_column = "system_time_stamp",
@@ -209,7 +213,7 @@ df_111_main_aoi$Trackloss_column <- as.logical(df_111_main_aoi$Trackloss_column)
 df_111_main <- merge(df_111_main, dat_table, by="trialNo")
 
 #Making sure they're looking at the correct video or not
-df_111_main %>%
+df_111_main_aoi %>%
   group_by(Condition, subjectID, trialNo) %>% 
   mutate(correctBias = ifelse(Condition == 'Path' & pathSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, TRUE,
                    ifelse(Condition == 'Path' & pathSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, TRUE,
@@ -244,9 +248,7 @@ data <- make_eyetrackingr_data(df_111_main_aoi,
 )
 
 #aggregating by subjectID to get a proportion of looks to screen by AOI, with only trial 5
-data_summary <- describe_data(data, 
-                              describe_column='Correct', group_columns=c('subjectID'))
-response_window_agg_by_sub <- make_time_window_data(data, aois = c("correctBias", "incorrectBias", "correctTest", "incorrectTest"), summarize_by = "subjectID")
+esponse_window_agg_by_sub <- make_time_window_data(data, aois = c("correctBias", "incorrectBias", "correctTest", "incorrectTest"), summarize_by = "subjectID")
 
 #creating plots
 ggplot(data=response_window_agg_by_sub, aes(x=AOI, y=Prop)) +
