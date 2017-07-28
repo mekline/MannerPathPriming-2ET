@@ -1056,7 +1056,9 @@ global parameters WINDOW_PARAMS RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLA
     %And save the file!
     filename = [DATAFOLDER, '/timestamps_' EXPERIMENT '_' SUBJECT '.csv'];
     writetable(timeTable, filename);
-
+    
+    
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
     % END PRACTICE TRAINING                             
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
