@@ -286,10 +286,10 @@ allData$Trial_description <- a
 # Adding AOI for Practice
 allData %>%
   group_by(Condition, subjectID, trialNo) %>% 
-  mutate(lookMannerBias = ifelse(phase == "Practice" $ "trialNo" == "1" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
-                          ifelse(phase == "Practice" $ "trialNo" == "2" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
-                          ifelse(phase == "Practice" $ "trialNo" == "3" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
-                          ifelse(phase == "Practice" $ "trialNo" == "4" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(NA)))))) -> allData 
+  mutate(lookPractice = ifelse(phase == "Practice" & "trialNo" == "1" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
+                          ifelse(phase == "Practice" & "trialNo" == "2" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
+                          ifelse(phase == "Practice" & "trialNo" == "3" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
+                          ifelse(phase == "Practice" & "trialNo" == "4" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(FALSE)))))) -> allData 
   
 
 # Adding AOI for Manner Bias and Test Bias
