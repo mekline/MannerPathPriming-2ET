@@ -11,6 +11,8 @@ library("dplyr")
 library("lme4")
 library("ggplot2")
 library("Matrix")
+install.packages("stringr")
+library("stringr")
 
 setwd('/Users/crystallee/Documents/Github/MannerPathPriming-2ET/Data')
 
@@ -74,7 +76,8 @@ trial_time <- function(x) {
     }
 }
   
-
+a <- lapply(df_practice$system_time_stamp, trial_time)
+df_practice$Trial_description <- a
 
 # Declaring empty variables
 subj.folders <- list.dirs(recursive = FALSE)
@@ -133,7 +136,7 @@ for(i in subj.folders){
     temp <- read.delim(data_table, header=TRUE, sep=",")
     df_data_table <- rbind(df_data_table, temp)
   }
-  
+ 
   ############################
   # LOOKING AT PRACTICE TRIALS
   ############################
@@ -286,23 +289,23 @@ allData$Trial_description <- a
 # Adding AOI for Practice
 allData %>%
   group_by(Condition, subjectID, trialNo) %>% 
-  mutate(lookPractice = ifelse(phase == "Practice" & "trialNo" == "1" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
-                          ifelse(phase == "Practice" & "trialNo" == "2" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
-                          ifelse(phase == "Practice" & "trialNo" == "3" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
-                          ifelse(phase == "Practice" & "trialNo" == "4" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(FALSE)))))) -> allData 
+  mutate(lookPractice = ifelse(phase == "Practice" & trialNo == "1" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
+                          ifelse(phase == "Practice" & trialNo == "2" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
+                          ifelse(phase == "Practice" & trialNo == "3" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
+                          ifelse(phase == "Practice" & trialNo == "4" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(FALSE)))))) -> allData 
   
 
 # Adding AOI for Manner Bias and Test Bias
 allData %>%
   group_by(Condition, subjectID, trialNo) %>% 
   mutate(lookMannerBias = ifelse(VerbDomain == "Motion" & pathSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
-                          ifelse(VerbDomain == "Motion" &pathSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
-                          ifelse(VerbDomain == "Motion" &mannerSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
-                          ifelse(VerbDomain == "Motion" &mannerSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(NA)))))) %>% 
-  mutate(lookMannerTest = ifelse(VerbDomain == "Motion" &pathSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
-                          ifelse(VerbDomain == "Motion" &pathSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
-                          ifelse(VerbDomain == "Motion" &mannerSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
-                          ifelse(VerbDomain == "Motion" &mannerSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(NA)))))) -> allData
+                          ifelse(VerbDomain == "Motion" & pathSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(VerbDomain == "Motion" & mannerSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
+                          ifelse(VerbDomain == "Motion" & mannerSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(NA)))))) %>% 
+  mutate(lookMannerTest = ifelse(VerbDomain == "Motion" & pathSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(VerbDomain == "Motion" & pathSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(VerbDomain == "Motion" & mannerSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
+                          ifelse(VerbDomain == "Motion" & mannerSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(NA)))))) -> allData
 
 # Adding AOI for Manner Bias and Test Bias
 allData %>%
@@ -323,6 +326,67 @@ allData %>%
                           ifelse(VerbDomain == "CoS" & pathSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
                           ifelse(VerbDomain == "CoS" & mannerSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
                           ifelse(VerbDomain == "CoS" & mannerSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(FALSE)))))) -> allData 
+
+
+############################
+# CREATING A SUBSET DF OF PRACTICE TEST TRIALS
+############################
+
+allPractice <- filter(allData, phase=="Practice")
+#allPractice <- allPractice[grep("testVideos", allPractice$Trial_description),]
+
+df_practice %>%
+  filter(str_detect(Trial_description, "testVideos")) -> df_practice_test
+
+df_practice_test$lookPractice <- as.logical(df_practice_test$lookPractice)
+
+# Reformatting allData
+df_practice_test$subjectID <- as.factor(df_practice_test$subjectID)
+
+# Defining a trackloss column
+df_practice_test$Trackloss_column <- ifelse(df_practice_test$L_valid == '1' & df_practice_test$R_valid == '1', FALSE, 
+                                            ifelse(df_practice_test$L_valid == '0' & df_practice_test$R_valid == '1', TRUE,
+                                                   ifelse(df_practice_test$L_valid == '1' & df_practice_test$R_valid == '0', TRUE,
+                                                          ifelse(df_practice_test$L_valid == '0' & df_practice_test$R_valid == '0', TRUE, 'Error'))))
+df_practice_test$Trackloss_column <- as.logical(df_practice_test$Trackloss_column)
+
+# Averaging together L and R eyes
+df_practice_test$X <- rowMeans(subset(df_practice_test, select = c(6, 9)), na.rm = TRUE)
+df_practice_test$Y <- rowMeans(subset(df_practice_test, select = c(7, 10)), na.rm = TRUE)
+
+# Adding AOI for Practice
+df_practice_test %>%
+  group_by(subjectID, trialNo) %>% 
+  mutate(lookPractice = ifelse(phase == "Practice" & trialNo == "1" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
+                        ifelse(phase == "Practice" & trialNo == "2" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
+                        ifelse(phase == "Practice" & trialNo == "3" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
+                        ifelse(phase == "Practice" & trialNo == "4" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(FALSE)))))) -> df_practice_test 
+
+
+# Starting to use eyetrackingR
+data <- make_eyetrackingr_data(df_practice_test, 
+                               participant_column = "subjectID",
+                               trial_column = "trialNo",
+                               time_column = "system_time_stamp",
+                               trackloss_column = "Trackloss_column",
+                               aoi_columns = "lookPractice",
+                               treat_non_aoi_looks_as_missing = FALSE
+)
+
+# Aggregating by subjectID to get a proportion of looks to screen by AOI
+response_window_agg_by_sub <- make_time_window_data(data, aois = "lookPractice", summarize_by = c("subjectID"))
+
+# Creating plots
+ggplot(data=response_window_agg_by_sub, aes(x=subjectID, y=Prop, fill=AOI)) +
+  geom_bar(stat="identity", position=position_dodge(), colour="black") + 
+  ylab("Proportion of looks to screen") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold")) 
+
+ggsave("pilot_practice.png")
+
 
 ############################
 # CREATING A SUBSET DF OF MAIN TEST TRIALS
