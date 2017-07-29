@@ -4,7 +4,7 @@ function [response] = Trial_NoBias(trialNo)
 % Training - Depending on the condition, show either MnP1 or M1Pn movies
 % Final test - take a forced choice response between M1P2 and M2P1 again
 
-global SUBJFOLDER parameters MAIN_ITEMS RESOURCEFOLDER CONDITION TOBII EYETRACKER EXPWIN BLACK SUBJFOLDER EXPERIMENT SUBJECT timeCell
+global parameters MAIN_ITEMS RESOURCEFOLDER CONDITION TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
 
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -422,14 +422,14 @@ global SUBJFOLDER parameters MAIN_ITEMS RESOURCEFOLDER CONDITION TOBII EYETRACKE
     
     %Save trial data as MAT, and add to the big CSV
     description = ['All_of_noBias_trial_' num2str(trialNo)]; %description of this timeperiod
-    save([SUBJFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
+    save([DATAFOLDER, '/gaze_' EXPERIMENT '_' SUBJECT '_' description '.mat'], 'GazeData');
     SaveGazeData(C, description);
     
     %saving timestamps
     timeTable = cell2table(timeCell(2:end,:));
     timeTable.Properties.VariableNames = timeCell(1,:);
     %And save the file!
-    filename = [SUBJFOLDER, '/timestamps_' EXPERIMENT '_' SUBJECT '.csv'];
+    filename = [DATAFOLDER, '/timestamps_' EXPERIMENT '_' SUBJECT '.csv'];
     writetable(timeTable, filename);
 
     

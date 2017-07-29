@@ -50,6 +50,8 @@ else
     SUBJECT = inputs.SubjectID;
 end
 
+disp(ischar(SUBJECT))
+
 %Make sure paths are set correctly (your system may need to update these!)
 addpath(genpath('/Applications/TobiiProSDK'));
 addpath(genpath('/Applications/PsychToolBox'));
@@ -57,8 +59,9 @@ addpath(genpath('/Users/snedlab/Desktop/MPP-Common-Resources'));
 RESOURCEFOLDER = '/Users/snedlab/Desktop/MPP-Common-Resources';
 EXPFOLDER = fileparts(which('MPP_2ET_Main.m')); %add this folder to the path too.
 addpath(genpath(EXPFOLDER));
-DATAFOLDER = [EXPFOLDER, '/Data/'];
-SUBJFOLDER = [DATAFOLDER '/' SUBJECT];
+mkdir([EXPFOLDER, '/Data/', SUBJECT]);
+DATAFOLDER = [EXPFOLDER, '/Data/', SUBJECT];
+%SUBJFOLDER = [DATAFOLDER '/' SUBJECT];
 EXPERIMENT = inputs.experiment_name;
 CALIBVERSION = inputs.calib_version;
 MAXCALIB = inputs.max_calib;
