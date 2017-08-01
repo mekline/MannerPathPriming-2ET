@@ -62,6 +62,7 @@ trial_time1 <- function(x) {
 trial_time <- function(x) {
   f = df_timestamps$system_time_stamp
   a = x
+  
   maxless <- max(f[f <= a])
   # find out which value that is
   y = which(f == maxless)
@@ -73,11 +74,9 @@ trial_time <- function(x) {
     return(temp)
   } else {
     return(z)
-    }
+  }
 }
-  
-a <- lapply(df_practice$system_time_stamp, trial_time)
-df_practice$Trial_description <- a
+
 
 # Declaring empty variables
 subj.folders <- list.dirs(recursive = FALSE)
@@ -266,7 +265,7 @@ df_data_table$trialNo <- as.factor(df_data_table$trialNo)
 df_timestamps$system_time_stamp <- df_timestamps[,2] - 1500000000000000
 
 # Merging data table with allData
-allData <- merge(subjData, df_data_table, by=c("subjectID", "trialNo"))
+allData <- dplyr::full_join(subjData, df_data_table, by=c("subjectID", "trialNo"))
 
 # Reformatting allData
 allData$subjectID <- as.factor(allData$subjectID)
@@ -285,6 +284,19 @@ allData$Y <- rowMeans(subset(allData, select = c(7, 10)), na.rm = TRUE)
 # Applying it to the dataframe for  trials
 a <- lapply(allData$system_time_stamp, trial_time)
 allData$Trial_description <- a
+
+# Attempts to try to loop through levels of SubjectID and then add trial descriptions, in order 
+# to be able to zero out the timestamps later and find trial descriptions based on both SubjectID
+# and nearest time. It's slow and makes RStudio crash, so I'm not pursuing this for now.
+# t <- levels(as.factor(allData$subjectID))
+# 
+# for(i in t) {
+#   print(i)
+#   isi <- str_detect(as.character(allData$subjectID), i)
+#   allData_isi <- subset(allData, subjectID == i)
+#   allData_isi$Trial_description <- lapply(allData_isi$system_time_stamp, trial_time)
+#   dplyr::full_join(allData, allData_isi, by = "subjectID")
+# }
 
 # Adding AOI for Practice
 allData %>%
@@ -335,7 +347,7 @@ allData %>%
 allPractice <- filter(allData, phase=="Practice")
 #allPractice <- allPractice[grep("testVideos", allPractice$Trial_description),]
 
-df_practice %>%
+allPractice %>%
   filter(str_detect(Trial_description, "testVideos")) -> df_practice_test
 
 df_practice_test$lookPractice <- as.logical(df_practice_test$lookPractice)
@@ -350,18 +362,6 @@ df_practice_test$Trackloss_column <- ifelse(df_practice_test$L_valid == '1' & df
                                                           ifelse(df_practice_test$L_valid == '0' & df_practice_test$R_valid == '0', TRUE, 'Error'))))
 df_practice_test$Trackloss_column <- as.logical(df_practice_test$Trackloss_column)
 
-# Averaging together L and R eyes
-df_practice_test$X <- rowMeans(subset(df_practice_test, select = c(6, 9)), na.rm = TRUE)
-df_practice_test$Y <- rowMeans(subset(df_practice_test, select = c(7, 10)), na.rm = TRUE)
-
-# Adding AOI for Practice
-df_practice_test %>%
-  group_by(subjectID, trialNo) %>% 
-  mutate(lookPractice = ifelse(phase == "Practice" & trialNo == "1" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
-                        ifelse(phase == "Practice" & trialNo == "2" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
-                        ifelse(phase == "Practice" & trialNo == "3" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
-                        ifelse(phase == "Practice" & trialNo == "4" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(FALSE)))))) -> df_practice_test 
-
 
 # Starting to use eyetrackingR
 data <- make_eyetrackingr_data(df_practice_test, 
@@ -374,10 +374,10 @@ data <- make_eyetrackingr_data(df_practice_test,
 )
 
 # Aggregating by subjectID to get a proportion of looks to screen by AOI
-response_window_agg_by_sub <- make_time_window_data(data, aois = "lookPractice", summarize_by = c("subjectID"))
+response_window_agg_by_sub_practice <- make_time_window_data(data, aois = "lookPractice", summarize_by = c("Condition", "subjectID"))
 
 # Creating plots
-ggplot(data=response_window_agg_by_sub, aes(x=subjectID, y=Prop, fill=AOI)) +
+ggplot(data=response_window_agg_by_sub_practice, aes(x=Condition, y=Prop, fill=AOI)) +
   geom_bar(stat="identity", position=position_dodge(), colour="black") + 
   ylab("Proportion of looks to screen") +
   theme(axis.title = element_text(size=18),
@@ -410,11 +410,11 @@ data <- make_eyetrackingr_data(allMain_test,
 )
 
 # Aggregating by subjectID to get a proportion of looks to screen by AOI
-response_window_agg_by_sub <- make_time_window_data(data, aois = c("lookMannerBias", "lookMannerTest", "lookPathBias", "lookPathTest"), summarize_by = c("subjectID"))
-response_window_agg_by_sub$phase <- ifelse(response_window_agg_by_sub$AOI == "lookMannerBias" | response_window_agg_by_sub$AOI == "lookPathBias", "Bias Test", 
-                                    ifelse(response_window_agg_by_sub$AOI == "lookMannerTest" | response_window_agg_by_sub$AOI == "lookPathTest", "Verb Test", "Error"))
+response_window_agg_by_sub_main <- make_time_window_data(data, aois = c("lookMannerBias", "lookMannerTest", "lookPathBias", "lookPathTest"), summarize_by = c("Condition"))
+response_window_agg_by_sub_main$phase <- ifelse(response_window_agg_by_sub_main$AOI == "lookMannerBias" | response_window_agg_by_sub_main$AOI == "lookPathBias", "Bias Test", 
+                                    ifelse(response_window_agg_by_sub_main$AOI == "lookMannerTest" | response_window_agg_by_sub_main$AOI == "lookPathTest", "Verb Test", "Error"))
 # Creating plots
-ggplot(data=response_window_agg_by_sub, aes(x=subjectID, y=Prop, fill=AOI)) +
+ggplot(data=response_window_agg_by_sub_main, aes(x=Condition, y=Prop, fill=AOI)) +
   geom_bar(stat="identity", position=position_dodge(), colour="black") + 
   ylab("Proportion of looks to screen") +
   theme(axis.title = element_text(size=18),
