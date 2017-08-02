@@ -1,4 +1,6 @@
-subjectID,Condition,Date,Birthday,Days old,Include?
-Melissa_111,Path,7/20/17,,,1
-pilot_0725,Path,7/25/17,4/25/15,822,1
-pilot_0728,Manner,7/28/17,2/11/15,898,1
+subjectID,Condition,Date,Birthday,Days old,Name,Include?
+Melissa_111,Path,7/20/17,,,,1
+pilot_0725,Path,7/25/17,4/25/15,822,Nessa,1
+pilot_0728,Manner,7/28/17,2/11/15,898,Lenora,1
+pilot_adult1,Manner,8/2/14,,,Ryan,1
+pilot_adult2,Path,8/2/14,,,Jessica,1
