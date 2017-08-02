@@ -374,12 +374,14 @@ data <- make_eyetrackingr_data(df_practice_test,
 )
 
 # Aggregating by subjectID to get a proportion of looks to screen by AOI
-response_window_agg_by_sub_practice <- make_time_window_data(data, aois = "lookPractice", summarize_by = c("Condition", "subjectID"))
+response_window_agg_by_sub_practice <- make_time_window_data(data, aois = "lookPractice", summarize_by = c("Condition"))
+response_window_agg_by_sub_practice$Condition[response_window_agg_by_sub_practice$subjectID == "pilot_0725"] <- "Path"
+response_window_agg_by_sub_practice <- response_window_agg_by_sub_practice[-c(3),]
 
 # Creating plots
 ggplot(data=response_window_agg_by_sub_practice, aes(x=Condition, y=Prop, fill=AOI)) +
   geom_bar(stat="identity", position=position_dodge(), colour="black") + 
-  ylab("Proportion of looks to screen") +
+  ylab("Proportion of looks to correct video") +
   theme(axis.title = element_text(size=18),
         axis.text.x  = element_text(size=18),
         axis.text.y = element_text(size=18),
@@ -446,12 +448,12 @@ data <- make_eyetrackingr_data(allExtend,
 )
 
 # Aggregating by subjectID to get a proportion of looks to screen by AOI
-response_window_agg_by_sub <- make_time_window_data(data, aois = c("lookActionBias"), summarize_by = c("subjectID"))
+response_window_agg_by_sub_extend <- make_time_window_data(data, aois = c("lookActionBias"), summarize_by = c("Condition"))
 
 # Creating plots
-ggplot(data=response_window_agg_by_sub, aes(x=subjectID, y=Prop, fill=AOI)) +
+ggplot(data=response_window_agg_by_sub_extend, aes(x=Condition, y=Prop, fill=AOI)) +
   geom_bar(stat="identity", position=position_dodge(), colour="black") + 
-  ylab("Proportion of looks to screen") +
+  ylab("Proportion of looks to Action") +
   theme(axis.title = element_text(size=18),
         axis.text.x  = element_text(size=18),
         axis.text.y = element_text(size=18),
