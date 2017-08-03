@@ -396,9 +396,18 @@ ggsave("pilot_practice.png")
 
 allMain_test <- filter(allData, phase=="Main")
 allMain_test <- allMain_test[grep("testVideos|biasTest", allMain_test$Trial_description),]
+allMain_test$trialNo <- as.factor(allMain_test$trialNo)
+allMain_test$lookMannerBias <- as.logical(allMain_test$lookMannerBias)
+allMain_test$lookMannerTest <- as.logical(allMain_test$lookMannerTest)
+allMain_test$lookPathBias <- as.logical(allMain_test$lookPathBias)
+allMain_test$lookPathTest <- as.logical(allMain_test$lookPathTest)
+allMain_test$system_time_stamp <- as.numeric(allMain_test$system_time_stamp)
 
 # IDK IF THIS IS KOSHER OR NOT
 allMain_test <- allMain_test[!duplicated(allMain_test),]
+
+allMain_test %>% 
+  distinct(trialNo, system_time_stamp, .keep_all = TRUE) -> allMain_test
 
 # Starting to use eyetrackingR
 data <- make_eyetrackingr_data(allMain_test, 
@@ -411,7 +420,7 @@ data <- make_eyetrackingr_data(allMain_test,
                                treat_non_aoi_looks_as_missing = FALSE
 )
 
-# Aggregating by subjectID to get a proportion of looks to screen by AOI
+# Aggregating by Condition to get a proportion of looks to screen by AOI
 response_window_agg_by_sub_main <- make_time_window_data(data, aois = c("lookMannerBias", "lookMannerTest", "lookPathBias", "lookPathTest"), summarize_by = c("Condition"))
 response_window_agg_by_sub_main$phase <- ifelse(response_window_agg_by_sub_main$AOI == "lookMannerBias" | response_window_agg_by_sub_main$AOI == "lookPathBias", "Bias Test", 
                                     ifelse(response_window_agg_by_sub_main$AOI == "lookMannerTest" | response_window_agg_by_sub_main$AOI == "lookPathTest", "Verb Test", "Error"))
@@ -426,6 +435,20 @@ ggplot(data=response_window_agg_by_sub_main, aes(x=Condition, y=Prop, fill=AOI))
   facet_wrap(~phase)
 ggsave("maintrials_path.png")
 
+# Aggregating by trialNo to get a proportion of looks to screen by AOI
+response_window_agg_by_sub_main_trialNo <- make_time_window_data(data, aois = c("lookMannerBias", "lookMannerTest"), summarize_by = c("trialNo", "Condition"))
+response_window_agg_by_sub_main_trialNo$phase <- ifelse(response_window_agg_by_sub_main_trialNo$AOI == "lookMannerBias" | response_window_agg_by_sub_main_trialNo$AOI == "lookPathBias", "Bias Test", 
+                                                ifelse(response_window_agg_by_sub_main_trialNo$AOI == "lookMannerTest" | response_window_agg_by_sub_main_trialNo$AOI == "lookPathTest", "Verb Test", "Error"))
+# Creating plots
+ggplot(data=response_window_agg_by_sub_main_trialNo, aes(x=trialNo, y=Prop, color=Condition, group = Condition)) +
+  geom_line() + 
+  geom_point() +
+  ylab("Proportion of looks to Manner") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold")) +
+  facet_wrap(~phase)
 
 ############################
 # CREATING A SUBSET DF OF GENERALIZATION TEST TRIALS
@@ -433,11 +456,14 @@ ggsave("maintrials_path.png")
 allExtend <- filter(allData, phase=="Extend")
 allExtend <- allExtend[grep("biasTest_Extend", allExtend$Trial_description),]
 
+allExtend$lookActionBias <- as.logical(allExtend$lookActionBias)
+
 # IDK IF THIS IS KOSHER OR NOT
-allExtend <- allExtend[!duplicated(allExtend),]
+allExtend %>% 
+  distinct(trialNo, system_time_stamp, .keep_all = TRUE) -> allExtend_test
 
 # Starting to use eyetrackingR
-data <- make_eyetrackingr_data(allExtend, 
+data <- make_eyetrackingr_data(allExtend_test, 
                                participant_column = "subjectID",
                                trial_column = "trialNo",
                                item_columns = "itemID",
@@ -459,3 +485,37 @@ ggplot(data=response_window_agg_by_sub_extend, aes(x=Condition, y=Prop, fill=AOI
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 ggsave("extendtrials.png")
+
+
+# Aggregating by subjectID to get a proportion of looks to screen by AOI
+response_window_agg_by_sub_extend_trialNo <- make_time_window_data(data, aois = c("lookActionBias"), summarize_by = c("Condition", "trialNo"))
+
+# Creating plots
+ggplot(data=response_window_agg_by_sub_extend_trialNo, aes(x=trialNo, y=Prop, group=Condition, color=Condition)) +
+  geom_line() +
+  geom_point() +
+  ylab("Proportion of looks to Action") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold")) 
+
+############################
+# ACTUAL ANALYSIS
+############################
+
+contrasts(allData$Condition) = contr.sum(2)
+
+allData$lookMannerBias = factor(allData$lookMannerBias, levels=c(TRUE, FALSE))
+contrasts(allData$lookMannerBias) = contr.sum(2)
+
+allData$lookActionBias = factor(allData$lookActionBias, levels=c(TRUE, FALSE))
+contrasts(allData$lookActionBias) = contr.sum(2)
+
+M1 <- glmer(lookActionBias ~ Condition + lookMannerBias +
+              (1 | subjectID),
+            family="binomial", 
+            data=allData)
+
+summary(M1)
+
