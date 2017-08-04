@@ -16,6 +16,45 @@ library("stringr")
 
 setwd('/Users/crystallee/Documents/Github/MannerPathPriming-2ET/Data')
 
+############################
+# Helper Functions
+############################
+
+summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
+                      conf.interval=.95, .drop=TRUE) {
+  library(plyr)
+  
+  # New version of length which can handle NA's: if na.rm==T, don't count them
+  length2 <- function (x, na.rm=FALSE) {
+    if (na.rm) sum(!is.na(x))
+    else       length(x)
+  }
+  
+  # This does the summary. For each group's data frame, return a vector with
+  # N, mean, and sd
+  datac <- ddply(data, groupvars, .drop=.drop,
+                 .fun = function(xx, col) {
+                   c(N    = length2(xx[[col]], na.rm=na.rm),
+                     mean = mean   (xx[[col]], na.rm=na.rm),
+                     sd   = sd     (xx[[col]], na.rm=na.rm)
+                   )
+                 },
+                 measurevar
+  )
+  
+  # Rename the "mean" column    
+  datac <- rename(datac, c("mean" = measurevar))
+  
+  datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+  
+  # Confidence interval multiplier for standard error
+  # Calculate t-statistic for confidence interval: 
+  # e.g., if conf.interval is .95, use .975 (above/below), and use df=N-1
+  ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+  datac$ci <- datac$se * ciMult
+  
+  return(datac)
+}
 
 ############################
 # Getting ready
@@ -404,8 +443,6 @@ allMain_test$lookPathTest <- as.logical(allMain_test$lookPathTest)
 allMain_test$system_time_stamp <- as.numeric(allMain_test$system_time_stamp)
 
 # IDK IF THIS IS KOSHER OR NOT
-allMain_test <- allMain_test[!duplicated(allMain_test),]
-
 allMain_test %>% 
   distinct(trialNo, system_time_stamp, .keep_all = TRUE) -> allMain_test
 
@@ -425,30 +462,66 @@ response_window_agg_by_sub_main <- make_time_window_data(data, aois = c("lookMan
 response_window_agg_by_sub_main$phase <- ifelse(response_window_agg_by_sub_main$AOI == "lookMannerBias" | response_window_agg_by_sub_main$AOI == "lookPathBias", "Bias Test", 
                                     ifelse(response_window_agg_by_sub_main$AOI == "lookMannerTest" | response_window_agg_by_sub_main$AOI == "lookPathTest", "Verb Test", "Error"))
 # Creating plots
+
+response_window_agg_by_sub_main$Condition <- factor(response_window_agg_by_sub_main$Condition, levels=c("Manner", "Path"))
+
+describe_main_1 <- describe_data(response_window_agg_by_sub_main, describe_column = "Prop", group_columns = c("AOI"))
+
+describe_main <- describe_data(response_window_agg_by_sub_main, describe_column = "Prop", group_columns = c("Condition", "AOI"))
+describe_main$SD <- describe_main_1$SD
+describe_main$Var <- describe_main_1$Var
+
+describe_main$se <- describe_main$SD/sqrt(describe_main$N)
+
+response_window_agg_by_sub_main <- merge(response_window_agg_by_sub_main, describe_main, by=c("Condition", "AOI"))
+
 ggplot(data=response_window_agg_by_sub_main, aes(x=Condition, y=Prop, fill=AOI)) +
   geom_bar(stat="identity", position=position_dodge(), colour="black") + 
   ylab("Proportion of looks to screen") +
+  guides(fill=guide_legend(title=NULL)) +
+  geom_errorbar(aes(ymin=Prop-se, ymax=Prop+se),
+                width=.2,                    # Width of the error bars
+                position=position_dodge(.9)) +
   theme(axis.title = element_text(size=18),
         axis.text.x  = element_text(size=18),
         axis.text.y = element_text(size=18),
-        plot.title = element_text(size=18, face="bold")) +
+        plot.title = element_text(size=18, face="bold"),
+        strip.text.x = element_text(size=18),
+        legend.text = element_text(size = 16)) +
+  scale_fill_manual(values=c("#F65D57", "#CC3399", "#00B4B8", "#3399FF"), 
+                    breaks=c("lookMannerBias", "lookMannerTest", "lookPathBias", "lookPathTest"),
+                    labels=c("Manner Bias", "Manner Test", "Path Bias", "Path Test")) +
   facet_wrap(~phase)
-ggsave("maintrials_path.png")
+ggsave("maintrials.png")
 
 # Aggregating by trialNo to get a proportion of looks to screen by AOI
 response_window_agg_by_sub_main_trialNo <- make_time_window_data(data, aois = c("lookMannerBias", "lookMannerTest"), summarize_by = c("trialNo", "Condition"))
 response_window_agg_by_sub_main_trialNo$phase <- ifelse(response_window_agg_by_sub_main_trialNo$AOI == "lookMannerBias" | response_window_agg_by_sub_main_trialNo$AOI == "lookPathBias", "Bias Test", 
                                                 ifelse(response_window_agg_by_sub_main_trialNo$AOI == "lookMannerTest" | response_window_agg_by_sub_main_trialNo$AOI == "lookPathTest", "Verb Test", "Error"))
+
+describe_main_trialNo <- describe_data(response_window_agg_by_sub_main_trialNo, describe_column = "Prop", group_columns = c("trialNo"))
+
+response_window_agg_by_sub_main_trialNo$se <- describe_main_trialNo$SD/sqrt(describe_main_trialNo$N)
+
 # Creating plots
+
+response_window_agg_by_sub_main_trialNo$Condition <- factor(response_window_agg_by_sub_main_trialNo$Condition, levels=c("Manner", "Path"))
+
 ggplot(data=response_window_agg_by_sub_main_trialNo, aes(x=trialNo, y=Prop, color=Condition, group = Condition)) +
   geom_line() + 
   geom_point() +
-  ylab("Proportion of looks to Manner") +
+  ylab("Proportion of looks") +
+  geom_errorbar(aes(ymin=Prop-se, ymax=Prop+se), width=0.25) +
+  scale_x_discrete(name="Trial") +
   theme(axis.title = element_text(size=18),
         axis.text.x  = element_text(size=18),
         axis.text.y = element_text(size=18),
-        plot.title = element_text(size=18, face="bold")) +
+        plot.title = element_text(size=18, face="bold"),
+        strip.text.x = element_text(size=18),
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 16)) +
   facet_wrap(~phase)
+ggsave("maintrials_path_trialno.png")
 
 ############################
 # CREATING A SUBSET DF OF GENERALIZATION TEST TRIALS
@@ -474,31 +547,56 @@ data <- make_eyetrackingr_data(allExtend_test,
 )
 
 # Aggregating by subjectID to get a proportion of looks to screen by AOI
+response_window_agg_by_sub_extend_1 <- make_time_window_data(data, aois = c("lookActionBias"), summarize_by = c("Condition", "subjectID"))
 response_window_agg_by_sub_extend <- make_time_window_data(data, aois = c("lookActionBias"), summarize_by = c("Condition"))
 
+described_extend <- describe_data(response_window_agg_by_sub_extend_1, describe_column = "Prop", group_columns = c("Condition"))
+
+described_extend$se <- described_extend$SD/sqrt(described_extend$N)
+
+response_window_agg_by_sub_extend <- merge(response_window_agg_by_sub_extend, described_extend, by=c("Condition"))
+
+
 # Creating plots
-ggplot(data=response_window_agg_by_sub_extend, aes(x=Condition, y=Prop, fill=AOI)) +
+ggplot(data=response_window_agg_by_sub_extend, aes(x=Condition, y=Prop, fill = Condition)) +
   geom_bar(stat="identity", position=position_dodge(), colour="black") + 
+  geom_errorbar(aes(ymin=Prop-se, ymax=Prop+se),
+                width=.2,                    # Width of the error bars
+                position=position_dodge(.9)) +
   ylab("Proportion of looks to Action") +
   theme(axis.title = element_text(size=18),
         axis.text.x  = element_text(size=18),
         axis.text.y = element_text(size=18),
-        plot.title = element_text(size=18, face="bold")) 
-ggsave("extendtrials.png")
+        plot.title = element_text(size=18, face="bold"),
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 16))
+ggsave("extendtrials_bar.png")
 
 
 # Aggregating by subjectID to get a proportion of looks to screen by AOI
 response_window_agg_by_sub_extend_trialNo <- make_time_window_data(data, aois = c("lookActionBias"), summarize_by = c("Condition", "trialNo"))
 
+response_window_agg_by_sub_extend_trialNo$trialNo <- factor(response_window_agg_by_sub_extend_trialNo$trialNo, levels=c("7", "8", "9", "10", "11", "12", "13", "14"))
+
+described_extend <- describe_data(response_window_agg_by_sub_extend_trialNo, describe_column = "ArcSin", group_columns = c("trialNo"))
+
+response_window_agg_by_sub_extend_trialNo$se <- described_extend$SD/sqrt(described_extend$N)
+
 # Creating plots
+
+response_window_agg_by_sub_extend_trialNo$Condition <- factor(response_window_agg_by_sub_extend_trialNo$Condition, levels=c("Manner", "Path"))
+
 ggplot(data=response_window_agg_by_sub_extend_trialNo, aes(x=trialNo, y=Prop, group=Condition, color=Condition)) +
   geom_line() +
   geom_point() +
   ylab("Proportion of looks to Action") +
+  geom_errorbar(aes(ymin=Prop-se, ymax=Prop+se), width=0.25) +
+  ylim(0, 0.8) +
   theme(axis.title = element_text(size=18),
         axis.text.x  = element_text(size=18),
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
+ggsave("extendtrials_trialno.png")
 
 ############################
 # ACTUAL ANALYSIS
@@ -512,10 +610,16 @@ contrasts(allData$lookMannerBias) = contr.sum(2)
 allData$lookActionBias = factor(allData$lookActionBias, levels=c(TRUE, FALSE))
 contrasts(allData$lookActionBias) = contr.sum(2)
 
-M1 <- glmer(lookActionBias ~ Condition + lookMannerBias +
+M1 <- glmer(lookMannerTest ~ Condition + lookMannerBias +
               (1 | subjectID),
             family="binomial", 
-            data=allData)
+            data=allMain_test)
 
 summary(M1)
 
+M2 <- glmer(lookActionBias ~ Condition + lookMannerBias + lookMannerTest +
+              (1 | subjectID),
+            family="binomial", 
+            data=allExtend_test)
+
+summary(M2)
