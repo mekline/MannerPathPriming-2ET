@@ -16,45 +16,6 @@ library("stringr")
 
 setwd('/Users/crystallee/Documents/Github/MannerPathPriming-2ET/Data')
 
-############################
-# Helper Functions
-############################
-
-summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
-                      conf.interval=.95, .drop=TRUE) {
-  library(plyr)
-  
-  # New version of length which can handle NA's: if na.rm==T, don't count them
-  length2 <- function (x, na.rm=FALSE) {
-    if (na.rm) sum(!is.na(x))
-    else       length(x)
-  }
-  
-  # This does the summary. For each group's data frame, return a vector with
-  # N, mean, and sd
-  datac <- ddply(data, groupvars, .drop=.drop,
-                 .fun = function(xx, col) {
-                   c(N    = length2(xx[[col]], na.rm=na.rm),
-                     mean = mean   (xx[[col]], na.rm=na.rm),
-                     sd   = sd     (xx[[col]], na.rm=na.rm)
-                   )
-                 },
-                 measurevar
-  )
-  
-  # Rename the "mean" column    
-  datac <- rename(datac, c("mean" = measurevar))
-  
-  datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
-  
-  # Confidence interval multiplier for standard error
-  # Calculate t-statistic for confidence interval: 
-  # e.g., if conf.interval is .95, use .975 (above/below), and use df=N-1
-  ciMult <- qt(conf.interval/2 + .5, datac$N-1)
-  datac$ci <- datac$se * ciMult
-  
-  return(datac)
-}
 
 ############################
 # Getting ready
@@ -79,25 +40,8 @@ df_timestamps <- data.frame(Date=as.Date(character()),
                             User=character(), 
                             stringsAsFactors=FALSE) 
 
-###declaring my real function####
-trial_time1 <- function(x) {
-  
-  f = df_timestamps$system_time_stamp
-  a = x
-  maxless <- max(f[f <= a])
-  # find out which value that is
-  y = which(f == maxless)
-  z = as.character(df_timestamps$point_description[y])
-  
-  z1 = as.character(df_timestamps$point_description[y+1])
-  z2 <- paste(z1, z, sep=",")
-  
-  #x <- cbind(x, newColumn = z2)
-  
-  return(z2)
-}
 
-#declaring my PRACTICE function
+# Declaring my function
 trial_time <- function(x) {
   f = df_timestamps$system_time_stamp
   a = x
@@ -116,13 +60,32 @@ trial_time <- function(x) {
   }
 }
 
-
 # Declaring empty variables
 subj.folders <- list.dirs(recursive = FALSE)
 file.names_practice <- NULL
 file.names_main <- NULL
 file.names_extend <- NULL
-counter = 0 # Counter to load in dataframes for timestamps, probably will be unneeded in the future
+
+# This function returns an array of both the start and end portions of the current trial 
+# (e.g., "Start Trial 7, AmbigVideo 7" (or whatever)), but it gives me an error. So, I'm including
+# the code incase anyone wants to use it later. 
+# trial_time1 <- function(x) {
+#   
+#   f = df_timestamps$system_time_stamp
+#   a = x
+#   maxless <- max(f[f <= a])
+#   # find out which value that is
+#   y = which(f == maxless)
+#   z = as.character(df_timestamps$point_description[y])
+#   
+#   z1 = as.character(df_timestamps$point_description[y+1])
+#   z2 <- paste(z1, z, sep=",")
+#   
+#   #x <- cbind(x, newColumn = z2)
+#   
+#   return(z2)
+# }
+
 
 ############################
 # LOOPING THROUGH ALL THE SUBJECTS (1 subject at a time)
@@ -164,6 +127,10 @@ for(i in subj.folders){
   }
 }
 
+############################
+# LOOKING AT PRACTICE TRIALS
+############################
+
 for(i in subj.folders){
   # Reading in data table
   data_table <- list.files(path = i, pattern=".*\\.dat", full.names=TRUE)
@@ -174,10 +141,6 @@ for(i in subj.folders){
     temp <- read.delim(data_table, header=TRUE, sep=",")
     df_data_table <- rbind(df_data_table, temp)
   }
- 
-  ############################
-  # LOOKING AT PRACTICE TRIALS
-  ############################
   
   subjData <- data.frame(Date=as.Date(character()),
                          File=character(), 
@@ -210,10 +173,12 @@ for(i in subj.folders){
   subjData <- rbind(subjData, df_practice)
 }
   
+
+############################
+# LOOKING AT MAIN TRIALS
+############################
+
 for(i in subj.folders){
-  ############################
-  # LOOKING AT MAIN TRIALS
-  ############################
 
   df_main <- data.frame(Date=as.Date(character()),
                         File=character(),
@@ -246,10 +211,11 @@ for(i in subj.folders){
   subjData <- rbind(subjData, df_main)
 }
 
+##########################
+# LOOKING AT EXTEND TRIALS
+##########################
+
 for(i in subj.folders){
-  ##########################
-  # LOOKING AT EXTEND TRIALS
-  ##########################
 
   # Reading in extend trial CSVs
   df_extend <- data.frame(Date=as.Date(character()),
@@ -320,22 +286,9 @@ allData$Trackloss_column <- as.logical(allData$Trackloss_column)
 allData$X <- rowMeans(subset(allData, select = c(6, 9)), na.rm = TRUE)
 allData$Y <- rowMeans(subset(allData, select = c(7, 10)), na.rm = TRUE)
 
-# Applying it to the dataframe for  trials
-a <- lapply(allData$system_time_stamp, trial_time)
-allData$Trial_description <- a
-
-# Attempts to try to loop through levels of SubjectID and then add trial descriptions, in order 
-# to be able to zero out the timestamps later and find trial descriptions based on both SubjectID
-# and nearest time. It's slow and makes RStudio crash, so I'm not pursuing this for now.
-# t <- levels(as.factor(allData$subjectID))
-# 
-# for(i in t) {
-#   print(i)
-#   isi <- str_detect(as.character(allData$subjectID), i)
-#   allData_isi <- subset(allData, subjectID == i)
-#   allData_isi$Trial_description <- lapply(allData_isi$system_time_stamp, trial_time)
-#   dplyr::full_join(allData, allData_isi, by = "subjectID")
-# }
+# Applying it to the dataframe for trials, it's taking a long time, so we'll apply it in sections
+# a <- lapply(allData$system_time_stamp, trial_time)
+# allData$Trial_description <- a
 
 # Adding AOI for Practice
 allData %>%
@@ -343,7 +296,11 @@ allData %>%
   mutate(lookPractice = ifelse(phase == "Practice" & trialNo == "1" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
                           ifelse(phase == "Practice" & trialNo == "2" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
                           ifelse(phase == "Practice" & trialNo == "3" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
-                          ifelse(phase == "Practice" & trialNo == "4" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(FALSE)))))) -> allData 
+                          ifelse(phase == "Practice" & trialNo == "4" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(FALSE)))))) %>%
+  mutate(lookNotPractice = ifelse(phase == "Practice" & trialNo == "1" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
+                           ifelse(phase == "Practice" & trialNo == "2" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
+                           ifelse(phase == "Practice" & trialNo == "3" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
+                           ifelse(phase == "Practice" & trialNo == "4" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(FALSE)))))) -> allData
   
 
 # Adding AOI for Manner Bias and Test Bias
@@ -384,7 +341,10 @@ allData %>%
 ############################
 
 allPractice <- filter(allData, phase=="Practice")
-#allPractice <- allPractice[grep("testVideos", allPractice$Trial_description),]
+
+# Applying it to the dataframe for trials, it's taking a long time, so we'll apply it in sections
+a <- lapply(allPractice$system_time_stamp, trial_time)
+allPractice$Trial_description <- a
 
 allPractice %>%
   filter(str_detect(Trial_description, "testVideos")) -> df_practice_test
@@ -408,16 +368,20 @@ data <- make_eyetrackingr_data(df_practice_test,
                                trial_column = "trialNo",
                                time_column = "system_time_stamp",
                                trackloss_column = "Trackloss_column",
-                               aoi_columns = "lookPractice",
+                               aoi_columns = c("lookPractice", "lookNotPractice"),
                                treat_non_aoi_looks_as_missing = FALSE
 )
 
 # Aggregating by subjectID to get a proportion of looks to screen by AOI
-response_window_agg_by_sub_practice <- make_time_window_data(data, aois = "lookPractice", summarize_by = c("Condition"))
+response_window_agg_by_sub_practice <- make_time_window_data(data, aois = c("lookPractice", "lookNotPractice"), summarize_by = c("Condition"))
 response_window_agg_by_sub_practice$Condition[response_window_agg_by_sub_practice$subjectID == "pilot_0725"] <- "Path"
-response_window_agg_by_sub_practice <- response_window_agg_by_sub_practice[-c(3),]
+response_window_agg_by_sub_practice <- response_window_agg_by_sub_practice[-c(3,6),]
 
-# Creating plots
+############################
+# GRAPHS FOR PRACTICE
+############################
+
+# Creating bar graph
 ggplot(data=response_window_agg_by_sub_practice, aes(x=Condition, y=Prop, fill=AOI)) +
   geom_bar(stat="identity", position=position_dodge(), colour="black") + 
   ylab("Proportion of looks to correct video") +
@@ -426,7 +390,12 @@ ggplot(data=response_window_agg_by_sub_practice, aes(x=Condition, y=Prop, fill=A
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("pilot_practice.png")
+ggsave("pilot_practice_kid_and_adult.png")
+
+
+
+
+
 
 
 ############################
@@ -434,6 +403,11 @@ ggsave("pilot_practice.png")
 ############################
 
 allMain_test <- filter(allData, phase=="Main")
+
+# Applying it to the dataframe for trials, it's taking a long time, so we'll apply it in sections
+a <- lapply(allMain_test$system_time_stamp, trial_time)
+allMain_test$Trial_description <- a
+
 allMain_test <- allMain_test[grep("testVideos|biasTest", allMain_test$Trial_description),]
 allMain_test$trialNo <- as.factor(allMain_test$trialNo)
 allMain_test$lookMannerBias <- as.logical(allMain_test$lookMannerBias)
@@ -457,76 +431,118 @@ data <- make_eyetrackingr_data(allMain_test,
                                treat_non_aoi_looks_as_missing = FALSE
 )
 
+# Cleaning data with 25% trackloss
+response_window_clean <- clean_by_trackloss(data = data, trial_prop_thresh = .25)
+
+############################
+# GRAPHS FOR MAIN
+############################
+
 # Aggregating by Condition to get a proportion of looks to screen by AOI
-response_window_agg_by_sub_main <- make_time_window_data(data, aois = c("lookMannerBias", "lookMannerTest", "lookPathBias", "lookPathTest"), summarize_by = c("Condition"))
+response_window_agg_by_sub_main <- make_time_window_data(response_window_clean, aois = c("lookMannerBias", "lookMannerTest", "lookPathBias", "lookPathTest"), summarize_by = c("Condition"))
 response_window_agg_by_sub_main$phase <- ifelse(response_window_agg_by_sub_main$AOI == "lookMannerBias" | response_window_agg_by_sub_main$AOI == "lookPathBias", "Bias Test", 
                                     ifelse(response_window_agg_by_sub_main$AOI == "lookMannerTest" | response_window_agg_by_sub_main$AOI == "lookPathTest", "Verb Test", "Error"))
-# Creating plots
 
+# Getting an SE for each response (MannerBias, etc.)
 response_window_agg_by_sub_main$Condition <- factor(response_window_agg_by_sub_main$Condition, levels=c("Manner", "Path"))
-
 describe_main_1 <- describe_data(response_window_agg_by_sub_main, describe_column = "Prop", group_columns = c("AOI"))
-
 describe_main <- describe_data(response_window_agg_by_sub_main, describe_column = "Prop", group_columns = c("Condition", "AOI"))
 describe_main$SD <- describe_main_1$SD
 describe_main$Var <- describe_main_1$Var
-
 describe_main$se <- describe_main$SD/sqrt(describe_main$N)
-
 response_window_agg_by_sub_main <- merge(response_window_agg_by_sub_main, describe_main, by=c("Condition", "AOI"))
 
+# Making a bar graph
 ggplot(data=response_window_agg_by_sub_main, aes(x=Condition, y=Prop, fill=AOI)) +
   geom_bar(stat="identity", position=position_dodge(), colour="black") + 
-  ylab("Proportion of looks to screen") +
+  ylab("Proportion of looks to Manner") +
   guides(fill=guide_legend(title=NULL)) +
   geom_errorbar(aes(ymin=Prop-se, ymax=Prop+se),
                 width=.2,                    # Width of the error bars
                 position=position_dodge(.9)) +
-  theme(axis.title = element_text(size=18),
-        axis.text.x  = element_text(size=18),
-        axis.text.y = element_text(size=18),
+  theme(axis.title = element_text(size=12),
+        axis.text.x  = element_text(size=12),
+        axis.text.y = element_text(size=12),
         plot.title = element_text(size=18, face="bold"),
         strip.text.x = element_text(size=18),
-        legend.text = element_text(size = 16)) +
+        legend.text = element_text(size = 12),
+        legend.position="top") +
   scale_fill_manual(values=c("#F65D57", "#CC3399", "#00B4B8", "#3399FF"), 
                     breaks=c("lookMannerBias", "lookMannerTest", "lookPathBias", "lookPathTest"),
                     labels=c("Manner Bias", "Manner Test", "Path Bias", "Path Test")) +
   facet_wrap(~phase)
-ggsave("maintrials.png")
+ggsave("maintrials_kid_and_adult.png", width=5.5, height=3,units = "in")
+
+
+# Remaking a dataframe for only the Bias Test line graph
+allMain_test_1 <- allMain_test[grep("biasTest", allMain_test$Trial_description),]
+allMain_test_1$trialNo <- as.factor(allMain_test_1$trialNo)
+allMain_test_1$lookMannerBias <- as.logical(allMain_test_1$lookMannerBias)
+allMain_test_1$lookPathBias <- as.logical(allMain_test_1$lookPathBias)
+allMain_test_1$system_time_stamp <- as.numeric(allMain_test_1$system_time_stamp)
+
+# IDK IF THIS IS KOSHER OR NOT
+allMain_test_1 %>% 
+  distinct(trialNo, system_time_stamp, .keep_all = TRUE) -> allMain_test_1
+
+# Starting to use eyetrackingR
+data <- make_eyetrackingr_data(allMain_test_1, 
+                               participant_column = "subjectID",
+                               trial_column = "trialNo",
+                               item_columns = "itemID",
+                               time_column = "system_time_stamp",
+                               trackloss_column = "Trackloss_column",
+                               aoi_columns = c("lookMannerBias", "lookPathBias"),
+                               treat_non_aoi_looks_as_missing = FALSE
+)
+
+# Cleaning data with 25% trackloss
+response_window_clean <- clean_by_trackloss(data = data, trial_prop_thresh = .25)
 
 # Aggregating by trialNo to get a proportion of looks to screen by AOI
-response_window_agg_by_sub_main_trialNo <- make_time_window_data(data, aois = c("lookMannerBias", "lookMannerTest"), summarize_by = c("trialNo", "Condition"))
+response_window_agg_by_sub_main_trialNo <- make_time_window_data(response_window_clean, aois = c("lookMannerBias"), summarize_by = c("trialNo", "Condition"))
 response_window_agg_by_sub_main_trialNo$phase <- ifelse(response_window_agg_by_sub_main_trialNo$AOI == "lookMannerBias" | response_window_agg_by_sub_main_trialNo$AOI == "lookPathBias", "Bias Test", 
-                                                ifelse(response_window_agg_by_sub_main_trialNo$AOI == "lookMannerTest" | response_window_agg_by_sub_main_trialNo$AOI == "lookPathTest", "Verb Test", "Error"))
+                                                        ifelse(response_window_agg_by_sub_main_trialNo$AOI == "lookMannerTest" | response_window_agg_by_sub_main_trialNo$AOI == "lookPathTest", "Verb Test", "Error"))
 
+# Getting an SE for each trial
 describe_main_trialNo <- describe_data(response_window_agg_by_sub_main_trialNo, describe_column = "Prop", group_columns = c("trialNo"))
-
 response_window_agg_by_sub_main_trialNo$se <- describe_main_trialNo$SD/sqrt(describe_main_trialNo$N)
-
-# Creating plots
-
 response_window_agg_by_sub_main_trialNo$Condition <- factor(response_window_agg_by_sub_main_trialNo$Condition, levels=c("Manner", "Path"))
 
+# Making the by-trial line graph
 ggplot(data=response_window_agg_by_sub_main_trialNo, aes(x=trialNo, y=Prop, color=Condition, group = Condition)) +
   geom_line() + 
   geom_point() +
-  ylab("Proportion of looks") +
+  ylab("Proportion of looks to Manner") +
   geom_errorbar(aes(ymin=Prop-se, ymax=Prop+se), width=0.25) +
-  scale_x_discrete(name="Trial") +
-  theme(axis.title = element_text(size=18),
-        axis.text.x  = element_text(size=18),
-        axis.text.y = element_text(size=18),
-        plot.title = element_text(size=18, face="bold"),
-        strip.text.x = element_text(size=18),
-        legend.title = element_text(size = 18),
-        legend.text = element_text(size = 16)) +
+  scale_x_discrete(name="Trial",
+                   breaks=c("5", "6", "7", "8"),
+                   labels=c("1", "2", "3", "4")) +
+  theme(axis.title.y = element_text(size=12),
+        axis.title.x = element_text(size=16),
+        axis.text.x  = element_text(size=16),
+        axis.text.y = element_text(size=16),
+        plot.title = element_text(size=16, face="bold"),
+        strip.text.x = element_text(size=16),
+        legend.title = element_text(size = 16),
+        legend.text = element_text(size = 16),
+        legend.position="top") +
   facet_wrap(~phase)
-ggsave("maintrials_path_trialno.png")
+ggsave("maintrials_biasTest_trialno_kid_and_adult.png", units="in", width=4, height = 3)
+
+
+
+
 
 ############################
 # CREATING A SUBSET DF OF GENERALIZATION TEST TRIALS
 ############################
 allExtend <- filter(allData, phase=="Extend")
+
+# Applying it to the dataframe for trials, it's taking a long time, so we'll apply it in sections
+a <- lapply(allExtend$system_time_stamp, trial_time)
+allExtend$Trial_description <- a
+
 allExtend <- allExtend[grep("biasTest_Extend", allExtend$Trial_description),]
 
 allExtend$lookActionBias <- as.logical(allExtend$lookActionBias)
@@ -546,43 +562,47 @@ data <- make_eyetrackingr_data(allExtend_test,
                                treat_non_aoi_looks_as_missing = FALSE
 )
 
+# Cleaning data with 25% trackloss
+response_window_clean <- clean_by_trackloss(data = data, trial_prop_thresh = .25)
+
+############################
+# GRAPHS FOR GENERALIZATION
+############################
+
 # Aggregating by subjectID to get a proportion of looks to screen by AOI
+# Also getting a SE for each subject
+
 response_window_agg_by_sub_extend_1 <- make_time_window_data(data, aois = c("lookActionBias"), summarize_by = c("Condition", "subjectID"))
 response_window_agg_by_sub_extend <- make_time_window_data(data, aois = c("lookActionBias"), summarize_by = c("Condition"))
-
 described_extend <- describe_data(response_window_agg_by_sub_extend_1, describe_column = "Prop", group_columns = c("Condition"))
-
 described_extend$se <- described_extend$SD/sqrt(described_extend$N)
-
 response_window_agg_by_sub_extend <- merge(response_window_agg_by_sub_extend, described_extend, by=c("Condition"))
 
-
-# Creating plots
+# Creating a bar graph
 ggplot(data=response_window_agg_by_sub_extend, aes(x=Condition, y=Prop, fill = Condition)) +
   geom_bar(stat="identity", position=position_dodge(), colour="black") + 
   geom_errorbar(aes(ymin=Prop-se, ymax=Prop+se),
                 width=.2,                    # Width of the error bars
                 position=position_dodge(.9)) +
   ylab("Proportion of looks to Action") +
-  theme(axis.title = element_text(size=18),
-        axis.text.x  = element_text(size=18),
-        axis.text.y = element_text(size=18),
-        plot.title = element_text(size=18, face="bold"),
-        legend.title = element_text(size = 18),
-        legend.text = element_text(size = 16))
-ggsave("extendtrials_bar.png")
+  theme(axis.title = element_text(size=12),
+        axis.text.x  = element_text(size=12),
+        axis.text.y = element_text(size=12),
+        plot.title = element_text(size=12, face="bold"),
+        legend.title = element_text(size = 13),
+        legend.text = element_text(size = 13),
+        legend.position = "top")
+ggsave("extendtrials_bar_kid_and_adult.png", units="in", width=3, height=3)
 
 
 # Aggregating by subjectID to get a proportion of looks to screen by AOI
+# Also getting an SE for each trial
 response_window_agg_by_sub_extend_trialNo <- make_time_window_data(data, aois = c("lookActionBias"), summarize_by = c("Condition", "trialNo"))
-
 response_window_agg_by_sub_extend_trialNo$trialNo <- factor(response_window_agg_by_sub_extend_trialNo$trialNo, levels=c("7", "8", "9", "10", "11", "12", "13", "14"))
-
 described_extend <- describe_data(response_window_agg_by_sub_extend_trialNo, describe_column = "ArcSin", group_columns = c("trialNo"))
-
 response_window_agg_by_sub_extend_trialNo$se <- described_extend$SD/sqrt(described_extend$N)
 
-# Creating plots
+# Creating by-trial line graph
 
 response_window_agg_by_sub_extend_trialNo$Condition <- factor(response_window_agg_by_sub_extend_trialNo$Condition, levels=c("Manner", "Path"))
 
@@ -596,30 +616,58 @@ ggplot(data=response_window_agg_by_sub_extend_trialNo, aes(x=trialNo, y=Prop, gr
         axis.text.x  = element_text(size=18),
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
-ggsave("extendtrials_trialno.png")
+ggsave("extendtrials_trialno_kid_and_adult.png")
+
+
+
+
+
 
 ############################
 # ACTUAL ANALYSIS
 ############################
+mainExtend <- bind_rows(allMain_test, allExtend_test)
 
-contrasts(allData$Condition) = contr.sum(2)
+# Starting to use eyetrackingR
+data <- make_eyetrackingr_data(mainExtend, 
+                               participant_column = "subjectID",
+                               trial_column = "trialNo",
+                               time_column = "system_time_stamp",
+                               trackloss_column = "Trackloss_column",
+                               aoi_columns = c("lookActionBias", "lookMannerBias", "lookMannerTest", "lookPathBias", "lookPathTest"),
+                               treat_non_aoi_looks_as_missing = FALSE
+)
 
-allData$lookMannerBias = factor(allData$lookMannerBias, levels=c(TRUE, FALSE))
-contrasts(allData$lookMannerBias) = contr.sum(2)
+response_window_clean <- clean_by_trackloss(data = data, trial_prop_thresh = .25)
 
-allData$lookActionBias = factor(allData$lookActionBias, levels=c(TRUE, FALSE))
-contrasts(allData$lookActionBias) = contr.sum(2)
+response_window_agg_analysis <- make_time_window_data(response_window_clean, 
+                                             aois= c("lookActionBias", "lookMannerBias", "lookMannerTest", "lookPathBias", "lookPathTest"), 
+                                             predictor_columns=c("Condition","subjectID"))
+response_window_agg_analysis %>%
+  spread(AOI, Prop) %>%
+  group_by(subjectID)-> test
 
-M1 <- glmer(lookMannerTest ~ Condition + lookMannerBias +
-              (1 | subjectID),
-            family="binomial", 
-            data=allMain_test)
+response_window_agg_analysis <- na.omit(response_window_agg_analysis)
+
+response_window_agg_analysis %>%
+  group_by(subjectID) %>%
+  tidyr::spread(AOI, Prop) -> test
+
+M1 <- lmer(lookPathTest ~ Condition +
+             (1 | subjectID), 
+            data=test)
 
 summary(M1)
+anova(M1)
 
-M2 <- glmer(lookActionBias ~ Condition + lookMannerBias + lookMannerTest +
-              (1 | subjectID),
-            family="binomial", 
-            data=allExtend_test)
+library(lmerTest)
+
+M2 <- lmer(lookActionBias ~ Condition +
+            (1|subjectID),
+            data=test)
 
 summary(M2)
+anova(M2)
+
+
+

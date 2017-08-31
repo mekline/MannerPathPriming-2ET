@@ -1,7 +1,11 @@
-subjectID,Condition,Date,Birthday,Days old,Name,Include?
-Melissa_111,Path,7/20/17,,,,1
-pilot_0725,Path,7/25/17,4/25/15,822,Nessa,1
-pilot_0728,Manner,7/28/17,2/11/15,898,Lenora,1
-pilot_adult1,Manner,8/2/14,,,Ryan,1
-pilot_adult2,Path,8/2/14,,,Jessica,1
-pilot_adult3,Manner,8/2/14,,,Jerry,1
+subjectID,Condition,Date,Birthday,Days old,Name,Include?,Notes
+pilot_0725,Path,7/25/17,4/25/15,822,Nessa,1,Had to stop because she had to go to the bathroom
+pilot_0728,Manner,7/28/17,2/11/15,898,Hazel,1,
+pilot_adult1,Manner,8/2/14,,,Ryan,1,
+pilot_adult2,Path,8/2/14,,,Jessica,1,
+pilot_adult3,Manner,8/2/14,,,Jerry,1,
+pilot_adult4,Path,8/4/17,,,Christine,1,
+pilot_0803,Path,8/3/17,7/31/15,734,Parker,1,Sat through the whole thing! 
+pilot_0807,Path,8/7/17,9/7/14,1065,Calvin,1,"Sat through the whole thing, but was a bit inattentive towards the end"
+pilot_adult5,Manner,8/4/17,,,Cristina,1,Experiment crashed
+pilot_0804,Manner,8/4/16,2/11/15,540,Peter,1,"Sat through the whole thing, but needed a break halfway through"
