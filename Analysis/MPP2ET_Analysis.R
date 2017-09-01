@@ -42,15 +42,20 @@ df_timestamps <- data.frame(Date=as.Date(character()),
 
 
 # Declaring my function
+
+## Declaring function trial_time, where a is a given value and f a timestamp
 trial_time <- function(x) {
   f = df_timestamps$system_time_stamp
   a = x
   
+  ## search for the maximum timestamp where the timestamp is equal to or less than value a  
   maxless <- max(f[f <= a])
   # find out which value that is
   y = which(f == maxless)
   z = as.character(df_timestamps$point_description[y])
   
+  ## if the vector is empty, return the timestamp of the minimum value bigger than a,
+  ## if the vector is not empty, return the vector
   if(identical(z,character(0))) {
     y = min(which(f > a))
     temp = as.character(df_timestamps$point_description[y])
@@ -141,17 +146,20 @@ for(i in subj.folders){
     temp <- read.delim(data_table, header=TRUE, sep=",")
     df_data_table <- rbind(df_data_table, temp)
   }
+
   
+  ## makes an empty data frame
   subjData <- data.frame(Date=as.Date(character()),
                          File=character(), 
                          User=character(), 
                          stringsAsFactors=FALSE) 
-  
+
   df_practice <- data.frame(Date=as.Date(character()),
                             File=character(), 
                             User=character(), 
                             stringsAsFactors=FALSE)
   
+  ## adds all the eye-tracking data of the practice runs in the data frame
   for(file in file.names_practice){
     temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
     df_practice <-rbind(df_practice, temp)
@@ -180,11 +188,13 @@ for(i in subj.folders){
 
 for(i in subj.folders){
 
+  ## making an empty data frame
   df_main <- data.frame(Date=as.Date(character()),
                         File=character(),
                         User=character(),
                         stringsAsFactors=FALSE)
   
+  ## adds all the eyetracking data for the main trials in the data frame
   for(file in file.names_main){
     temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
     df_main <- rbind(df_main, temp)
@@ -207,7 +217,7 @@ for(i in subj.folders){
                                ifelse(df_main$trialNo == "All_of_Main_trial_7", "7",
                                ifelse(df_main$trialNo == "All_of_Main_trial_8", "8", "Error")))))))))
 
-
+  ## adds practice data and main trials data together in one data frame
   subjData <- rbind(subjData, df_main)
 }
 
@@ -218,11 +228,13 @@ for(i in subj.folders){
 for(i in subj.folders){
 
   # Reading in extend trial CSVs
+  ## making an empty data frame
   df_extend <- data.frame(Date=as.Date(character()),
                           File=character(),
                           User=character(),
                           stringsAsFactors=FALSE)
   
+  ## adds all the eyetracking data of the extend trials in the data frame
   for(file in file.names_extend){
     temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
     if("trialNo" %in% colnames(temp)) {
