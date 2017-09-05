@@ -19,7 +19,10 @@ setwd('/Users/crystallee/Documents/Github/MannerPathPriming-2ET/Data')
 
 ############################
 # Getting ready
+# This will add all the data in a dataframe, if you want to skip it and load the workspace,
+# go to line 395
 ############################
+
 
 # Reading in subject list
 subjects <- read.csv("MPP2ET_Data.csv")
@@ -389,6 +392,9 @@ response_window_agg_by_sub_practice <- make_time_window_data(data, aois = c("loo
 response_window_agg_by_sub_practice$Condition[response_window_agg_by_sub_practice$subjectID == "pilot_0725"] <- "Path"
 response_window_agg_by_sub_practice <- response_window_agg_by_sub_practice[-c(3,6),]
 
+# load workspace
+load("~/GitHub/MannerPathPriming-2ET/Data/Dataframes.RData")
+
 ############################
 # GRAPHS FOR PRACTICE
 ############################
@@ -429,6 +435,7 @@ allMain_test$lookPathTest <- as.logical(allMain_test$lookPathTest)
 allMain_test$system_time_stamp <- as.numeric(allMain_test$system_time_stamp)
 
 # IDK IF THIS IS KOSHER OR NOT
+## only keep the unique rows from the input
 allMain_test %>% 
   distinct(trialNo, system_time_stamp, .keep_all = TRUE) -> allMain_test
 
@@ -465,6 +472,7 @@ describe_main$se <- describe_main$SD/sqrt(describe_main$N)
 response_window_agg_by_sub_main <- merge(response_window_agg_by_sub_main, describe_main, by=c("Condition", "AOI"))
 
 # Making a bar graph
+## gives a graph comparing the bias test and the verb test
 ggplot(data=response_window_agg_by_sub_main, aes(x=Condition, y=Prop, fill=AOI)) +
   geom_bar(stat="identity", position=position_dodge(), colour="black") + 
   ylab("Proportion of looks to Manner") +
@@ -650,21 +658,26 @@ data <- make_eyetrackingr_data(mainExtend,
                                treat_non_aoi_looks_as_missing = FALSE
 )
 
+# Cleaning data with 25% trackloss
 response_window_clean <- clean_by_trackloss(data = data, trial_prop_thresh = .25)
 
 response_window_agg_analysis <- make_time_window_data(response_window_clean, 
                                              aois= c("lookActionBias", "lookMannerBias", "lookMannerTest", "lookPathBias", "lookPathTest"), 
                                              predictor_columns=c("Condition","subjectID"))
+
+# got an error: could not find function "spread", but the dplyr package is installed
 response_window_agg_analysis %>%
   spread(AOI, Prop) %>%
   group_by(subjectID)-> test
 
+# removes incomplete cases
 response_window_agg_analysis <- na.omit(response_window_agg_analysis)
 
 response_window_agg_analysis %>%
   group_by(subjectID) %>%
   tidyr::spread(AOI, Prop) -> test
 
+# analyses the effect of different conditions on the looking times to path in the test trials
 M1 <- lmer(lookPathTest ~ Condition +
              (1 | subjectID), 
             data=test)
@@ -674,6 +687,7 @@ anova(M1)
 
 library(lmerTest)
 
+# analyses the effect of different conditions on the looking times to action in the bias test
 M2 <- lmer(lookActionBias ~ Condition +
             (1|subjectID),
             data=test)
