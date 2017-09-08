@@ -19,7 +19,10 @@ setwd('/Users/crystallee/Documents/Github/MannerPathPriming-2ET/Data')
 
 ############################
 # Getting ready
+# This will add all the data in a dataframe, if you want to skip it and load the workspace,
+# go to line 395
 ############################
+
 
 # Reading in subject list
 subjects <- read.csv("MPP2ET_Data.csv")
@@ -42,15 +45,20 @@ df_timestamps <- data.frame(Date=as.Date(character()),
 
 
 # Declaring my function
+
+## Declaring function trial_time, where a is a given value and f a timestamp
 trial_time <- function(x) {
   f = df_timestamps$system_time_stamp
   a = x
   
+  ## search for the maximum timestamp where the timestamp is equal to or less than value a  
   maxless <- max(f[f <= a])
   # find out which value that is
   y = which(f == maxless)
   z = as.character(df_timestamps$point_description[y])
   
+  ## if the vector is empty, return the timestamp of the minimum value bigger than a,
+  ## if the vector is not empty, return the vector
   if(identical(z,character(0))) {
     y = min(which(f > a))
     temp = as.character(df_timestamps$point_description[y])
@@ -141,17 +149,20 @@ for(i in subj.folders){
     temp <- read.delim(data_table, header=TRUE, sep=",")
     df_data_table <- rbind(df_data_table, temp)
   }
+
   
+  ## makes an empty data frame
   subjData <- data.frame(Date=as.Date(character()),
                          File=character(), 
                          User=character(), 
                          stringsAsFactors=FALSE) 
-  
+
   df_practice <- data.frame(Date=as.Date(character()),
                             File=character(), 
                             User=character(), 
                             stringsAsFactors=FALSE)
   
+  ## adds all the eye-tracking data of the practice runs in the data frame
   for(file in file.names_practice){
     temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
     df_practice <-rbind(df_practice, temp)
@@ -180,11 +191,13 @@ for(i in subj.folders){
 
 for(i in subj.folders){
 
+  ## making an empty data frame
   df_main <- data.frame(Date=as.Date(character()),
                         File=character(),
                         User=character(),
                         stringsAsFactors=FALSE)
   
+  ## adds all the eyetracking data for the main trials in the data frame
   for(file in file.names_main){
     temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
     df_main <- rbind(df_main, temp)
@@ -207,7 +220,7 @@ for(i in subj.folders){
                                ifelse(df_main$trialNo == "All_of_Main_trial_7", "7",
                                ifelse(df_main$trialNo == "All_of_Main_trial_8", "8", "Error")))))))))
 
-
+  ## adds practice data and main trials data together in one data frame
   subjData <- rbind(subjData, df_main)
 }
 
@@ -218,11 +231,13 @@ for(i in subj.folders){
 for(i in subj.folders){
 
   # Reading in extend trial CSVs
+  ## making an empty data frame
   df_extend <- data.frame(Date=as.Date(character()),
                           File=character(),
                           User=character(),
                           stringsAsFactors=FALSE)
   
+  ## adds all the eyetracking data of the extend trials in the data frame
   for(file in file.names_extend){
     temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
     if("trialNo" %in% colnames(temp)) {
@@ -377,6 +392,9 @@ response_window_agg_by_sub_practice <- make_time_window_data(data, aois = c("loo
 response_window_agg_by_sub_practice$Condition[response_window_agg_by_sub_practice$subjectID == "pilot_0725"] <- "Path"
 response_window_agg_by_sub_practice <- response_window_agg_by_sub_practice[-c(3,6),]
 
+# load workspace
+load("~/GitHub/MannerPathPriming-2ET/Data/Dataframes.RData")
+
 ############################
 # GRAPHS FOR PRACTICE
 ############################
@@ -417,6 +435,7 @@ allMain_test$lookPathTest <- as.logical(allMain_test$lookPathTest)
 allMain_test$system_time_stamp <- as.numeric(allMain_test$system_time_stamp)
 
 # IDK IF THIS IS KOSHER OR NOT
+## only keep the unique rows from the input
 allMain_test %>% 
   distinct(trialNo, system_time_stamp, .keep_all = TRUE) -> allMain_test
 
@@ -453,6 +472,7 @@ describe_main$se <- describe_main$SD/sqrt(describe_main$N)
 response_window_agg_by_sub_main <- merge(response_window_agg_by_sub_main, describe_main, by=c("Condition", "AOI"))
 
 # Making a bar graph
+## gives a graph comparing the bias test and the verb test
 ggplot(data=response_window_agg_by_sub_main, aes(x=Condition, y=Prop, fill=AOI)) +
   geom_bar(stat="identity", position=position_dodge(), colour="black") + 
   ylab("Proportion of looks to Manner") +
@@ -638,21 +658,26 @@ data <- make_eyetrackingr_data(mainExtend,
                                treat_non_aoi_looks_as_missing = FALSE
 )
 
+# Cleaning data with 25% trackloss
 response_window_clean <- clean_by_trackloss(data = data, trial_prop_thresh = .25)
 
 response_window_agg_analysis <- make_time_window_data(response_window_clean, 
                                              aois= c("lookActionBias", "lookMannerBias", "lookMannerTest", "lookPathBias", "lookPathTest"), 
                                              predictor_columns=c("Condition","subjectID"))
+
+# got an error: could not find function "spread", but the dplyr package is installed
 response_window_agg_analysis %>%
   spread(AOI, Prop) %>%
   group_by(subjectID)-> test
 
+# removes incomplete cases
 response_window_agg_analysis <- na.omit(response_window_agg_analysis)
 
 response_window_agg_analysis %>%
   group_by(subjectID) %>%
   tidyr::spread(AOI, Prop) -> test
 
+# analyses the effect of different conditions on the looking times to path in the test trials
 M1 <- lmer(lookPathTest ~ Condition +
              (1 | subjectID), 
             data=test)
@@ -662,6 +687,7 @@ anova(M1)
 
 library(lmerTest)
 
+# analyses the effect of different conditions on the looking times to action in the bias test
 M2 <- lmer(lookActionBias ~ Condition +
             (1|subjectID),
             data=test)
