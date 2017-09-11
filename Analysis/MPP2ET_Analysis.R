@@ -19,8 +19,6 @@ setwd('/Users/crystallee/Documents/Github/MannerPathPriming-2ET/Data')
 
 ############################
 # Getting ready
-# This will add all the data in a dataframe, if you want to skip it and load the workspace,
-# go to line 395
 ############################
 
 
@@ -391,9 +389,6 @@ data <- make_eyetrackingr_data(df_practice_test,
 response_window_agg_by_sub_practice <- make_time_window_data(data, aois = c("lookPractice", "lookNotPractice"), summarize_by = c("Condition"))
 response_window_agg_by_sub_practice$Condition[response_window_agg_by_sub_practice$subjectID == "pilot_0725"] <- "Path"
 response_window_agg_by_sub_practice <- response_window_agg_by_sub_practice[-c(3,6),]
-
-# load workspace
-load("~/GitHub/MannerPathPriming-2ET/Data/Dataframes.RData")
 
 ############################
 # GRAPHS FOR PRACTICE
