@@ -41,7 +41,7 @@ global KEYID %Keyboard stuff
 %MPP-specific stuff 
 global CONDITION %Manner, Path, Action, or Effect
 global TOEXTEND %Extend or NoExtend
-global EXTENDPRACTICE %ExtendPractice or NoPractice
+global EXTENDPRACTICE %ExtendPractice or NoPractice %MK's not sure what this is for!
 
 if ~ischar(inputs.SubjectID)
     SUBJECT = num2str(inputs.SubjectID);
@@ -121,15 +121,6 @@ end
 %- unplug the ethernet cable & replug
 %- run ping <ip> and then telnet <ip>. If only the latter fails...(I don't
 %know, I am stuck here for Koala room.)
-
-
-%*********************
-% Track status of eyes (position participant before calibrating)
-%*********************
-
-if USE_EYETRACKER
-    TrackEyesOnscreen(Calib);
-end
 
 %*********************
 % Calibration
