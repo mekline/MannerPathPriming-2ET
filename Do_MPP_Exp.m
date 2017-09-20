@@ -2,10 +2,13 @@
 function Do_MPP_Exp()
 
 %We are adapting MPP to the eyetracker, very exciting!
-global EXPWIN RESOURCEFOLDER DATAFILE 
+global EXPWIN RESOURCEFOLDER
 
 %MPP specific objects
-global expStart expTime CONDITION TOEXTEND EXTENDCONDITION MAIN_ITEMS EXT_ITEMS STARS EXTENDPRACTICE ntrials TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
+global expStart expTime CONDITION TOEXTEND EXTENDCONDITION 
+global MAIN_ITEMS EXT_ITEMS EXTENDPRACTICE ntrials 
+global TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT 
+global SUBJECT timeCell
 
 %Some numeric versions of condition names for indexing into tables...
 
@@ -58,39 +61,7 @@ try
         EXT_ITEMS = EXT_ITEMS(randperm(height(EXT_ITEMS)), :);
     end
     
-    %Add the star pictures _in order!!!_
-    if (toExtend == 1) && (ExtendPractice == 0)
-        myStars = dir([RESOURCEFOLDER '/stars/longstars*.jpeg']);
-        myStars = struct2cell(myStars);  
-        myStars(1,:) = strcat('stars/',myStars(1,:));
-        STARS.noun = myStars(1,1:3);
-        STARS.main = myStars(1,4:11);
-        STARS.ext = myStars(1,12:19);
-        
-    elseif (toExtend == 1) && (ExtendPractice == 1)
-        myStars = dir([RESOURCEFOLDER '/stars/longstars_practice*.jpeg']);
-        myStars = struct2cell(myStars);  
-        myStars(1,:) = strcat('stars/',myStars(1,:));
-        STARS.noun = myStars(1,1:3);
-        STARS.practice = myStars(1,4:7);
-        STARS.main = myStars(1,8:15);
-        STARS.ext = myStars(1,16:24);
     
-    elseif (toExtend == 0) && (ExtendPractice == 1)
-        myStars = dir([RESOURCEFOLDER '/stars/stars_practice*.jpeg']);
-        myStars = struct2cell(myStars);  
-        myStars(1,:) = strcat('stars/',myStars(1,:));
-        STARS.noun = myStars(1,1:3);
-        STARS.practice = myStars(1,4:7);
-        STARS.main = myStars(1,8:15);
-        
-    else
-        myStars = dir('stars/stars*.jpg');
-        myStars = struct2cell(myStars);
-        myStars(1,:) = strcat('stars/',myStars(1,:));
-        STARS.noun = myStars(1,1:3);
-        STARS.main = myStars(1,4:11);
-    end
     
     %Randomize the side presentation of the items
     %(Counterbalancing note: left video always plays first, assignment is
@@ -168,11 +139,7 @@ try
         'letsFindAudio'});
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    Text_Show('Press spacebar to start experiment.')
-    Take_Response();
-    Show_Blank();
-    
+
     expStart = GetSecs;
     disp(expStart);
     
@@ -182,18 +149,6 @@ try
         'Experiment Start'};
 
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % GET READY....
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Play_Sound(strcat(RESOURCEFOLDER, '/audio/aa_motivation/getready.wav'), 'toBlock');
-    Show_Blank();
-
-%     Show_Image(strcat(RESOURCEFOLDER, '/', STARS.noun{1}));
-    
-    Take_Response();
-    Show_Blank;
-    
-
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 4 TRIALS OF PRACTICE TRAINING
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
