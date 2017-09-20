@@ -1,6 +1,6 @@
 function [response] = MPP_Practice()
 
-global parameters WINDOW_PARAMS RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
+global WINDOW_PARAMS RESOURCEFOLDER TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT SUBJECT timeCell
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
         % 4 TRIALS OF NOUN PRACTICE                             
@@ -10,6 +10,8 @@ global parameters WINDOW_PARAMS RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLA
     %FIRST PRACTICE TRIAL
     %%%%%%%%%%%%%%%%%%%%%
     
+        Get_Attention();
+        
         %%%%%%%%%%%%%%%%%%%%%%%%
         %INITIAL AMBIGUOUS VIDEO     
         %%%%%%%%%%%%%%%%%%%%%%%%
@@ -43,8 +45,7 @@ global parameters WINDOW_PARAMS RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLA
         movietoplay_practice_1c = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_1c.mp4');
         movietoplay_practice_1d = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_1d.mp4');
         movietoplay_practice_1e = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_1e.mp4');
-        movietoplay_practice_1_distr = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_1_distr.mp4');
-        movietoplay_recenter = strcat(RESOURCEFOLDER, '/movies/babylaugh.mov');
+        movietoplay_practice_1_distr = strcat(RESOURCEFOLDER,'/Movies_Practice/practice_1_distr.mp4');       
         Show_Blank;
 
         %Concatenate arrays to save gaze data in all one big file
@@ -281,20 +282,19 @@ global parameters WINDOW_PARAMS RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLA
         %Concatenate arrays to save gaze data in all one big file
         C = horzcat(C, GazeData);
               
-        %Save gaze data for attention grab
+        %Save gaze data before attention grab
         GazeData = EYETRACKER.get_gaze_data; 
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['recenter ' ]}; 
-        disp(['recenter ' ])
-        
-        PlayCenterMovie(movietoplay_recenter, 'ownsound', 1);
-        Show_Blank; 
-        
-        [x1,y1,z1] = size(movietoplay_recenter)
+            ['attention grabber start' ]}; 
         
         %Concatenate arrays to save gaze data in all one big file
         C = horzcat(C, GazeData);
+        
+        
+        Get_Attention();
+        
+        
               
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % SAVE THE DATA
@@ -533,14 +533,12 @@ global parameters WINDOW_PARAMS RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLA
         GazeData = EYETRACKER.get_gaze_data; 
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['recenter ' ]}; 
-        disp(['recenter ' ])
-        
-        PlayCenterMovie(movietoplay_recenter, 'ownsound', 1);
-        Show_Blank; 
+            ['attention grabber' ]};  
         
         %Concatenate arrays to save gaze data in all one big file
         C = horzcat(C, GazeData);
+        
+        Get_Attention();
               
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % SAVE THE DATA
@@ -788,15 +786,12 @@ global parameters WINDOW_PARAMS RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLA
         GazeData = EYETRACKER.get_gaze_data; 
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['recenter ' ]}; 
-        disp(['recenter ' ])
-        
-        PlayCenterMovie(movietoplay_recenter, 'ownsound', 1);
-        Show_Blank; 
+            ['attention grabber' ]}; 
         
         %Concatenate arrays to save gaze data in all one big file
         C = horzcat(C, GazeData);
-              
+        
+        Get_Attention();
         
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % SAVE THE DATA
@@ -1032,15 +1027,12 @@ global parameters WINDOW_PARAMS RESOURCEFOLDER STARS TOBII EYETRACKER EXPWIN BLA
         GazeData = EYETRACKER.get_gaze_data; 
         timeCell(end+1,:) = {SUBJECT,...
             TOBII.get_system_time_stamp,...
-            ['recenter ' ]}; 
-        
-        PlayCenterMovie(movietoplay_recenter, 'ownsound', 1);
-        Show_Blank; 
+            ['attention grabber' ]}; 
         
         %Concatenate arrays to save gaze data in all one big file
         C = horzcat(C, GazeData);
               
-        
+        Get_Attention();
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % SAVE THE DATA
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
