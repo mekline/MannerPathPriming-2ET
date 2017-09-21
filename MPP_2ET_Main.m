@@ -41,16 +41,13 @@ global KEYID %Keyboard stuff
 %MPP-specific stuff 
 global CONDITION %Manner, Path, Action, or Effect
 global TOEXTEND %Extend or NoExtend
-global EXTENDPRACTICE %ExtendPractice or NoPractice
-global SUBJFOLDER %Subject Folder for data
+global EXTENDPRACTICE %ExtendPractice or NoPractice %MK's not sure what this is for!
 
 if ~ischar(inputs.SubjectID)
     SUBJECT = num2str(inputs.SubjectID);
 else
     SUBJECT = inputs.SubjectID;
-end
-
-disp(ischar(SUBJECT))
+end 
 
 %Make sure paths are set correctly (your system may need to update these!)
 addpath(genpath('/Applications/TobiiProSDK'));
@@ -61,7 +58,6 @@ EXPFOLDER = fileparts(which('MPP_2ET_Main.m')); %add this folder to the path too
 addpath(genpath(EXPFOLDER));
 mkdir([EXPFOLDER, '/Data/', SUBJECT]);
 DATAFOLDER = [EXPFOLDER, '/Data/', SUBJECT];
-%SUBJFOLDER = [DATAFOLDER '/' SUBJECT];
 EXPERIMENT = inputs.experiment_name;
 CALIBVERSION = inputs.calib_version;
 MAXCALIB = inputs.max_calib;
@@ -74,12 +70,13 @@ EXTENDPRACTICE = inputs.ExtendPractice;
 Conditions = {'Manner', 'Path', 'Action', 'Effect'};
 knownCond = strfind(Conditions, CONDITION);
 k = logical(sum(~cellfun(@isempty, knownCond)));
-assert(k, 'Use Manner Path Action or Effect for main exp')
+assert(k, 'Use Manner Path Action or Effect for main exp');
 
 ExtConditions = {'Extend', 'NoExtend'};
 knownCond = strfind(ExtConditions, TOEXTEND);
 k = logical(sum(~cellfun(@isempty, knownCond)));
-assert(k, 'Use NoExtend or Extend for the extension (NoExtend is default)')
+assert(k, 'Use NoExtend or Extend for the extension (NoExtend is default)');
+
 
 DATAFILE = AssignDataFile(); %will kick you out if the subjname has been used
 
@@ -112,6 +109,7 @@ if USE_EYETRACKER
     end
     
     disp('Connected to the Tobii server, congratulations!');
+    disp('Occasionally the script crashes right here if it doesnt get eyedata right  away,\n especially the first time after the eyetracker is connected. Dont stress, just restart the experiment!');
     %Get and print the Frame rate of the current ET
     fprintf('Frame rate: %d Hz.\n', EYETRACKER.get_gaze_output_frequency());
 end
@@ -123,15 +121,6 @@ end
 %- unplug the ethernet cable & replug
 %- run ping <ip> and then telnet <ip>. If only the latter fails...(I don't
 %know, I am stuck here for Koala room.)
-
-
-%*********************
-% Track status of eyes (position participant before calibrating)
-%*********************
-
-if USE_EYETRACKER
-    TrackEyesOnscreen(Calib);
-end
 
 %*********************
 % Calibration
@@ -150,11 +139,11 @@ end
 Screen('FillRect',EXPWIN, WINDOW_PARAMS.BLACK);
 Screen(EXPWIN,'Flip');
 
-disp(strcat('Starting Experiment: ', EXPERIMENT));
+disp(['Starting Experiment: ', EXPERIMENT]);
 
 %---And the experiment runs here!
 Do_MPP_Exp();
 
-%---Clean up and exit nicely
-Screen('Close',EXPWIN);
-clear all;
+%---After the experiment finishes, clean up and exit nicely
+Screen('CloseAll');
+Closeout_PTool;
