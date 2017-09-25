@@ -1,4 +1,4 @@
-# This script is looking at the eyetracking data of MPP2ET. We're going to read 
+opti# This script is looking at the eyetracking data of MPP2ET. We're going to read 
 # in each participant's trials one by one, append them to each specific phase
 # (Practice, Main, Extend), and then append them all to a dataframe. We're going
 # to loop through each participant. 
@@ -23,7 +23,7 @@ setwd('/Users/crystallee/Documents/Github/MannerPathPriming-2ET/Data')
 
 
 # Reading in subject list
-subjects <- read.csv("MPP2ET_Data.csv")
+subjects <- read.csv("MPP2ET_Pilot_Data.csv")
 
 # Declaring an empty df to append to
 allData <- data.frame(Date=as.Date(character()),
@@ -393,6 +393,40 @@ response_window_agg_by_sub_practice <- response_window_agg_by_sub_practice[-c(3,
 ############################
 # GRAPHS FOR PRACTICE
 ############################
+
+
+## Analyzing pilot data, when are the children looking at which AOI in the practice trials ##
+
+# rank the data, based on subjectID and trialNo
+data <- data %>% 
+  group_by(subjectID, trialNo) %>% 
+  mutate(Rank = dense_rank(system_time_stamp)) %>%
+  arrange(subjectID, trialNo, Rank)
+
+
+data <- make_eyetrackingr_data(data, 
+                               participant_column = "subjectID",
+                               trial_column = "trialNo",
+                               time_column = "system_time_stamp",
+                               trackloss_column = "Trackloss_column",
+                               aoi_columns = c("lookPractice", "lookNotPractice"),
+                               treat_non_aoi_looks_as_missing = FALSE
+)
+
+# rezero system time stamps, so that at every trial start, the system time stamp is 0
+response_window <- subset_by_window(data, window_start_msg = 1, msg_col = "Rank", rezero= TRUE, remove= FALSE)
+
+# aggregate across trials within subjects in time analysis
+response_time <- make_time_sequence_data(response_window, time_bin_size = 500000,
+                                         aois = c("lookPractice", "lookNotPractice")
+)
+
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot_practice_lookingtimesAOI_kid.png")
+
+# visualize time results
+plot(response_time, dv = "Prop") + 
+  theme_light() +
+  coord_cartesian(ylim = c(0,1))
 
 # Creating bar graph
 ggplot(data=response_window_agg_by_sub_practice, aes(x=Condition, y=Prop, fill=AOI)) +
