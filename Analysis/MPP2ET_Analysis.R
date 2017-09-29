@@ -1,4 +1,4 @@
-opti# This script is looking at the eyetracking data of MPP2ET. We're going to read 
+# This script is looking at the eyetracking data of MPP2ET. We're going to read 
 # in each participant's trials one by one, append them to each specific phase
 # (Practice, Main, Extend), and then append them all to a dataframe. We're going
 # to loop through each participant. 
@@ -374,6 +374,8 @@ df_practice_test$Trackloss_column <- ifelse(df_practice_test$L_valid == '1' & df
                                                           ifelse(df_practice_test$L_valid == '0' & df_practice_test$R_valid == '0', TRUE, 'Error'))))
 df_practice_test$Trackloss_column <- as.logical(df_practice_test$Trackloss_column)
 
+# Defining column for looks to anything other than the AOI's
+df_practice_test$lookNotAOI <- ifelse(df_practice_test$Trackloss_column == "FALSE" & df_practice_test$lookPractice == "FALSE" & df_practice_test$lookNotPractice == "FALSE", TRUE, FALSE)
 
 # Starting to use eyetrackingR
 data <- make_eyetrackingr_data(df_practice_test, 
@@ -381,7 +383,7 @@ data <- make_eyetrackingr_data(df_practice_test,
                                trial_column = "trialNo",
                                time_column = "system_time_stamp",
                                trackloss_column = "Trackloss_column",
-                               aoi_columns = c("lookPractice", "lookNotPractice"),
+                               aoi_columns = c("lookPractice", "lookNotPractice", "lookNotAOI"),
                                treat_non_aoi_looks_as_missing = FALSE
 )
 
@@ -403,13 +405,12 @@ data <- data %>%
   mutate(Rank = dense_rank(system_time_stamp)) %>%
   arrange(subjectID, trialNo, Rank)
 
-
 data <- make_eyetrackingr_data(data, 
                                participant_column = "subjectID",
                                trial_column = "trialNo",
                                time_column = "system_time_stamp",
                                trackloss_column = "Trackloss_column",
-                               aoi_columns = c("lookPractice", "lookNotPractice"),
+                               aoi_columns = c("lookPractice", "lookNotPractice", "lookNotAOI"),
                                treat_non_aoi_looks_as_missing = FALSE
 )
 
@@ -418,15 +419,46 @@ response_window <- subset_by_window(data, window_start_msg = 1, msg_col = "Rank"
 
 # aggregate across trials within subjects in time analysis
 response_time <- make_time_sequence_data(response_window, time_bin_size = 500000,
-                                         aois = c("lookPractice", "lookNotPractice")
+                                         #predictor_columns = c("Condition"),
+                                         aois = c("lookPractice", "lookNotPractice", "lookNotAOI")
 )
 
-ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot_practice_lookingtimesAOI_kid.png")
+
 
 # visualize time results
-plot(response_time, dv = "Prop") + 
-  theme_light() +
-  coord_cartesian(ylim = c(0,1))
+plottingmeandata <- response_time %>%
+  group_by(AOI, TimeBin) %>%
+  summarize(meanProp = mean(Prop, na.rm = TRUE)) %>%
+  mutate(subjectID = 'Mean')
+
+plottingtrialdata <- response_time %>%
+  group_by(AOI, TimeBin, trialNo) %>%
+  summarize(meanProp = mean(Prop, na.rm = TRUE))
+
+
+plottinginddata <- response_time %>%
+  group_by(subjectID, AOI, TimeBin) %>%
+  summarize(meanProp = mean(Prop, na.rm = TRUE))
+
+# plot data for the mean
+ggplot(plottingmeandata, aes(x=TimeBin, y=meanProp, color = AOI)) +
+    facet_wrap(~subjectID) +
+    geom_line()
+
+# plot data per individual
+ggplot(plottinginddata, aes(x=TimeBin, y=meanProp, color = AOI)) +
+  facet_wrap(~subjectID) +
+  geom_line()
+
+# plot data per trial
+ggplot(plottingtrialdata, aes(x=TimeBin, y=meanProp, color = AOI)) +
+  facet_wrap(~trialNo) +
+  geom_line()
+  
+                          
+
+
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot_practice_lookingtimesAOI_kid.png")
 
 # Creating bar graph
 ggplot(data=response_window_agg_by_sub_practice, aes(x=Condition, y=Prop, fill=AOI)) +
