@@ -534,8 +534,8 @@ data_NoBias <- make_eyetrackingr_data(data_NoBias,
 # rezero system time stamps, so that at every trial start, the system time stamp is 0
 response_window <- subset_by_window(data_NoBias, window_start_msg = 1, msg_col = "Rank", rezero= TRUE, remove= FALSE)
 
-# aggregate across trials within subjects in time analysis (time bin size is 0.2 seconds)
-response_time <- make_time_sequence_data(response_window, time_bin_size = 200000,
+# aggregate across trials within subjects in time analysis (time bin size is 0.3 seconds)
+response_time <- make_time_sequence_data(response_window, time_bin_size = 300000,
                                          predictor_columns = c("Condition"),
                                          aois = c("lookMannerTest", "lookPathTest"),
                                          summarize_by = "subjectID"
