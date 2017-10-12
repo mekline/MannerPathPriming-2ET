@@ -14,7 +14,7 @@ library("Matrix")
 install.packages("stringr")
 library("stringr")
 
-setwd('/Users/crystallee/Documents/Github/MannerPathPriming-2ET/Data')
+setwd('/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Data')
 
 
 ############################
@@ -147,6 +147,7 @@ for(i in subj.folders){
     temp <- read.delim(data_table, header=TRUE, sep=",")
     df_data_table <- rbind(df_data_table, temp)
   }
+
 
   
   ## makes an empty data frame
@@ -300,8 +301,8 @@ allData$X <- rowMeans(subset(allData, select = c(6, 9)), na.rm = TRUE)
 allData$Y <- rowMeans(subset(allData, select = c(7, 10)), na.rm = TRUE)
 
 # Applying it to the dataframe for trials, it's taking a long time, so we'll apply it in sections
-# a <- lapply(allData$system_time_stamp, trial_time)
-# allData$Trial_description <- a
+a <- lapply(allData$system_time_stamp, trial_time)
+allData$Trial_description <- a
 
 # Adding AOI for Practice
 allData %>%
@@ -328,7 +329,7 @@ allData %>%
                           ifelse(VerbDomain == "Motion" & mannerSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
                           ifelse(VerbDomain == "Motion" & mannerSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(NA)))))) -> allData
 
-# Adding AOI for Manner Bias and Test Bias
+# Adding AOI for Path Bias and Test Bias
 allData %>%
   group_by(Condition, subjectID, trialNo) %>% 
   mutate(lookPathBias = ifelse(VerbDomain == "Motion" & pathSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
@@ -417,8 +418,8 @@ data <- make_eyetrackingr_data(data,
 # rezero system time stamps, so that at every trial start, the system time stamp is 0
 response_window <- subset_by_window(data, window_start_msg = 1, msg_col = "Rank", rezero= TRUE, remove= FALSE)
 
-# aggregate across trials within subjects in time analysis
-response_time <- make_time_sequence_data(response_window, time_bin_size = 500000,
+# aggregate across trials within subjects in time analysis (time bin size is 0.2 seconds)
+response_time <- make_time_sequence_data(response_window, time_bin_size = 200000,
                                          #predictor_columns = c("Condition"),
                                          aois = c("lookPractice", "lookNotPractice", "lookNotAOI")
 )
@@ -445,20 +446,23 @@ ggplot(plottingmeandata, aes(x=TimeBin, y=meanProp, color = AOI)) +
     facet_wrap(~subjectID) +
     geom_line()
 
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot_practice_lookingtimesAOI_kid_mean.png")
+
 # plot data per individual
 ggplot(plottinginddata, aes(x=TimeBin, y=meanProp, color = AOI)) +
   facet_wrap(~subjectID) +
   geom_line()
 
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot_practice_lookingtimesAOI_kid_ind.png")
+
 # plot data per trial
 ggplot(plottingtrialdata, aes(x=TimeBin, y=meanProp, color = AOI)) +
   facet_wrap(~trialNo) +
   geom_line()
+
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot_practice_lookingtimesAOI_kid_trial.png")
   
-                          
-
-
-ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot_practice_lookingtimesAOI_kid.png")
+                        
 
 # Creating bar graph
 ggplot(data=response_window_agg_by_sub_practice, aes(x=Condition, y=Prop, fill=AOI)) +
@@ -472,13 +476,93 @@ ggplot(data=response_window_agg_by_sub_practice, aes(x=Condition, y=Prop, fill=A
 ggsave("pilot_practice_kid_and_adult.png")
 
 
+####################################################################################
+# CREATING A SUBSET DF OF MAIN TEST TRIALS, ONLY THE LEARNING TESTS (NO BIAS)
+####################################################################################
+
+allMain_test <- filter(allData, phase=="Main")
+
+# Applying it to the dataframe for trials, it's taking a long time, so we'll apply it in sections
+a <- lapply(allMain_test$system_time_stamp, trial_time)
+allMain_test$Trial_description <- a
+
+# all main test videos, without bias
+allMain_test_NoBias <- allMain_test[grep("testVideos", allMain_test$Trial_description),]
+allMain_test_NoBias$trialNo <- as.factor(allMain_test_NoBias$trialNo)
+allMain_test_NoBias$lookMannerTest <- as.logical(allMain_test_NoBias$lookMannerTest)
+allMain_test_NoBias$lookPathTest <- as.logical(allMain_test_NoBias$lookPathTest)
+allMain_test_NoBias$system_time_stamp <- as.numeric(allMain_test_NoBias$system_time_stamp)
+
+# IDK IF THIS IS KOSHER OR NOT
+## only keep the unique rows from the input
+allMain_test_NoBias %>% 
+  distinct(trialNo, system_time_stamp, .keep_all = TRUE) -> allMain_test_NoBias
+
+# Starting to use eyetrackingR
+data_NoBias <- make_eyetrackingr_data(allMain_test_NoBias, 
+                                      participant_column = "subjectID",
+                                      trial_column = "trialNo",
+                                      item_columns = "itemID",
+                                      time_column = "system_time_stamp",
+                                      trackloss_column = "Trackloss_column",
+                                      aoi_columns = c("lookMannerTest", "lookPathTest"),
+                                      treat_non_aoi_looks_as_missing = FALSE
+)
+
+# Cleaning data with 25% trackloss
+response_window_clean <- clean_by_trackloss(data = data_NoBias, trial_prop_thresh = .25)
+
+#############################
+# GRAPHS FOR MAIN PILOT STUDY
+#############################
+
+# rank the data, based on subjectID and trialNo
+data_NoBias <- data_NoBias %>% 
+  group_by(subjectID, trialNo) %>% 
+  mutate(Rank = dense_rank(system_time_stamp)) %>%
+  arrange(subjectID, trialNo, Rank)
+
+data_NoBias <- make_eyetrackingr_data(data_NoBias, 
+                                      participant_column = "subjectID",
+                                      trial_column = "trialNo",
+                                      time_column = "system_time_stamp",
+                                      trackloss_column = "Trackloss_column",
+                                      aoi_columns = c("lookMannerTest", "lookPathTest"),
+                                      treat_non_aoi_looks_as_missing = FALSE
+)
+
+# rezero system time stamps, so that at every trial start, the system time stamp is 0
+response_window <- subset_by_window(data_NoBias, window_start_msg = 1, msg_col = "Rank", rezero= TRUE, remove= FALSE)
+
+# aggregate across trials within subjects in time analysis (time bin size is 0.3 seconds)
+response_time <- make_time_sequence_data(response_window, time_bin_size = 300000,
+                                         predictor_columns = c("Condition"),
+                                         aois = c("lookMannerTest", "lookPathTest"),
+                                         summarize_by = "subjectID"
+)
+
+# Adding condition for pilot_0920_x2, because of missing condition data
+response_time$Condition[is.na(response_time$Condition)] <- 'Manner'
 
 
+# visualize time results
+plottingmeandata <- response_time %>%
+  group_by(AOI, TimeBin, Condition) %>%
+  summarize(meanProp = mean(Prop, na.rm = TRUE)) %>%
+  mutate(subjectID = 'Mean')
 
+plot(response_time, predictor_column = "Condition")
+
+# plot data for the mean
+ggplot(plottingmeandata, aes(x=TimeBin, y=meanProp, color = AOI)) +
+  facet_wrap(~Condition) +
+  geom_line()
+
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot_main_lookingtimesAOI_kid_learning_test.png")
 
 
 ############################
-# CREATING A SUBSET DF OF MAIN TEST TRIALS
+# CREATING A SUBSET DF OF MAIN TEST TRIALS, BIAS AND NO BIAS
 ############################
 
 allMain_test <- filter(allData, phase=="Main")
@@ -487,6 +571,7 @@ allMain_test <- filter(allData, phase=="Main")
 a <- lapply(allMain_test$system_time_stamp, trial_time)
 allMain_test$Trial_description <- a
 
+# all main test videos
 allMain_test <- allMain_test[grep("testVideos|biasTest", allMain_test$Trial_description),]
 allMain_test$trialNo <- as.factor(allMain_test$trialNo)
 allMain_test$lookMannerBias <- as.logical(allMain_test$lookMannerBias)
@@ -500,6 +585,7 @@ allMain_test$system_time_stamp <- as.numeric(allMain_test$system_time_stamp)
 allMain_test %>% 
   distinct(trialNo, system_time_stamp, .keep_all = TRUE) -> allMain_test
 
+
 # Starting to use eyetrackingR
 data <- make_eyetrackingr_data(allMain_test, 
                                participant_column = "subjectID",
@@ -511,12 +597,14 @@ data <- make_eyetrackingr_data(allMain_test,
                                treat_non_aoi_looks_as_missing = FALSE
 )
 
+
 # Cleaning data with 25% trackloss
 response_window_clean <- clean_by_trackloss(data = data, trial_prop_thresh = .25)
 
 ############################
 # GRAPHS FOR MAIN
 ############################
+
 
 # Aggregating by Condition to get a proportion of looks to screen by AOI
 response_window_agg_by_sub_main <- make_time_window_data(response_window_clean, aois = c("lookMannerBias", "lookMannerTest", "lookPathBias", "lookPathTest"), summarize_by = c("Condition"))
@@ -561,6 +649,15 @@ allMain_test_1$trialNo <- as.factor(allMain_test_1$trialNo)
 allMain_test_1$lookMannerBias <- as.logical(allMain_test_1$lookMannerBias)
 allMain_test_1$lookPathBias <- as.logical(allMain_test_1$lookPathBias)
 allMain_test_1$system_time_stamp <- as.numeric(allMain_test_1$system_time_stamp)
+
+# all main test videos, with and without bias
+allMain_test_BiasNoBias <- allMain_test[grep("testVideos|biasTest", allMain_test$Trial_description),]
+allMain_test_BiasNoBias$trialNo <- as.factor(allMain_test_BiasNoBias$trialNo)
+allMain_test_BiasNoBias$lookMannerBias <- as.logical(allMain_test_BiasNoBias$lookMannerBias)
+allMain_test_BiasNoBias$lookMannerTest <- as.logical(allMain_test_BiasNoBias$lookMannerTest)
+allMain_test_BiasNoBias$lookPathBias <- as.logical(allMain_test_BiasNoBias$lookPathBias)
+allMain_test_BiasNoBias$lookPathTest <- as.logical(allMain_test_BiasNoBias$lookPathTest)
+allMain_test_BiasNoBias$system_time_stamp <- as.numeric(allMain_test_BiasNoBias$system_time_stamp)
 
 # IDK IF THIS IS KOSHER OR NOT
 allMain_test_1 %>% 
