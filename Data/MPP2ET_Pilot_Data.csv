@@ -9,7 +9,7 @@ pilot_0803,Path,8/3/17,7/31/15,734,Parker,1,Sat through the whole thing!
 pilot_0807,Path,8/7/17,9/7/14,1065,Calvin,1,"Sat through the whole thing, but was a bit inattentive towards the end"
 pilot_adult5,Manner,8/4/17,,,Cristina,1,Experiment crashed
 pilot_0804,Manner,8/4/16,2/11/15,540,Peter,1,"Sat through the whole thing, but needed a break halfway through"
-pilot_0920,Manner,9/20/17,,,Scarlet,1,"31 months old. Script crashed after 1st trial (MK coding error), very engaged in the new shapes and sounds calibrator. "
+pilot_0920,Manner,9/20/17,,,Scarlet,,"31 months old. Script crashed after 1st trial (MK coding error), very engaged in the new shapes and sounds calibrator. "
 pilot_0927_x3,Manner,9/27/17,,,James,,33 months old. Got through the fifth monster video trial
 pilot_1004,Path,10/4/17,,,Emerson,,"31 months old. Sat through the whole thing, but turned around a couple of times"
 pilot_1004_4PM,Manner,10/4/17,,,Bridget,,28 months old.
@@ -18,5 +18,5 @@ pilot_1012_9AM,Manner,10/12/17,,,Henry,,27 months old. Stopped after practice tr
 pilot_1012_10AM,Path,10/12/17,,,Linus,,"27 months old. Sat through the whole thing, but got a little bored after trial 5"
 pilot_1016_9am,Manner,10/16/17,,,Zoe,,25 months old. Start pilot 2: sat through the whole thing
 pilot_1016_10am,Path,10/16/17,,,Caroline,,28 months old. Stopped during trial 6. 
-,,,,,,,
+pilot_1023,Manner,10/23/17,,,Elodie,,"35 months old. Sat through the whole thing, but often changed positions"
 ,,,,,,,
