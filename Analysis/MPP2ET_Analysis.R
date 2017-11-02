@@ -102,7 +102,7 @@ for(i in subj.folders){
   # Importing files specific to participant
   ############################
   
-  # Gettting all the practice trials for 1 subject
+  # Getting all the practice trials for 1 subject
   file.names_practice_temp <- list.files(path = i, recursive = FALSE, full.names = TRUE, pattern = ".*\\Practice_.*.csv")
   file.names_practice <- c(file.names_practice, file.names_practice_temp)
 
@@ -388,11 +388,6 @@ data_practice <- make_eyetrackingr_data(df_practice_test,
                                treat_non_aoi_looks_as_missing = FALSE
 )
 
-# Aggregating by subjectID to get a proportion of looks to screen by AOI
-response_window_agg_by_sub_practice <- make_time_window_data(data_practice, aois = c("lookPractice", "lookNotPractice"), summarize_by = c("Condition"))
-response_window_agg_by_sub_practice$Condition[response_window_agg_by_sub_practice$subjectID == "pilot_0725"] <- "Path"
-response_window_agg_by_sub_practice <- response_window_agg_by_sub_practice[-c(3,6),]
-
 ############################
 # GRAPHS FOR PRACTICE
 ############################
@@ -458,24 +453,6 @@ ggplot(plot_practice_trial, aes(x=TimeBin, y=meanProp, color = AOI)) +
   facet_wrap(~trialNo) +
   geom_line()
 
-# Creating bar graphs for looking times to AOI
-plot_practice_mean_ind <- response_time_practice %>%
-  group_by(AOI, TimeBin) %>%
-  summarize(meanProp = mean(Prop, na.rm = TRUE)) %>%
-  mutate(bigTimeBin = ifelse(TimeBin < 15, "FirstQuarter", ifelse(TimeBin <30, "SecondQuarter", ifelse(TimeBin < 45, "ThirdQuarter", "FourthQuarter"))))
-
-ggplot(plot_practice_mean_ind, aes(x=AOI, y=meanProp, fill = AOI)) +
-  geom_bar(stat="identity")
-
-ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_bar_AOI.png")
-
-
-ggplot(plot_practice_mean_ind, aes(x=AOI, y=meanProp, fill = AOI)) +
-  facet_wrap(~bigTimeBin) +
-  geom_bar(stat="identity")
-
-ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_bar_AOI_quarters.png")
-
 # Analysing trackloss data practice trials
 
 tl_practice_analysis <- trackloss_analysis(data_practice)
@@ -487,15 +464,32 @@ ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2
                         
 
 # Creating bar graph
-ggplot(data=response_window_agg_by_sub_practice, aes(x=Condition, y=Prop, fill=AOI)) +
-  geom_bar(stat="identity", position=position_dodge(), colour="black") + 
+
+# Aggregating by subjectID to get a proportion of looks to screen by AOI
+response_window_agg_by_sub_practice <- make_time_window_data(data_practice, aois = c("lookPractice", "lookNotPractice", "lookNotAOI"), summarize_by = c("subjectID"))
+
+ggplot(data=response_window_agg_by_sub_practice, aes(x=AOI, y=Prop, fill=AOI)) +
+  geom_bar(stat="identity", position=position_dodge()) + 
   ylab("Proportion of looks to correct video") +
   theme(axis.title = element_text(size=18),
         axis.text.x  = element_text(size=18),
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("pilot_practice_kid_and_adult.png")
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_bar_AOI.png")
+
+# Creating bar graph per quarter
+plot_practice_mean_ind <- response_time_practice %>%
+  group_by(AOI, TimeBin) %>%
+  summarize(meanProp = mean(Prop, na.rm = TRUE)) %>%
+  mutate(bigTimeBin = ifelse(TimeBin < 15, "FirstQuarter", ifelse(TimeBin <30, "SecondQuarter", ifelse(TimeBin < 45, "ThirdQuarter", "FourthQuarter"))))
+
+ggplot(plot_practice_mean_ind, aes(x=AOI, y=meanProp, fill = AOI)) +
+  facet_wrap(~bigTimeBin) +
+  geom_bar(stat="identity", position=position_dodge())
+
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_bar_AOI_quarters.png")
+
 
 ####################################################################################
 # CREATING A SUBSET DF OF MAIN TRIALS, TO CHECK FOR TRACKLOSS
@@ -612,7 +606,7 @@ data_noBias <- make_eyetrackingr_data(allMain_test_noBias,
 )
 
 # Cleaning data with 25% trackloss
-response_window_clean <- clean_by_trackloss(data = data_noBias, trial_prop_thresh = .25)
+response_window_clean_noBias <- clean_by_trackloss(data = data_noBias, trial_prop_thresh = .25)
 
 #############################
 # GRAPHS FOR MAIN PILOT STUDY
@@ -658,6 +652,34 @@ ggplot(plot_noBias_mean, aes(x=TimeBin, y=meanProp, color = AOI)) +
   geom_line()
 
 ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_main_lookingtimesAOI_learning_test.png")
+
+# Creating bar graphs for looking times to AOI
+
+# Aggregating by subjectID to get a proportion of looks to screen by AOI
+response_window_agg_by_sub_noBias <- make_time_window_data(response_window_clean_noBias, aois = c("lookMannerBias", "lookPathBias"), predictor_columns=c("Condition"), summarize_by = c("subjectID"))
+
+ggplot(data=response_window_agg_by_sub_noBias, aes(x=Condition, y=Prop, fill=AOI)) +
+  geom_bar(stat="identity", position=position_dodge()) + 
+  ylab("Proportion of looks to correct video") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold")) 
+
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_noBias_bar_AOI.png")
+
+# Aggregating by subjectID and trialNo
+response_window_agg_by_sub_trialNo_noBias <- make_time_window_data(response_window_clean_noBias, aois = c("lookMannerBias", "lookPathBias"), predictor_columns=c("Condition"), summarize_by = c("subjectID", "trialNo"))
+
+ggplot(data=response_window_agg_by_sub_trialNo_noBias, aes(x=Condition, y=Prop, fill=AOI)) +
+  geom_bar(stat="identity", position=position_dodge()) + 
+  ylab("Proportion of looks to correct video") +
+  facet_wrap(~trialNo) +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold")) 
+
 
 # Analysing trackloss data test trials
 
