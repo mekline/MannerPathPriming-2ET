@@ -316,6 +316,18 @@ allData %>%
                            ifelse(phase == "Practice" & trialNo == "3" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), 
                            ifelse(phase == "Practice" & trialNo == "4" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE), as.logical(FALSE)))))) -> allData
   
+# Adding AOI half screen for Practice
+allData %>%
+  group_by(Condition, subjectID, trialNo) %>%
+  mutate(lookPracticeHalf = ifelse(phase == "Practice" & trialNo == "1" & X > 0.67, as.logical(TRUE), 
+                        ifelse(phase == "Practice" & trialNo == "2" & X < 0.605, as.logical(TRUE), 
+                        ifelse(phase == "Practice" & trialNo == "3" & X < 0.605, as.logical(TRUE), 
+                        ifelse(phase == "Practice" & trialNo == "4" & X < 0.605, as.logical(TRUE), as.logical(FALSE)))))) %>%
+  mutate(lookNotPracticeHalf = ifelse(phase == "Practice" & trialNo == "1" & X < 0.605, as.logical(TRUE), 
+                            ifelse(phase == "Practice" & trialNo == "2" & X > 0.67, as.logical(TRUE), 
+                            ifelse(phase == "Practice" & trialNo == "3" & X > 0.67, as.logical(TRUE), 
+                            ifelse(phase == "Practice" & trialNo == "4" & X > 0.67, as.logical(TRUE), as.logical(FALSE)))))) -> allData
+
 
 # Adding AOI for Manner Bias and Test Bias
 allData %>%
@@ -333,13 +345,13 @@ allData %>%
 allData %>%
   group_by(Condition, subjectID, trialNo) %>% 
   mutate(lookPathBias = ifelse(VerbDomain == "Motion" & pathSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
-                          ifelse(VerbDomain == "Motion" &pathSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
-                          ifelse(VerbDomain == "Motion" &mannerSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
-                          ifelse(VerbDomain == "Motion" &mannerSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE), as.logical(NA)))))) %>% 
-  mutate(lookPathTest = ifelse(VerbDomain == "Motion" &pathSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
-                          ifelse(VerbDomain == "Motion" &pathSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
-                          ifelse(VerbDomain == "Motion" &mannerSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
-                          ifelse(VerbDomain == "Motion" &mannerSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE), as.logical(NA)))))) -> allData
+                          ifelse(VerbDomain == "Motion" & pathSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
+                          ifelse(VerbDomain == "Motion" & mannerSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(VerbDomain == "Motion" & mannerSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE), as.logical(NA)))))) %>% 
+  mutate(lookPathTest = ifelse(VerbDomain == "Motion" & pathSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
+                          ifelse(VerbDomain == "Motion" & pathSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(TRUE),
+                          ifelse(VerbDomain == "Motion" & mannerSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE),
+                          ifelse(VerbDomain == "Motion" & mannerSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, as.logical(FALSE), as.logical(NA)))))) -> allData
 
 # Adding AOI for Generalization Test
 allData %>%
@@ -384,7 +396,7 @@ data_practice <- make_eyetrackingr_data(df_practice_test,
                                trial_column = "trialNo",
                                time_column = "system_time_stamp",
                                trackloss_column = "Trackloss_column",
-                               aoi_columns = c("lookPractice", "lookNotPractice", "lookNotAOI"),
+                               aoi_columns = c("lookPractice", "lookNotPractice", "lookNotAOI", "lookPracticeHalf", "lookNotPracticeHalf"),
                                treat_non_aoi_looks_as_missing = FALSE
 )
 
@@ -410,46 +422,99 @@ data_practice <- make_eyetrackingr_data(data_practice,
                                treat_non_aoi_looks_as_missing = FALSE
 )
 
+
+# making eyetrackingR data for AOI half screen
+data_practice_half <- make_eyetrackingr_data(data_practice, 
+                                        participant_column = "subjectID",
+                                        trial_column = "trialNo",
+                                        time_column = "system_time_stamp",
+                                        trackloss_column = "Trackloss_column",
+                                        aoi_columns = c("lookPracticeHalf", "lookNotPracticeHalf"),
+                                        treat_non_aoi_looks_as_missing = FALSE
+)
+
 # rezero system time stamps, so that at every trial start, the system time stamp is 0
 response_window_practice <- subset_by_window(data_practice, window_start_msg = 1, msg_col = "Rank", rezero= TRUE, remove= FALSE)
 
+# again for AIO half screen
+response_window_practice_half <- subset_by_window(data_practice_half, window_start_msg = 1, msg_col = "Rank", rezero= TRUE, remove= FALSE)
+
 # aggregate across trials within subjects in time analysis (time bin size is 0.2 seconds)
 response_time_practice <- make_time_sequence_data(response_window_practice, time_bin_size = 200000,
-                                         #predictor_columns = c("Condition"),
                                          aois = c("lookPractice", "lookNotPractice", "lookNotAOI")
 )
+
+# transforming microseconds to miliseconds
+response_time_practice <- response_time_practice %>%
+  mutate(time_ms = Time/1000)
+
+# again for AIO half screen
+response_time_practice_half <- make_time_sequence_data(response_window_practice_half, time_bin_size = 200000,
+                                                   aois = c("lookPracticeHalf", "lookNotPracticeHalf")
+)
+
+
+response_time_practice_half <- response_time_practice_half %>%
+  mutate(time_ms = Time/1000)
 
 
 
 # visualize time results
 plot_practice_mean <- response_time_practice %>%
-  group_by(AOI, TimeBin) %>%
+  group_by(AOI, TimeBin, time_ms) %>%
+  summarize(meanProp = mean(Prop, na.rm = TRUE)) %>%
+  mutate(subjectID = 'Mean')%>%
+  mutate(bigTimeBin = ifelse(TimeBin < 15, "FirstQuarter", ifelse(TimeBin <30, "SecondQuarter", ifelse(TimeBin < 45, "ThirdQuarter", "FourthQuarter"))))
+
+plot_practice_mean_half <- response_time_practice_half %>%
+  group_by(AOI, TimeBin, time_ms) %>%
   summarize(meanProp = mean(Prop, na.rm = TRUE)) %>%
   mutate(subjectID = 'Mean')%>%
   mutate(bigTimeBin = ifelse(TimeBin < 15, "FirstQuarter", ifelse(TimeBin <30, "SecondQuarter", ifelse(TimeBin < 45, "ThirdQuarter", "FourthQuarter"))))
 
 plot_practice_trial <- response_time_practice %>%
-  group_by(AOI, TimeBin, trialNo) %>%
+  group_by(AOI, TimeBin, trialNo, time_ms) %>%
   summarize(meanProp = mean(Prop, na.rm = TRUE))
 
 plot_practice_ind <- response_time_practice %>%
-  group_by(subjectID, AOI, TimeBin) %>%
+  group_by(subjectID, AOI, TimeBin, time_ms) %>%
   summarize(meanProp = mean(Prop, na.rm = TRUE))
 
-# plot data for the mean
-ggplot(plot_practice_mean, aes(x=TimeBin, y=meanProp, color = AOI)) +
-    facet_wrap(~subjectID) +
-    geom_line()
+# plot data for the mean proportion of looks to video in a line graph
+ggplot(plot_practice_mean, aes(x=time_ms, y=meanProp, color = AOI)) +
+  facet_wrap(~subjectID) +
+  geom_line() +
+  ylab("Proportion of looks to video") +
+  xlab("Time (ms)") +
+  ggtitle("Looks during practice trials") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold")) 
 
 ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_line_AOI.png")
 
-# plot data per individual
-ggplot(plot_practice_ind, aes(x=TimeBin, y=meanProp, color = AOI)) +
+# plot data for the AOI half screen
+ggplot(plot_practice_mean_half, aes(x=time_ms, y=meanProp, color = AOI)) +
+  facet_wrap(~subjectID) +
+  geom_line() +
+  ylab("Proportion of looks to video") +
+  xlab("Time (ms)") +
+  ggtitle("Looks during practice trials") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold")) 
+
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_line_AOI_half_screen.png")
+
+# plot data per individual in a line graph
+ggplot(plot_practice_ind, aes(x=time_ms, y=meanProp, color = AOI)) +
   facet_wrap(~subjectID) +
   geom_line()
 
-# plot data per trial
-ggplot(plot_practice_trial, aes(x=TimeBin, y=meanProp, color = AOI)) +
+# plot data per trial in a line graph
+ggplot(plot_practice_trial, aes(x=time_ms, y=meanProp, color = AOI)) +
   facet_wrap(~trialNo) +
   geom_line()
 
@@ -458,19 +523,37 @@ ggplot(plot_practice_trial, aes(x=TimeBin, y=meanProp, color = AOI)) +
 tl_practice_analysis <- trackloss_analysis(data_practice)
 
 ggplot(tl_practice_analysis, aes(x=trialNo, y=TracklossForTrial)) +
-  geom_boxplot()
+  geom_boxplot() + 
+  ylab("Trackloss") +
+  xlab("Trial") +
+  ggtitle("Trackloss during practice trials") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold")) 
 
 ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_trackloss_per_trial.png")
                         
 
-# Creating bar graph
+## Creating bar graphs
 
 # Aggregating by subjectID to get a proportion of looks to screen by AOI
 response_window_agg_by_sub_practice <- make_time_window_data(data_practice, aois = c("lookPractice", "lookNotPractice", "lookNotAOI"), summarize_by = c("subjectID"))
 
-ggplot(data=response_window_agg_by_sub_practice, aes(x=AOI, y=Prop, fill=AOI)) +
-  geom_bar(stat="identity", position=position_dodge()) + 
+# Creating error bars
+response_window_agg_by_sub_practice_sum <- response_window_agg_by_sub_practice %>%
+  dplyr::group_by(AOI) %>%   # the grouping variable
+  summarise(mean_prop = mean(Prop),  # calculates the mean of each group
+            sd_prop = sd(Prop), # calculates the standard deviation of each group
+            n_prop = n(),  # calculates the sample size per group
+            SE_prop = sd(Prop)/sqrt(n())) # calculates the standard error of each group
+
+# Creating a bar graph for the proportion of looks to the correct video
+ggplot(data=response_window_agg_by_sub_practice_sum, aes(x=AOI, y=mean_prop, fill=AOI)) +
+  geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) + 
+  geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2) +
   ylab("Proportion of looks to correct video") +
+  ggtitle("Looks during practice") +
   theme(axis.title = element_text(size=18),
         axis.text.x  = element_text(size=18),
         axis.text.y = element_text(size=18),
@@ -478,17 +561,86 @@ ggplot(data=response_window_agg_by_sub_practice, aes(x=AOI, y=Prop, fill=AOI)) +
 
 ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_bar_AOI.png")
 
-# Creating bar graph per quarter
+# Same for AOI half screen
+response_window_agg_by_sub_practice_half <- make_time_window_data(data_practice_half, aois = c("lookPracticeHalf", "lookNotPracticeHalf"), summarize_by = c("subjectID"))
+
+# Creating error bars
+response_window_agg_by_sub_practice_half_sum <- response_window_agg_by_sub_practice_half %>% # the names of the new data frame and the data frame to be summarised
+  group_by(AOI) %>%   # the grouping variable
+  summarise(mean_prop = mean(Prop),  # calculates the mean of each group
+            sd_prop = sd(Prop), # calculates the standard deviation of each group
+            n_prop = n(),  # calculates the sample size per group
+            SE_prop = sd(Prop)/sqrt(n())) # calculates the standard error of each group
+
+
+# Creating a bar graph for the proportion of looks to the correct video
+ggplot(data=response_window_agg_by_sub_practice_half_sum, aes(x=AOI, y=mean_prop, fill=AOI)) +
+  geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) + 
+  geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2) +
+  ylab("Proportion of looks to correct video") +
+  ggtitle("Looks during practice trials") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold"))
+
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_bar_AOI_half_screen.png")
+
+
+
+# Creating bar graph for the proportion of looks divided into time quarters
 plot_practice_mean_ind <- response_time_practice %>%
   group_by(AOI, TimeBin) %>%
   summarize(meanProp = mean(Prop, na.rm = TRUE)) %>%
   mutate(bigTimeBin = ifelse(TimeBin < 15, "FirstQuarter", ifelse(TimeBin <30, "SecondQuarter", ifelse(TimeBin < 45, "ThirdQuarter", "FourthQuarter"))))
 
-ggplot(plot_practice_mean_ind, aes(x=AOI, y=meanProp, fill = AOI)) +
+# Creating error bars
+plot_practice_mean_ind_sum <- plot_practice_mean_ind %>%
+  dplyr::group_by(AOI, bigTimeBin) %>%   # the grouping variable
+  summarise(mean_prop = mean(meanProp),  # calculates the mean of each group
+            sd_prop = sd(meanProp), # calculates the standard deviation of each group
+            n_prop = n(),  # calculates the sample size per group
+            SE_prop = sd(meanProp)/sqrt(n())) # calculates the standard error of each group
+
+# Make the bar graph
+ggplot(plot_practice_mean_ind_sum, aes(x=AOI, y=mean_prop, fill = AOI)) +
   facet_wrap(~bigTimeBin) +
-  geom_bar(stat="identity", position=position_dodge())
+  geom_bar(stat="identity", position=position_dodge()) + 
+  geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2, position=position_dodge(.9)) +
+  ylab("Proportion of looks to correct video")  +
+  ggtitle("Looks to practice trials per quarter") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=12),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold"))
 
 ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_bar_AOI_quarters.png")
+
+# Again for AOI half screen
+plot_practice_mean_ind_half <- response_time_practice_half %>%
+  group_by(AOI, TimeBin) %>%
+  summarize(meanProp = mean(Prop, na.rm = TRUE)) %>%
+  mutate(bigTimeBin = ifelse(TimeBin < 15, "FirstQuarter", ifelse(TimeBin <30, "SecondQuarter", ifelse(TimeBin < 45, "ThirdQuarter", "FourthQuarter"))))
+
+plot_practice_mean_ind_half_sum <- plot_practice_mean_ind_half %>%
+  dplyr::group_by(AOI, bigTimeBin) %>%   # the grouping variable
+  summarise(mean_prop = mean(meanProp),  # calculates the mean of each group
+            sd_prop = sd(meanProp), # calculates the standard deviation of each group
+            n_prop = n(),  # calculates the sample size per group
+            SE_prop = sd(meanProp)/sqrt(n())) # calculates the standard error of each group
+
+ggplot(plot_practice_mean_ind_half_sum, aes(x=AOI, y=mean_prop, fill = AOI)) +
+  facet_wrap(~bigTimeBin) +
+  geom_bar(stat="identity", position=position_dodge()) + 
+  geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2, position=position_dodge(.9))  +
+  ylab("Proportion of looks to correct video") +
+  ggtitle("Looks to practice trials per quarter") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=12),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold"))
+
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_bar_AOI_quarters_half_screen.png")
 
 
 ####################################################################################
@@ -528,7 +680,14 @@ data_main <- make_eyetrackingr_data(allMain,
 tl_main_analysis <- trackloss_analysis(data_main)
 
 ggplot(tl_main_analysis, aes(x=trialNo, y=TracklossForTrial)) +
-  geom_boxplot()
+  geom_boxplot() +
+  ylab("Trackloss") +
+  xlab("Trial") +
+  ggtitle("Trackloss during main trials") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold")) 
 
 ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_main_trackloss_per_trial.png")
 
@@ -608,9 +767,9 @@ data_noBias <- make_eyetrackingr_data(allMain_test_noBias,
 # Cleaning data with 25% trackloss
 response_window_clean_noBias <- clean_by_trackloss(data = data_noBias, trial_prop_thresh = .25)
 
-#############################
-# GRAPHS FOR MAIN PILOT STUDY
-#############################
+###############################################
+# GRAPHS FOR MAIN PILOT STUDY LEARNING VIDEOS (NO BIAS)
+###############################################
 
 # rank the data, based on subjectID and trialNo
 data_noBias <- data_noBias %>% 
@@ -637,30 +796,51 @@ response_time_noBias <- make_time_sequence_data(response_window_noBias, time_bin
                                          summarize_by = "subjectID"
 )
 
+# transforming microseconds to miliseconds
+response_time_noBias <- response_time_noBias %>%
+  mutate(time_ms = Time/1000)
+
 
 # visualize time results
 plot_noBias_mean <- response_time_noBias %>%
-  group_by(AOI, TimeBin, Condition) %>%
+  group_by(AOI, TimeBin, Condition,time_ms) %>%
   summarize(meanProp = mean(Prop, na.rm = TRUE)) %>%
   mutate(subjectID = 'Mean')
 
-plot(response_time_noBias, predictor_column = "Condition")
 
-# plot data for the mean
-ggplot(plot_noBias_mean, aes(x=TimeBin, y=meanProp, color = AOI)) +
+# plot data for the mean in a line graph
+ggplot(plot_noBias_mean, aes(x=time_ms, y=meanProp, color = AOI)) +
   facet_wrap(~Condition) +
-  geom_line()
+  geom_line() + 
+  ylab("Proportion of looks to video") +
+  xlab("Time (ms)") +
+  ggtitle ("Looks to test videos") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold")) 
 
 ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_main_lookingtimesAOI_learning_test.png")
 
-# Creating bar graphs for looking times to AOI
+## Creating bar graphs for looking times to AOI
 
 # Aggregating by subjectID to get a proportion of looks to screen by AOI
-response_window_agg_by_sub_noBias <- make_time_window_data(response_window_clean_noBias, aois = c("lookMannerBias", "lookPathBias"), predictor_columns=c("Condition"), summarize_by = c("subjectID"))
+response_window_agg_by_sub_noBias <- make_time_window_data(response_window_clean_noBias, aois = c("lookMannerTest", "lookPathTest"), predictor_columns=c("Condition"), summarize_by = c("subjectID"))
 
-ggplot(data=response_window_agg_by_sub_noBias, aes(x=Condition, y=Prop, fill=AOI)) +
-  geom_bar(stat="identity", position=position_dodge()) + 
+# Creating error bars
+response_window_agg_by_sub_noBias_sum <- response_window_agg_by_sub_noBias %>%
+  dplyr::group_by(Condition, AOI) %>%   # the grouping variable
+  summarise(mean_prop = mean(Prop),  # calculates the mean of each group
+            sd_prop = sd(Prop), # calculates the standard deviation of each group
+            n_prop = n(),  # calculates the sample size per group
+            SE_prop = sd(Prop)/sqrt(n())) # calculates the standard error of each group
+
+# Creating the bar graph for the learning tests
+ggplot(data=response_window_agg_by_sub_noBias_sum, aes(x=Condition, y=mean_prop, fill=AOI)) +
+  geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) +
+  geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2, position=position_dodge(.9)) +
   ylab("Proportion of looks to correct video") +
+  ggtitle("Looks to test videos")
   theme(axis.title = element_text(size=18),
         axis.text.x  = element_text(size=18),
         axis.text.y = element_text(size=18),
@@ -669,10 +849,11 @@ ggplot(data=response_window_agg_by_sub_noBias, aes(x=Condition, y=Prop, fill=AOI
 ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_noBias_bar_AOI.png")
 
 # Aggregating by subjectID and trialNo
-response_window_agg_by_sub_trialNo_noBias <- make_time_window_data(response_window_clean_noBias, aois = c("lookMannerBias", "lookPathBias"), predictor_columns=c("Condition"), summarize_by = c("subjectID", "trialNo"))
+response_window_agg_by_sub_trialNo_noBias <- make_time_window_data(response_window_clean_noBias, aois = c("lookMannerTest", "lookPathTest"), predictor_columns=c("Condition"), summarize_by = c("subjectID", "trialNo"))
 
+# Creating a bar graph for every trial of the learning tests
 ggplot(data=response_window_agg_by_sub_trialNo_noBias, aes(x=Condition, y=Prop, fill=AOI)) +
-  geom_bar(stat="identity", position=position_dodge()) + 
+  geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) + 
   ylab("Proportion of looks to correct video") +
   facet_wrap(~trialNo) +
   theme(axis.title = element_text(size=18),
@@ -686,9 +867,156 @@ ggplot(data=response_window_agg_by_sub_trialNo_noBias, aes(x=Condition, y=Prop, 
 tl_noBias_analysis <- trackloss_analysis(data_noBias)
 
 ggplot(tl_noBias_analysis, aes(x=trialNo, y=TracklossForTrial)) +
-  geom_boxplot()
+  geom_boxplot() +
+  ylab("Trackloss") +
+  xlab("Trial") +
+  ggtitle("Trackloss during test videos") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold")) 
 
 ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_mainNoBias_trackloss_per_trial.png")
+
+##############################################################
+# CREATING A SUBSET DF OF MAIN TEST TRIALS, ONLY THE BIAS TEST
+##############################################################
+
+# all main test videos, without bias
+allMain_test_Bias <- allMain_test[grep("biasTest", allMain_test$Trial_description),]
+allMain_test_Bias$trialNo <- as.factor(allMain_test_Bias$trialNo)
+allMain_test_Bias$lookMannerBias <- as.logical(allMain_test_Bias$lookMannerBias)
+allMain_test_Bias$lookPathBias <- as.logical(allMain_test_Bias$lookPathBias)
+allMain_test_Bias$system_time_stamp <- as.numeric(allMain_test_Bias$system_time_stamp)
+
+# IDK IF THIS IS KOSHER OR NOT
+## only keep the unique rows from the input
+allMain_test_Bias %>% 
+  distinct(trialNo, system_time_stamp, .keep_all = TRUE) -> allMain_test_Bias
+
+# Starting to use eyetrackingR
+data_Bias <- make_eyetrackingr_data(allMain_test_Bias, 
+                                      participant_column = "subjectID",
+                                      trial_column = "trialNo",
+                                      item_columns = "itemID",
+                                      time_column = "system_time_stamp",
+                                      trackloss_column = "Trackloss_column",
+                                      aoi_columns = c("lookMannerBias", "lookPathBias"),
+                                      treat_non_aoi_looks_as_missing = FALSE
+)
+
+# Cleaning data with 25% trackloss
+response_window_clean_Bias <- clean_by_trackloss(data = data_Bias, trial_prop_thresh = .25)
+
+#############################
+# GRAPHS FOR MAIN PILOT STUDY
+#############################
+
+# rank the data, based on subjectID and trialNo
+data_Bias <- data_Bias %>% 
+  group_by(subjectID, trialNo) %>% 
+  mutate(Rank = dense_rank(system_time_stamp)) %>%
+  arrange(subjectID, trialNo, Rank)
+
+data_Bias <- make_eyetrackingr_data(data_Bias, 
+                                      participant_column = "subjectID",
+                                      trial_column = "trialNo",
+                                      time_column = "system_time_stamp",
+                                      trackloss_column = "Trackloss_column",
+                                      aoi_columns = c("lookMannerBias", "lookPathBias"),
+                                      treat_non_aoi_looks_as_missing = FALSE
+)
+
+# rezero system time stamps, so that at every trial start, the system time stamp is 0
+response_window_Bias <- subset_by_window(data_Bias, window_start_msg = 1, msg_col = "Rank", rezero= TRUE, remove= FALSE)
+
+# aggregate across trials within subjects in time analysis (time bin size is 0.3 seconds)
+response_time_Bias <- make_time_sequence_data(response_window_Bias, time_bin_size = 300000,
+                                                predictor_columns = c("Condition"),
+                                                aois = c("lookMannerBias", "lookPathBias"),
+                                                summarize_by = "subjectID"
+)
+
+# transforming microseconds to miliseconds
+response_time_Bias <- response_time_Bias %>%
+  mutate(time_ms = Time/1000)
+
+
+# visualize time results
+plot_Bias_mean <- response_time_Bias %>%
+  group_by(AOI, TimeBin, Condition,time_ms) %>%
+  summarize(meanProp = mean(Prop, na.rm = TRUE)) %>%
+  mutate(subjectID = 'Mean')
+
+# plot data for the mean in a line graph
+ggplot(plot_Bias_mean, aes(x=time_ms, y=meanProp, color = AOI)) +
+  facet_wrap(~Condition) +
+  geom_line() + 
+  ylab("Proportion of looks to video") +
+  xlab("Time (ms)") +
+  ggtitle("Looks to bias test videos") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold")) 
+
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_main_lookingtimesAOI_bias_test.png")
+
+# Creating bar graphs for looking times to AOI
+
+# Aggregating by subjectID to get a proportion of looks to screen by AOI
+response_window_agg_by_sub_Bias <- make_time_window_data(response_window_clean_Bias, aois = c("lookMannerBias", "lookPathBias"), predictor_columns=c("Condition"), summarize_by = c("subjectID"))
+
+# Creating the error bars
+response_window_agg_by_sub_Bias_sum <- response_window_agg_by_sub_Bias %>%
+  dplyr::group_by(Condition, AOI) %>%   # the grouping variable
+  summarise(mean_prop = mean(Prop),  # calculates the mean of each group
+            sd_prop = sd(Prop), # calculates the standard deviation of each group
+            n_prop = n(),  # calculates the sample size per group
+            SE_prop = sd(Prop)/sqrt(n())) # calculates the standard error of each group
+
+# Creating the bar graph
+ggplot(data=response_window_agg_by_sub_Bias_sum, aes(x=Condition, y=mean_prop, fill=AOI)) +
+  geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) +
+  geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2, position=position_dodge(.9)) +
+  ylab("Proportion of looks to correct video") +
+  ggtitle("Looks to bias test videos") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold")) 
+
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_Bias_bar_AOI.png")
+
+# Aggregating by subjectID and trialNo
+response_window_agg_by_sub_trialNo_Bias <- make_time_window_data(response_window_clean_Bias, aois = c("lookMannerBias", "lookPathBias"), predictor_columns=c("Condition"), summarize_by = c("subjectID", "trialNo"))
+
+# Creating a bar graph for every trial seperately
+ggplot(data=response_window_agg_by_sub_trialNo_Bias, aes(x=Condition, y=Prop, fill=AOI)) +
+  geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) + 
+  ylab("Proportion of looks to correct video") +
+  facet_wrap(~trialNo) +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold")) 
+
+
+# Analysing trackloss data test trials
+
+tl_Bias_analysis <- trackloss_analysis(data_Bias)
+
+ggplot(tl_Bias_analysis, aes(x=trialNo, y=TracklossForTrial)) +
+  geom_boxplot() +
+  ylab("Trackloss") +
+  xlab("Trial") +
+  ggtitle("Trackloss during bias test videos") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold")) 
+
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_mainBias_trackloss_per_trial.png")
 
 
 ############################
