@@ -301,8 +301,8 @@ allData$X <- rowMeans(subset(allData, select = c(6, 9)), na.rm = TRUE)
 allData$Y <- rowMeans(subset(allData, select = c(7, 10)), na.rm = TRUE)
 
 # Applying it to the dataframe for trials, it's taking a long time, so we'll apply it in sections
-a <- lapply(allData$system_time_stamp, trial_time)
-allData$Trial_description <- a
+#a <- lapply(allData$system_time_stamp, trial_time)
+#allData$Trial_description <- a
 
 # Adding AOI for Practice
 allData %>%
@@ -588,7 +588,7 @@ ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2
 
 
 
-# Creating bar graph for the proportion of looks divided into time quarters
+# Creating bar graph for the proportion of looks divided into equal time bins
 plot_practice_mean_ind <- response_time_practice %>%
   group_by(AOI, TimeBin) %>%
   summarize(meanProp = mean(Prop, na.rm = TRUE)) %>%
@@ -631,7 +631,7 @@ plot_practice_mean_ind_half_sum <- plot_practice_mean_ind_half %>%
 
 ggplot(plot_practice_mean_ind_half_sum, aes(x=AOI, y=mean_prop, fill = AOI)) +
   facet_wrap(~bigTimeBin) +
-  geom_bar(stat="identity", position=position_dodge()) + 
+  geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) + 
   geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2, position=position_dodge(.9))  +
   ylab("Proportion of looks to correct video") +
   ggtitle("Looks to practice trials per quarter") +
@@ -848,6 +848,35 @@ ggplot(data=response_window_agg_by_sub_noBias_sum, aes(x=Condition, y=mean_prop,
 
 ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_noBias_bar_AOI.png")
 
+# Bar graph for looking times divided into equal time bins
+plot_noBias_mean_ind <- response_time_noBias %>%
+  group_by(AOI, TimeBin, Condition) %>%
+  summarize(meanProp = mean(Prop, na.rm = TRUE)) %>%
+  mutate(bigTimeBin = ifelse(TimeBin < 15, "FirstQuarter", ifelse(TimeBin <30, "SecondQuarter", ifelse(TimeBin < 45, "ThirdQuarter", "FourthQuarter"))))
+
+# Creating error bars
+plot_noBias_mean_ind_sum <- plot_noBias_mean_ind %>%
+  dplyr::group_by(AOI, bigTimeBin, Condition) %>%   # the grouping variable
+  summarise(mean_prop = mean(meanProp),  # calculates the mean of each group
+            sd_prop = sd(meanProp), # calculates the standard deviation of each group
+            n_prop = n(),  # calculates the sample size per group
+            SE_prop = sd(meanProp)/sqrt(n())) # calculates the standard error of each group
+
+# Make the bar graph
+ggplot(plot_noBias_mean_ind_sum, aes(x=Condition, y=mean_prop, fill = AOI)) +
+  facet_wrap(~bigTimeBin) +
+  geom_bar(stat="identity", position=position_dodge()) + 
+  geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2, position=position_dodge(.9)) +
+  ylab("Proportion of looks to correct video")  +
+  ggtitle("Looks to test videos per quarter") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=12),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold"))
+
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_noBias_bar_AOI_quarters.png")
+
+
 # Aggregating by subjectID and trialNo
 response_window_agg_by_sub_trialNo_noBias <- make_time_window_data(response_window_clean_noBias, aois = c("lookMannerTest", "lookPathTest"), predictor_columns=c("Condition"), summarize_by = c("subjectID", "trialNo"))
 
@@ -883,19 +912,19 @@ ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2
 ##############################################################
 
 # all main test videos, without bias
-allMain_test_Bias <- allMain_test[grep("biasTest", allMain_test$Trial_description),]
-allMain_test_Bias$trialNo <- as.factor(allMain_test_Bias$trialNo)
-allMain_test_Bias$lookMannerBias <- as.logical(allMain_test_Bias$lookMannerBias)
-allMain_test_Bias$lookPathBias <- as.logical(allMain_test_Bias$lookPathBias)
-allMain_test_Bias$system_time_stamp <- as.numeric(allMain_test_Bias$system_time_stamp)
+allMain_test_bias <- allMain_test[grep("^biasTest", allMain_test$Trial_description),]
+allMain_test_bias$trialNo <- as.factor(allMain_test_Bias$trialNo)
+allMain_test_bias$lookMannerBias <- as.logical(allMain_test_Bias$lookMannerBias)
+allMain_test_bias$lookPathBias <- as.logical(allMain_test_Bias$lookPathBias)
+allMain_test_bias$system_time_stamp <- as.numeric(allMain_test_Bias$system_time_stamp)
 
 # IDK IF THIS IS KOSHER OR NOT
 ## only keep the unique rows from the input
-allMain_test_Bias %>% 
-  distinct(trialNo, system_time_stamp, .keep_all = TRUE) -> allMain_test_Bias
+allMain_test_bias %>% 
+  distinct(trialNo, system_time_stamp, .keep_all = TRUE) -> allMain_test_bias
 
 # Starting to use eyetrackingR
-data_Bias <- make_eyetrackingr_data(allMain_test_Bias, 
+data_bias <- make_eyetrackingr_data(allMain_test_bias, 
                                       participant_column = "subjectID",
                                       trial_column = "trialNo",
                                       item_columns = "itemID",
@@ -906,19 +935,19 @@ data_Bias <- make_eyetrackingr_data(allMain_test_Bias,
 )
 
 # Cleaning data with 25% trackloss
-response_window_clean_Bias <- clean_by_trackloss(data = data_Bias, trial_prop_thresh = .25)
+response_window_clean_bias <- clean_by_trackloss(data = data_bias, trial_prop_thresh = .25)
 
 #############################
 # GRAPHS FOR MAIN PILOT STUDY
 #############################
 
 # rank the data, based on subjectID and trialNo
-data_Bias <- data_Bias %>% 
+data_bias <- data_bias %>% 
   group_by(subjectID, trialNo) %>% 
   mutate(Rank = dense_rank(system_time_stamp)) %>%
   arrange(subjectID, trialNo, Rank)
 
-data_Bias <- make_eyetrackingr_data(data_Bias, 
+data_bias <- make_eyetrackingr_data(data_bias, 
                                       participant_column = "subjectID",
                                       trial_column = "trialNo",
                                       time_column = "system_time_stamp",
@@ -928,28 +957,28 @@ data_Bias <- make_eyetrackingr_data(data_Bias,
 )
 
 # rezero system time stamps, so that at every trial start, the system time stamp is 0
-response_window_Bias <- subset_by_window(data_Bias, window_start_msg = 1, msg_col = "Rank", rezero= TRUE, remove= FALSE)
+response_window_bias <- subset_by_window(data_bias, window_start_msg = 1, msg_col = "Rank", rezero= TRUE, remove= FALSE)
 
 # aggregate across trials within subjects in time analysis (time bin size is 0.3 seconds)
-response_time_Bias <- make_time_sequence_data(response_window_Bias, time_bin_size = 300000,
+response_time_bias <- make_time_sequence_data(response_window_bias, time_bin_size = 300000,
                                                 predictor_columns = c("Condition"),
                                                 aois = c("lookMannerBias", "lookPathBias"),
                                                 summarize_by = "subjectID"
 )
 
 # transforming microseconds to miliseconds
-response_time_Bias <- response_time_Bias %>%
+response_time_bias <- response_time_bias %>%
   mutate(time_ms = Time/1000)
 
 
 # visualize time results
-plot_Bias_mean <- response_time_Bias %>%
-  group_by(AOI, TimeBin, Condition,time_ms) %>%
+plot_bias_mean <- response_time_bias %>%
+  group_by(AOI, TimeBin, Condition, time_ms) %>%
   summarize(meanProp = mean(Prop, na.rm = TRUE)) %>%
   mutate(subjectID = 'Mean')
 
 # plot data for the mean in a line graph
-ggplot(plot_Bias_mean, aes(x=time_ms, y=meanProp, color = AOI)) +
+ggplot(plot_bias_mean, aes(x=time_ms, y=meanProp, color = AOI)) +
   facet_wrap(~Condition) +
   geom_line() + 
   ylab("Proportion of looks to video") +
@@ -965,10 +994,10 @@ ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2
 # Creating bar graphs for looking times to AOI
 
 # Aggregating by subjectID to get a proportion of looks to screen by AOI
-response_window_agg_by_sub_Bias <- make_time_window_data(response_window_clean_Bias, aois = c("lookMannerBias", "lookPathBias"), predictor_columns=c("Condition"), summarize_by = c("subjectID"))
+response_window_agg_by_sub_bias <- make_time_window_data(response_window_clean_bias, aois = c("lookMannerBias", "lookPathBias"), predictor_columns=c("Condition"), summarize_by = c("subjectID"))
 
 # Creating the error bars
-response_window_agg_by_sub_Bias_sum <- response_window_agg_by_sub_Bias %>%
+response_window_agg_by_sub_bias_sum <- response_window_agg_by_sub_bias %>%
   dplyr::group_by(Condition, AOI) %>%   # the grouping variable
   summarise(mean_prop = mean(Prop),  # calculates the mean of each group
             sd_prop = sd(Prop), # calculates the standard deviation of each group
@@ -976,7 +1005,7 @@ response_window_agg_by_sub_Bias_sum <- response_window_agg_by_sub_Bias %>%
             SE_prop = sd(Prop)/sqrt(n())) # calculates the standard error of each group
 
 # Creating the bar graph
-ggplot(data=response_window_agg_by_sub_Bias_sum, aes(x=Condition, y=mean_prop, fill=AOI)) +
+ggplot(data=response_window_agg_by_sub_bias_sum, aes(x=Condition, y=mean_prop, fill=AOI)) +
   geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) +
   geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2, position=position_dodge(.9)) +
   ylab("Proportion of looks to correct video") +
@@ -988,11 +1017,54 @@ ggplot(data=response_window_agg_by_sub_Bias_sum, aes(x=Condition, y=mean_prop, f
 
 ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_Bias_bar_AOI.png")
 
+## Bar graph for looking times divided into equal time bins
+
+# Cleaning data with 25% trackloss
+response_window_bias_clean <- clean_by_trackloss(data = response_window_bias, trial_prop_thresh = .25)
+
+# aggregate across trials within subjects in time analysis (time bin size is 0.3 seconds) with cleaned data
+response_time_bias_clean <- make_time_sequence_data(response_window_bias_clean, time_bin_size = 300000,
+                                              predictor_columns = c("Condition"),
+                                              aois = c("lookMannerBias", "lookPathBias"),
+                                              summarize_by = "subjectID"
+)
+
+plot_bias_mean_ind <- response_time_bias_clean %>%
+  group_by(AOI, TimeBin, Condition) %>%
+  summarize(meanProp = mean(Prop, na.rm = TRUE)) %>%
+  mutate(bigTimeBin = ifelse(TimeBin < 15, "FirstQuarter", ifelse(TimeBin <30, "SecondQuarter", ifelse(TimeBin < 45, "ThirdQuarter", "FourthQuarter"))))
+
+plot_bias_mean_ind <- na.omit(plot_bias_mean_ind)
+
+# Creating error bars (there are some NaN in the FourthQuarter, )
+plot_bias_mean_ind_sum <- plot_bias_mean_ind %>%
+  dplyr::group_by(AOI, bigTimeBin, Condition) %>%   # the grouping variable
+  summarise(mean_prop = mean(meanProp),  # calculates the mean of each group
+            sd_prop = sd(meanProp), # calculates the standard deviation of each group
+            n_prop = n(),  # calculates the sample size per group
+            SE_prop = sd(meanProp)/sqrt(n())) # calculates the standard error of each group
+
+# Make the bar graph
+ggplot(plot_bias_mean_ind_sum, aes(x=Condition, y=mean_prop, fill = AOI)) +
+  facet_wrap(~bigTimeBin) +
+  geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) + 
+  geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2, position=position_dodge(.9)) +
+  ylab("Proportion of looks to correct video")  +
+  ggtitle("Looks to bias videos per quarter") +
+  theme(axis.title = element_text(size=18),
+        axis.text.x  = element_text(size=12),
+        axis.text.y = element_text(size=18),
+        plot.title = element_text(size=18, face="bold"))
+
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_bias_bar_AOI_quarters.png")
+
+
+
 # Aggregating by subjectID and trialNo
-response_window_agg_by_sub_trialNo_Bias <- make_time_window_data(response_window_clean_Bias, aois = c("lookMannerBias", "lookPathBias"), predictor_columns=c("Condition"), summarize_by = c("subjectID", "trialNo"))
+response_window_agg_by_sub_trialNo_bias <- make_time_window_data(response_window_clean_bias, aois = c("lookMannerBias", "lookPathBias"), predictor_columns=c("Condition"), summarize_by = c("subjectID", "trialNo"))
 
 # Creating a bar graph for every trial seperately
-ggplot(data=response_window_agg_by_sub_trialNo_Bias, aes(x=Condition, y=Prop, fill=AOI)) +
+ggplot(data=response_window_agg_by_sub_trialNo_bias, aes(x=Condition, y=Prop, fill=AOI)) +
   geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) + 
   ylab("Proportion of looks to correct video") +
   facet_wrap(~trialNo) +
