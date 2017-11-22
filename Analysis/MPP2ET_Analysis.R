@@ -548,10 +548,17 @@ response_window_agg_by_sub_practice_sum <- response_window_agg_by_sub_practice %
             n_prop = n(),  # calculates the sample size per group
             SE_prop = sd(Prop)/sqrt(n())) # calculates the standard error of each group
 
-# Creating a bar graph for the proportion of looks to the correct video
+# Calculate standard error of the mean (SEM)
+response_window_agg_by_sub_practice_sum$SEM_prop <- response_window_agg_by_sub_practice_sum$sd_prop/sqrt(response_window_agg_by_sub_practice_sum$n_prop)
+
+# Calculate margin of error for confidence interval
+alpha <- 0.05 # for a (1.00-alpha)=95% confidence interval
+response_window_agg_by_sub_practice_sum$ME_prop <- qt(1-alpha/2, df=response_window_agg_by_sub_practice_sum$n_prop)*response_window_agg_by_sub_practice_sum$SEM_prop
+
+# Creating a bar graph for the proportion of looks to the correct video with 95% CI
 ggplot(data=response_window_agg_by_sub_practice_sum, aes(x=AOI, y=mean_prop, fill=AOI)) +
   geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) + 
-  geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2) +
+  geom_errorbar(aes(ymin=mean_prop-ME_prop, ymax=mean_prop+ME_prop), width=0.2) +
   ylab("Proportion of looks to correct video") +
   ggtitle("Looks during practice") +
   theme(axis.title = element_text(size=18),
@@ -572,11 +579,18 @@ response_window_agg_by_sub_practice_half_sum <- response_window_agg_by_sub_pract
             n_prop = n(),  # calculates the sample size per group
             SE_prop = sd(Prop)/sqrt(n())) # calculates the standard error of each group
 
+# Calculate standard error of the mean (SEM)
+response_window_agg_by_sub_practice_half_sum$SEM_prop <- response_window_agg_by_sub_practice_half_sum$sd_prop/sqrt(response_window_agg_by_sub_practice_half_sum$n_prop)
+
+# Calculate margin of error for confidence interval
+alpha <- 0.05 # for a (1.00-alpha)=95% confidence interval
+response_window_agg_by_sub_practice_half_sum$ME_prop <- qt(1-alpha/2, df=response_window_agg_by_sub_practice_half_sum$n_prop)*response_window_agg_by_sub_practice_half_sum$SEM_prop
+
 
 # Creating a bar graph for the proportion of looks to the correct video
 ggplot(data=response_window_agg_by_sub_practice_half_sum, aes(x=AOI, y=mean_prop, fill=AOI)) +
   geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) + 
-  geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2) +
+  geom_errorbar(aes(ymin=mean_prop-ME_prop, ymax=mean_prop+ME_prop), width=0.2) +
   ylab("Proportion of looks to correct video") +
   ggtitle("Looks during practice trials") +
   theme(axis.title = element_text(size=18),
@@ -602,11 +616,19 @@ plot_practice_mean_ind_sum <- plot_practice_mean_ind %>%
             n_prop = n(),  # calculates the sample size per group
             SE_prop = sd(meanProp)/sqrt(n())) # calculates the standard error of each group
 
+# Calculate standard error of the mean (SEM)
+plot_practice_mean_ind_sum$SEM_prop <- plot_practice_mean_ind_sum$sd_prop/sqrt(plot_practice_mean_ind_sum$n_prop)
+
+# Calculate margin of error for confidence interval
+alpha <- 0.05 # for a (1.00-alpha)=95% confidence interval
+plot_practice_mean_ind_sum$ME_prop <- qt(1-alpha/2, df=plot_practice_mean_ind_sum$n_prop)*plot_practice_mean_ind_sum$SEM_prop
+
+
 # Make the bar graph
 ggplot(plot_practice_mean_ind_sum, aes(x=AOI, y=mean_prop, fill = AOI)) +
   facet_wrap(~bigTimeBin) +
   geom_bar(stat="identity", position=position_dodge()) + 
-  geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2, position=position_dodge(.9)) +
+  geom_errorbar(aes(ymin=mean_prop-ME_prop, ymax=mean_prop+ME_prop), width=0.2, position=position_dodge(.9)) +
   ylab("Proportion of looks to correct video")  +
   ggtitle("Looks to practice trials per quarter") +
   theme(axis.title = element_text(size=18),
@@ -629,10 +651,18 @@ plot_practice_mean_ind_half_sum <- plot_practice_mean_ind_half %>%
             n_prop = n(),  # calculates the sample size per group
             SE_prop = sd(meanProp)/sqrt(n())) # calculates the standard error of each group
 
+# Calculate standard error of the mean (SEM)
+plot_practice_mean_ind_half_sum$SEM_prop <- plot_practice_mean_ind_half_sum$sd_prop/sqrt(plot_practice_mean_ind_half_sum$n_prop)
+
+# Calculate margin of error for confidence interval
+alpha <- 0.05 # for a (1.00-alpha)=95% confidence interval
+plot_practice_mean_ind_half_sum$ME_prop <- qt(1-alpha/2, df=plot_practice_mean_ind_half_sum$n_prop)*plot_practice_mean_ind_half_sum$SEM_prop
+
+
 ggplot(plot_practice_mean_ind_half_sum, aes(x=AOI, y=mean_prop, fill = AOI)) +
   facet_wrap(~bigTimeBin) +
   geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) + 
-  geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2, position=position_dodge(.9))  +
+  geom_errorbar(aes(ymin=mean_prop-ME_prop, ymax=mean_prop+ME_prop), width=0.2, position=position_dodge(.9))  +
   ylab("Proportion of looks to correct video") +
   ggtitle("Looks to practice trials per quarter") +
   theme(axis.title = element_text(size=18),
@@ -835,12 +865,19 @@ response_window_agg_by_sub_noBias_sum <- response_window_agg_by_sub_noBias %>%
             n_prop = n(),  # calculates the sample size per group
             SE_prop = sd(Prop)/sqrt(n())) # calculates the standard error of each group
 
+# Calculate standard error of the mean (SEM)
+response_window_agg_by_sub_noBias_sum$SEM_prop <- response_window_agg_by_sub_noBias_sum$sd_prop/sqrt(response_window_agg_by_sub_noBias_sum$n_prop)
+
+# Calculate margin of error for confidence interval
+alpha <- 0.05 # for a (1.00-alpha)=95% confidence interval
+response_window_agg_by_sub_noBias_sum$ME_prop <- qt(1-alpha/2, df=response_window_agg_by_sub_noBias_sum$n_prop)*response_window_agg_by_sub_noBias_sum$SEM_prop
+
 # Creating the bar graph for the learning tests
 ggplot(data=response_window_agg_by_sub_noBias_sum, aes(x=Condition, y=mean_prop, fill=AOI)) +
   geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) +
-  geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2, position=position_dodge(.9)) +
+  geom_errorbar(aes(ymin=mean_prop-ME_prop, ymax=mean_prop+ME_prop), width=0.2, position=position_dodge(.9)) +
   ylab("Proportion of looks to correct video") +
-  ggtitle("Looks to test videos")
+  ggtitle("Looks to learning test")
   theme(axis.title = element_text(size=18),
         axis.text.x  = element_text(size=18),
         axis.text.y = element_text(size=18),
@@ -862,13 +899,20 @@ plot_noBias_mean_ind_sum <- plot_noBias_mean_ind %>%
             n_prop = n(),  # calculates the sample size per group
             SE_prop = sd(meanProp)/sqrt(n())) # calculates the standard error of each group
 
+# Calculate standard error of the mean (SEM)
+plot_noBias_mean_ind_sum$SEM_prop <- plot_noBias_mean_ind_sum$sd_prop/sqrt(plot_noBias_mean_ind_sum$n_prop)
+
+# Calculate margin of error for confidence interval
+alpha <- 0.05 # for a (1.00-alpha)=95% confidence interval
+plot_noBias_mean_ind_sum$ME_prop <- qt(1-alpha/2, df=plot_noBias_mean_ind_sum$n_prop)*plot_noBias_mean_ind_sum$SEM_prop
+
 # Make the bar graph
 ggplot(plot_noBias_mean_ind_sum, aes(x=Condition, y=mean_prop, fill = AOI)) +
   facet_wrap(~bigTimeBin) +
   geom_bar(stat="identity", position=position_dodge()) + 
-  geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2, position=position_dodge(.9)) +
+  geom_errorbar(aes(ymin=mean_prop-ME_prop, ymax=mean_prop+ME_prop), width=0.2, position=position_dodge(.9)) +
   ylab("Proportion of looks to correct video")  +
-  ggtitle("Looks to test videos per quarter") +
+  ggtitle("Looks to learning test per quarter") +
   theme(axis.title = element_text(size=18),
         axis.text.x  = element_text(size=12),
         axis.text.y = element_text(size=18),
@@ -899,7 +943,7 @@ ggplot(tl_noBias_analysis, aes(x=trialNo, y=TracklossForTrial)) +
   geom_boxplot() +
   ylab("Trackloss") +
   xlab("Trial") +
-  ggtitle("Trackloss during test videos") +
+  ggtitle("Trackloss during learning test") +
   theme(axis.title = element_text(size=18),
         axis.text.x  = element_text(size=18),
         axis.text.y = element_text(size=18),
@@ -1004,10 +1048,17 @@ response_window_agg_by_sub_bias_sum <- response_window_agg_by_sub_bias %>%
             n_prop = n(),  # calculates the sample size per group
             SE_prop = sd(Prop)/sqrt(n())) # calculates the standard error of each group
 
+# Calculate standard error of the mean (SEM)
+response_window_agg_by_sub_bias_sum$SEM_prop <- response_window_agg_by_sub_bias_sum$sd_prop/sqrt(response_window_agg_by_sub_bias_sum$n_prop)
+
+# Calculate margin of error for confidence interval
+alpha <- 0.05 # for a (1.00-alpha)=95% confidence interval
+response_window_agg_by_sub_bias_sum$ME_prop <- qt(1-alpha/2, df=response_window_agg_by_sub_bias_sum$n_prop)*response_window_agg_by_sub_bias_sum$SEM_prop
+
 # Creating the bar graph
 ggplot(data=response_window_agg_by_sub_bias_sum, aes(x=Condition, y=mean_prop, fill=AOI)) +
   geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) +
-  geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2, position=position_dodge(.9)) +
+  geom_errorbar(aes(ymin=mean_prop-ME_prop, ymax=mean_prop+ME_prop), width=0.2, position=position_dodge(.9)) +
   ylab("Proportion of looks to correct video") +
   ggtitle("Looks to bias test videos") +
   theme(axis.title = element_text(size=18),
@@ -1036,7 +1087,7 @@ plot_bias_mean_ind <- response_time_bias_clean %>%
 
 plot_bias_mean_ind <- na.omit(plot_bias_mean_ind)
 
-# Creating error bars (there are some NaN in the FourthQuarter, )
+# Creating error bars
 plot_bias_mean_ind_sum <- plot_bias_mean_ind %>%
   dplyr::group_by(AOI, bigTimeBin, Condition) %>%   # the grouping variable
   summarise(mean_prop = mean(meanProp),  # calculates the mean of each group
@@ -1044,11 +1095,18 @@ plot_bias_mean_ind_sum <- plot_bias_mean_ind %>%
             n_prop = n(),  # calculates the sample size per group
             SE_prop = sd(meanProp)/sqrt(n())) # calculates the standard error of each group
 
+# Calculate standard error of the mean (SEM)
+plot_bias_mean_ind_sum$SEM_prop <- plot_bias_mean_ind_sum$sd_prop/sqrt(plot_bias_mean_ind_sum$n_prop)
+
+# Calculate margin of error for confidence interval
+alpha <- 0.05 # for a (1.00-alpha)=95% confidence interval
+plot_bias_mean_ind_sum$ME_prop <- qt(1-alpha/2, df=plot_bias_mean_ind_sum$n_prop)*plot_bias_mean_ind_sum$SEM_prop
+
 # Make the bar graph
 ggplot(plot_bias_mean_ind_sum, aes(x=Condition, y=mean_prop, fill = AOI)) +
   facet_wrap(~bigTimeBin) +
   geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) + 
-  geom_errorbar(aes(ymin = mean_prop - sd_prop, ymax = mean_prop + sd_prop), width=0.2, position=position_dodge(.9)) +
+  geom_errorbar(aes(ymin=mean_prop-ME_prop, ymax=mean_prop+ME_prop), width=0.2, position=position_dodge(.9)) +
   ylab("Proportion of looks to correct video")  +
   ggtitle("Looks to bias videos per quarter") +
   theme(axis.title = element_text(size=18),
@@ -1076,9 +1134,9 @@ ggplot(data=response_window_agg_by_sub_trialNo_bias, aes(x=Condition, y=Prop, fi
 
 # Analysing trackloss data test trials
 
-tl_Bias_analysis <- trackloss_analysis(data_Bias)
+tl_bias_analysis <- trackloss_analysis(data_bias)
 
-ggplot(tl_Bias_analysis, aes(x=trialNo, y=TracklossForTrial)) +
+ggplot(tl_bias_analysis, aes(x=trialNo, y=TracklossForTrial)) +
   geom_boxplot() +
   ylab("Trackloss") +
   xlab("Trial") +

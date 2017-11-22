@@ -55,6 +55,7 @@ try
         end
     end
     
+   
     %Randomize the order of the items
     MAIN_ITEMS = MAIN_ITEMS(randperm(height(MAIN_ITEMS)), :);
     if toExtend
