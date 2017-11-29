@@ -14,7 +14,7 @@ library("ggplot2")
 library("Matrix")
 library("stringr")
 
-setwd('/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Data/PILOT 2')
+setwd('/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Data/PILOT 2')
 
 
 ############################
@@ -447,7 +447,7 @@ ggplot(plot_practice_mean, aes(x=time_ms, y=meanProp, color = AOI)) +
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_line_AOI.png")
+ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_line_AOI.png")
 
 # plot data per individual in a line graph
 ggplot(plot_practice_ind, aes(x=time_ms, y=meanProp, color = AOI)) +
@@ -473,7 +473,7 @@ ggplot(tl_practice_analysis, aes(x=trialNo, y=TracklossForTrial)) +
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_trackloss_per_trial.png")
+ggsave("/Users/rebeccajarivs/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_trackloss_per_trial.png")
                         
 
 ## Creating bar graphs
@@ -507,7 +507,7 @@ ggplot(data=response_window_agg_by_sub_practice_sum, aes(x=AOI, y=mean_prop, fil
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_bar_AOI.png")
+ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_bar_AOI.png")
 
 # Creating bar graph for the proportion of looks divided into equal time bins
 plot_practice_mean_ind <- response_time_practice %>%
@@ -543,7 +543,7 @@ ggplot(plot_practice_mean_ind_sum, aes(x=AOI, y=mean_prop, fill = AOI)) +
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold"))
 
-ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_bar_AOI_quarters.png")
+ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_bar_AOI_quarters.png")
 
 ####################################################################################
 # CREATING A SUBSET DF OF MAIN TRIALS, TO CHECK FOR TRACKLOSS
@@ -591,7 +591,7 @@ ggplot(tl_main_analysis, aes(x=trialNo, y=TracklossForTrial)) +
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_main_trackloss_per_trial.png")
+ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_main_trackloss_per_trial.png")
 
 ####################################################################################
 # CREATING A SUBSET DF OF MAIN TEST TRIALS, ONLY THE LEARNING TESTS (NO BIAS)
@@ -682,7 +682,7 @@ ggplot(plot_noBias_mean, aes(x=time_ms, y=meanProp, color = AOI)) +
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_main_lookingtimesAOI_learning_test.png")
+ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_main_lookingtimesAOI_learning_test.png")
 
 ## Creating bar graphs for looking times to AOI
 
@@ -715,7 +715,7 @@ ggplot(data=response_window_agg_by_sub_noBias_sum, aes(x=Condition, y=mean_prop,
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_noBias_bar_AOI.png")
+ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_noBias_bar_AOI.png")
 
 # Bar graph for looking times divided into equal time bins
 plot_noBias_mean_ind <- response_time_noBias %>%
@@ -750,7 +750,7 @@ ggplot(plot_noBias_mean_ind_sum, aes(x=Condition, y=mean_prop, fill = AOI)) +
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold"))
 
-ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_noBias_bar_AOI_quarters.png")
+ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_noBias_bar_AOI_quarters.png")
 
 
 # Aggregating by subjectID and trialNo
@@ -767,21 +767,6 @@ ggplot(data=response_window_agg_by_sub_trialNo_noBias, aes(x=Condition, y=Prop, 
         plot.title = element_text(size=18, face="bold")) 
 
 
-# Analysing trackloss data test trials
-
-tl_noBias_analysis <- trackloss_analysis(data_noBias)
-
-ggplot(tl_noBias_analysis, aes(x=trialNo, y=TracklossForTrial)) +
-  geom_boxplot() +
-  ylab("Trackloss") +
-  xlab("Trial") +
-  ggtitle("Trackloss during learning test") +
-  theme(axis.title = element_text(size=18),
-        axis.text.x  = element_text(size=18),
-        axis.text.y = element_text(size=18),
-        plot.title = element_text(size=18, face="bold")) 
-
-ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_mainNoBias_trackloss_per_trial.png")
 
 ##############################################################
 # CREATING A SUBSET DF OF MAIN TEST TRIALS, ONLY THE BIAS TEST
@@ -865,7 +850,7 @@ ggplot(plot_bias_mean, aes(x=time_ms, y=meanProp, color = AOI)) +
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_main_lookingtimesAOI_bias_test.png")
+ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_main_lookingtimesAOI_bias_test.png")
 
 # Creating bar graphs for looking times to AOI
 
@@ -898,7 +883,7 @@ ggplot(data=response_window_agg_by_sub_bias_sum, aes(x=Condition, y=mean_prop, f
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_Bias_bar_AOI.png")
+ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_Bias_bar_AOI.png")
 
 ## Bar graph for looking times divided into equal time bins
 
@@ -946,39 +931,9 @@ ggplot(plot_bias_mean_ind_sum, aes(x=Condition, y=mean_prop, fill = AOI)) +
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold"))
 
-ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_bias_bar_AOI_quarters.png")
+ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_bias_bar_AOI_quarters.png")
 
 
-
-# Aggregating by subjectID and trialNo
-response_window_agg_by_sub_trialNo_bias <- make_time_window_data(response_window_clean_bias, aois = c("lookMannerBias", "lookPathBias"), predictor_columns=c("Condition"), summarize_by = c("subjectID", "trialNo"))
-
-# Creating a bar graph for every trial seperately
-ggplot(data=response_window_agg_by_sub_trialNo_bias, aes(x=Condition, y=Prop, fill=AOI)) +
-  geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) + 
-  ylab("Proportion of looks to correct video") +
-  facet_wrap(~trialNo) +
-  theme(axis.title = element_text(size=18),
-        axis.text.x  = element_text(size=18),
-        axis.text.y = element_text(size=18),
-        plot.title = element_text(size=18, face="bold")) 
-
-
-# Analysing trackloss data test trials
-
-tl_bias_analysis <- trackloss_analysis(data_bias)
-
-ggplot(tl_bias_analysis, aes(x=trialNo, y=TracklossForTrial)) +
-  geom_boxplot() +
-  ylab("Trackloss") +
-  xlab("Trial") +
-  ggtitle("Trackloss during bias test videos") +
-  theme(axis.title = element_text(size=18),
-        axis.text.x  = element_text(size=18),
-        axis.text.y = element_text(size=18),
-        plot.title = element_text(size=18, face="bold")) 
-
-ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_mainBias_trackloss_per_trial.png")
 
 
 ############################
