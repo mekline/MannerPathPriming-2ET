@@ -14,7 +14,7 @@ library("ggplot2")
 library("Matrix")
 library("stringr")
 
-setwd('/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Data/PILOT 2')
+setwd('/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Data/PILOT 2')
 
 
 ############################
@@ -307,14 +307,14 @@ allData$Y <- rowMeans(subset(allData, select = c(7, 10)), na.rm = TRUE)
 # Adding AOI for Practice
 allData %>%
   group_by(Condition, subjectID, trialNo) %>%
-  mutate(lookPractice = ifelse(phase == "Practice" & trialNo == "1" & X > 0.67, as.logical(TRUE), 
-                        ifelse(phase == "Practice" & trialNo == "2" & X < 0.605, as.logical(TRUE), 
-                        ifelse(phase == "Practice" & trialNo == "3" & X < 0.605, as.logical(TRUE), 
-                        ifelse(phase == "Practice" & trialNo == "4" & X < 0.605, as.logical(TRUE), as.logical(FALSE)))))) %>%
-  mutate(lookNotPractice = ifelse(phase == "Practice" & trialNo == "1" & X < 0.605, as.logical(TRUE), 
-                            ifelse(phase == "Practice" & trialNo == "2" & X > 0.67, as.logical(TRUE), 
-                            ifelse(phase == "Practice" & trialNo == "3" & X > 0.67, as.logical(TRUE), 
-                            ifelse(phase == "Practice" & trialNo == "4" & X > 0.67, as.logical(TRUE), as.logical(FALSE)))))) -> allData
+  mutate(lookPractice = ifelse(phase == "Practice" & trialNo == "1" & X > 0.6325, as.logical(TRUE), 
+                        ifelse(phase == "Practice" & trialNo == "2" & X < 0.6325, as.logical(TRUE), 
+                        ifelse(phase == "Practice" & trialNo == "3" & X < 0.6325, as.logical(TRUE), 
+                        ifelse(phase == "Practice" & trialNo == "4" & X < 0.6325, as.logical(TRUE), as.logical(FALSE)))))) %>%
+  mutate(lookNotPractice = ifelse(phase == "Practice" & trialNo == "1" & X < 0.6325, as.logical(TRUE), 
+                            ifelse(phase == "Practice" & trialNo == "2" & X > 0.6325, as.logical(TRUE), 
+                            ifelse(phase == "Practice" & trialNo == "3" & X > 0.6325, as.logical(TRUE), 
+                            ifelse(phase == "Practice" & trialNo == "4" & X > 0.6325, as.logical(TRUE), as.logical(FALSE)))))) -> allData
 
 
 # Adding AOI for Manner Bias and Test Bias
@@ -447,7 +447,7 @@ ggplot(plot_practice_mean, aes(x=time_ms, y=meanProp, color = AOI)) +
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_line_AOI.png")
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_line_AOI.png")
 
 # plot data per individual in a line graph
 ggplot(plot_practice_ind, aes(x=time_ms, y=meanProp, color = AOI)) +
@@ -473,7 +473,7 @@ ggplot(tl_practice_analysis, aes(x=trialNo, y=TracklossForTrial)) +
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("/Users/rebeccajarivs/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_trackloss_per_trial.png")
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_trackloss_per_trial.png")
                         
 
 ## Creating bar graphs
@@ -507,7 +507,7 @@ ggplot(data=response_window_agg_by_sub_practice_sum, aes(x=AOI, y=mean_prop, fil
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_bar_AOI.png")
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_bar_AOI.png")
 
 # Creating bar graph for the proportion of looks divided into equal time bins
 plot_practice_mean_ind <- response_time_practice %>%
@@ -543,7 +543,7 @@ ggplot(plot_practice_mean_ind_sum, aes(x=AOI, y=mean_prop, fill = AOI)) +
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold"))
 
-ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_bar_AOI_quarters.png")
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_practice_bar_AOI_quarters.png")
 
 ####################################################################################
 # CREATING A SUBSET DF OF MAIN TRIALS, TO CHECK FOR TRACKLOSS
@@ -591,20 +591,15 @@ ggplot(tl_main_analysis, aes(x=trialNo, y=TracklossForTrial)) +
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_main_trackloss_per_trial.png")
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_main_trackloss_per_trial.png")
 
 ####################################################################################
 # CREATING A SUBSET DF OF MAIN TEST TRIALS, ONLY THE LEARNING TESTS (NO BIAS)
 ####################################################################################
 
-allMain_test <- filter(allData, phase=="Main")
-
-# Applying it to the dataframe for trials, it's taking a long time, so we'll apply it in sections
-a <- lapply(allMain_test$system_time_stamp, trial_time)
-allMain_test$Trial_description <- a
 
 # all main test videos, without bias
-allMain_test_noBias <- allMain_test[grep("testVideos", allMain_test$Trial_description),]
+allMain_test_noBias <- allMain[grep("testVideos", allMain$Trial_description),]
 allMain_test_noBias$trialNo <- as.factor(allMain_test_noBias$trialNo)
 allMain_test_noBias$lookMannerTest <- as.logical(allMain_test_noBias$lookMannerTest)
 allMain_test_noBias$lookPathTest <- as.logical(allMain_test_noBias$lookPathTest)
@@ -682,7 +677,7 @@ ggplot(plot_noBias_mean, aes(x=time_ms, y=meanProp, color = AOI)) +
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_main_lookingtimesAOI_learning_test.png")
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_main_lookingtimesAOI_learning_test.png")
 
 ## Creating bar graphs for looking times to AOI
 
@@ -715,7 +710,7 @@ ggplot(data=response_window_agg_by_sub_noBias_sum, aes(x=Condition, y=mean_prop,
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_noBias_bar_AOI.png")
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_noBias_bar_AOI.png")
 
 # Bar graph for looking times divided into equal time bins
 plot_noBias_mean_ind <- response_time_noBias %>%
@@ -750,22 +745,7 @@ ggplot(plot_noBias_mean_ind_sum, aes(x=Condition, y=mean_prop, fill = AOI)) +
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold"))
 
-ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_noBias_bar_AOI_quarters.png")
-
-
-# Aggregating by subjectID and trialNo
-response_window_agg_by_sub_trialNo_noBias <- make_time_window_data(response_window_clean_noBias, aois = c("lookMannerTest", "lookPathTest"), predictor_columns=c("Condition"), summarize_by = c("subjectID", "trialNo"))
-
-# Creating a bar graph for every trial of the learning tests
-ggplot(data=response_window_agg_by_sub_trialNo_noBias, aes(x=Condition, y=Prop, fill=AOI)) +
-  geom_bar(stat="summary", fun.y = "mean", position=position_dodge()) + 
-  ylab("Proportion of looks to correct video") +
-  facet_wrap(~trialNo) +
-  theme(axis.title = element_text(size=18),
-        axis.text.x  = element_text(size=18),
-        axis.text.y = element_text(size=18),
-        plot.title = element_text(size=18, face="bold")) 
-
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_noBias_bar_AOI_quarters.png")
 
 
 ##############################################################
@@ -773,11 +753,11 @@ ggplot(data=response_window_agg_by_sub_trialNo_noBias, aes(x=Condition, y=Prop, 
 ##############################################################
 
 # all main test videos, without bias
-allMain_test_bias <- allMain_test[grep("^biasTest", allMain_test$Trial_description),]
-allMain_test_bias$trialNo <- as.factor(allMain_test_Bias$trialNo)
-allMain_test_bias$lookMannerBias <- as.logical(allMain_test_Bias$lookMannerBias)
-allMain_test_bias$lookPathBias <- as.logical(allMain_test_Bias$lookPathBias)
-allMain_test_bias$system_time_stamp <- as.numeric(allMain_test_Bias$system_time_stamp)
+allMain_test_bias <- allMain[grep("^biasTest", allMain$Trial_description),]
+allMain_test_bias$trialNo <- as.factor(allMain_test_bias$trialNo)
+allMain_test_bias$lookMannerBias <- as.logical(allMain_test_bias$lookMannerBias)
+allMain_test_bias$lookPathBias <- as.logical(allMain_test_bias$lookPathBias)
+allMain_test_bias$system_time_stamp <- as.numeric(allMain_test_bias$system_time_stamp)
 
 # IDK IF THIS IS KOSHER OR NOT
 ## only keep the unique rows from the input
@@ -850,7 +830,7 @@ ggplot(plot_bias_mean, aes(x=time_ms, y=meanProp, color = AOI)) +
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_main_lookingtimesAOI_bias_test.png")
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_main_lookingtimesAOI_bias_test.png")
 
 # Creating bar graphs for looking times to AOI
 
@@ -883,7 +863,7 @@ ggplot(data=response_window_agg_by_sub_bias_sum, aes(x=Condition, y=mean_prop, f
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold")) 
 
-ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_Bias_bar_AOI.png")
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_Bias_bar_AOI.png")
 
 ## Bar graph for looking times divided into equal time bins
 
@@ -931,23 +911,15 @@ ggplot(plot_bias_mean_ind_sum, aes(x=Condition, y=mean_prop, fill = AOI)) +
         axis.text.y = element_text(size=18),
         plot.title = element_text(size=18, face="bold"))
 
-ggsave("/Users/rebeccajarvis/Documents/MannerPathPriming-2ET/Analysis/figs/pilot2_bias_bar_AOI_quarters.png")
-
-
+ggsave("/Users/Lotte/Documents/Github/MannerPathPriming-2ET/Analysis/figs/pilot2_bias_bar_AOI_quarters.png")
 
 
 ############################
 # CREATING A SUBSET DF OF MAIN TEST TRIALS, BIAS AND NO BIAS
 ############################
 
-allMain_test <- filter(allData, phase=="Main")
-
-# Applying it to the dataframe for trials, it's taking a long time, so we'll apply it in sections
-a <- lapply(allMain_test$system_time_stamp, trial_time)
-allMain_test$Trial_description <- a
-
 # all main test videos
-allMain_test <- allMain_test[grep("testVideos|biasTest", allMain_test$Trial_description),]
+allMain_test <- allMain[grep("testVideos|^biasTest", allMain$Trial_description),]
 allMain_test$trialNo <- as.factor(allMain_test$trialNo)
 allMain_test$lookMannerBias <- as.logical(allMain_test$lookMannerBias)
 allMain_test$lookMannerTest <- as.logical(allMain_test$lookMannerTest)
@@ -1019,14 +991,14 @@ ggsave("maintrials_kid_and_adult.png", width=5.5, height=3,units = "in")
 
 
 # Remaking a dataframe for only the Bias Test line graph
-allMain_test_bias <- allMain_test[grep("biasTest", allMain_test$Trial_description),]
+allMain_test_bias <- allMain_test[grep("^biasTest", allMain_test$Trial_description),]
 allMain_test_bias$trialNo <- as.factor(allMain_test_bias$trialNo)
 allMain_test_bias$lookMannerBias <- as.logical(allMain_test_bias$lookMannerBias)
 allMain_test_bias$lookPathBias <- as.logical(allMain_test_bias$lookPathBias)
 allMain_test_bias$system_time_stamp <- as.numeric(allMain_test_bias$system_time_stamp)
 
 # all main test videos, with and without bias
-allMain_test_biasNoBias <- allMain_test[grep("testVideos|biasTest", allMain_test$Trial_description),]
+allMain_test_biasNoBias <- allMain_test[grep("testVideos|^biasTest", allMain_test$Trial_description),]
 allMain_test_biasNoBias$trialNo <- as.factor(allMain_test_biasNoBias$trialNo)
 allMain_test_biasNoBias$lookMannerBias <- as.logical(allMain_test_biasNoBias$lookMannerBias)
 allMain_test_biasNoBias$lookMannerTest <- as.logical(allMain_test_biasNoBias$lookMannerTest)
