@@ -2,13 +2,9 @@
 function Do_MPP_Exp()
 
 %We are adapting MPP to the eyetracker, very exciting!
-global EXPWIN RESOURCEFOLDER
-
 %MPP specific objects
-global expStart expTime CONDITION TOEXTEND EXTENDCONDITION 
-global MAIN_ITEMS EXT_ITEMS EXTENDPRACTICE ntrials 
-global TOBII EYETRACKER EXPWIN BLACK DATAFOLDER EXPERIMENT 
-global SUBJECT timeCell
+global expStart expTime CONDITION TOEXTEND SET EXTENDCONDITION
+global MAIN_ITEMS EXT_ITEMS ntrials timeCell
 
 %Some numeric versions of condition names for indexing into tables...
 
@@ -30,12 +26,15 @@ switch TOEXTEND
         toExtend = 1;
 end
 
-switch EXTENDPRACTICE
-    case 'NoPractice'
-        ExtendPractice = 0;
-    otherwise
-        ExtendPractice = 1;
+switch SET
+    case 'Set1'
+        Set = 1;
+    case 'Set2'
+        Set = 2;
 end
+       
+        
+        
 
 try
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -55,9 +54,33 @@ try
         end
     end
     
-   
-    %Randomize the order of the items
-    MAIN_ITEMS = MAIN_ITEMS(randperm(height(MAIN_ITEMS)), :);
+    %Randomize the order of the items, but dividing into 2 sets
+    %corresponding to (counterbalanced) at-home practice
+    VERB1 = vidInfo(strcmp(vidInfo.verbName,'glipping'),:);
+    VERB2 = vidInfo(strcmp(vidInfo.verbName,'krading'),:);
+    VERB3 = vidInfo(strcmp(vidInfo.verbName,'torging'),:);
+    VERB4 = vidInfo(strcmp(vidInfo.verbName,'birking'),:);
+    MAIN_ITEMS1 = vertcat(VERB1, VERB2, VERB3, VERB4);
+    MAIN_ITEMS1 = MAIN_ITEMS1(MAIN_ITEMS1.List == conditionno,:);
+    
+    VERB5 = vidInfo(strcmp(vidInfo.verbName,'zarking'),:);
+    VERB6 = vidInfo(strcmp(vidInfo.verbName,'dacking'),:);
+    VERB7 = vidInfo(strcmp(vidInfo.verbName,'pimming'),:);
+    VERB8 = vidInfo(strcmp(vidInfo.verbName,'molking'),:);
+    MAIN_ITEMS2 = vertcat(VERB5, VERB6, VERB7, VERB8);
+    MAIN_ITEMS2 = MAIN_ITEMS2(MAIN_ITEMS2.List == conditionno,:);
+    
+            
+    MAIN_ITEMS1 = MAIN_ITEMS1(randperm(height(MAIN_ITEMS1)), :);
+    MAIN_ITEMS2 = MAIN_ITEMS2(randperm(height(MAIN_ITEMS2)), :);
+    
+    if Set == 1
+        MAIN_ITEMS = vertcat(MAIN_ITEMS1, MAIN_ITEMS2);
+    elseif Set == 2
+        MAIN_ITEMS = vertcat(MAIN_ITEMS2, MAIN_ITEMS1);
+    end
+  
+    
     if toExtend
         EXT_ITEMS = EXT_ITEMS(randperm(height(EXT_ITEMS)), :);
     end
@@ -105,6 +128,7 @@ try
         'Time',...
         'VerbDomain',...
         'Condition',...
+        'Set',...
         'trialNo',...
         'itemID',...
         'verbName',...
@@ -145,75 +169,55 @@ try
     disp(expStart);
     
     timeCell = {'subjectID', 'system_time_stamp', 'point_description'};
-    timeCell(end+1,:) = {SUBJECT,...
-        TOBII.get_system_time_stamp,...
-        'Experiment Start'};
+    timeCell(end+1,:) = timeStamp('Experiment_Start');
 
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % 4 TRIALS OF PRACTICE TRAINING
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
-
-    MPP_Practice();
-    
+    % 2 TRIALS OF PRACTICE TRAINING
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%     for i=1:2
+%         NEW_Trial_Practice(i);
+%     end
+  
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % 4 TRIALS OF NO-BIAS TEST LEARNING
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
+    % N TRIALS OF WITHIN-FIELD PRIMING or VERB LEARNING
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
     %How many trials?
-    ntrials = height(MAIN_ITEMS); %For the skeleton, play some short sample trials!
-
-%     
-%     %And actually play the trials! Data is saved on each round to allow for
-%     %partial data collection
+    ntrials = height(MAIN_ITEMS); 
+    
+    %4 NoBias trials
     for i = 1:ntrials/2;
         disp(i)
-        Trial_NoBias(i)
-        
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         % Write result file
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+        Trial_Omnibus(i, 'WithBias'); %DEBUG
         expTrial = GetSecs;
-        expTime = expTrial - expStart;
-        
+        expTime = expTrial - expStart;       
         Write_Trial_to_File(i, MAIN_ITEMS);
-
     end
     
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % N TRIALS OF WITHIN-FIELD PRIMING/VERB LEARNING
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    %And actually play the trials! Data is saved on each round to allow for
-    %partial data collection
-    for i=5:ntrials
+    %4 WithBias trials
+    for i=(1+ntrials/2):ntrials
         Trial_Main(i)
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % Write result file
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         expTrial = GetSecs;
-        expTime = expTrial - expStart;
-        
+        expTime = expTrial - expStart;       
         Write_Trial_to_File(i, MAIN_ITEMS);
+    end
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % N TRIALS OF CROSS-FIELD TESTING
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    if TOEXTEND
+        for i=(ntrials+1):(2*ntrials)
+            Trial_Omnibus('BiasOnly');
+            expTrial = GetSecs;
+            expTime = expTrial - expStart;
+            Write_Trial_to_File(i, EXT_ITEMS);
+        end
+    end
+    
 
-    end
-    
-    %And do the same for the Extension trials, if we're doing that!
-    for i=(ntrials+1):(2*ntrials)
-        Trial_Extend(i);
-        expTrial = GetSecs;
-        expTime = expTrial - expStart;
-        Write_Trial_to_File(i, EXT_ITEMS);
-    end
-    
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % Cleanup & Shutdown
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        Closeout_PTool();
+    %Experiment ended cleanly! Cleanup and shut down
+    Closeout_PTool();
         
 
 catch 
