@@ -1,4 +1,4 @@
-function MPP_2ET_Main(SubjectID, Condition, ToExtend, varargin)
+function MPP_2ET_Main(SubjectID, Condition, ToExtend, Set, varargin)
 % The new MPP, for eyetracking 2yos. The new excitement is that
 % this version has refactored the common resources for PTB,
 % eyetracking, and common stimuli for easier/more economical
@@ -13,6 +13,7 @@ p = inputParser;
 p.addRequired('SubjectID');
 p.addRequired('Condition');
 p.addRequired('ToExtend');
+p.addRequired('Set');
 p.addParamValue('use_eyetracker', 1, @isnumeric); %use 0 for no eyetracker
 p.addParamValue('experiment_name', 'MPPCREATION', @isstr);
 p.addParamValue('eyetracker_name', 'Lion', @isstr); %in case you have multiple eyetrackers in the lab...
@@ -20,7 +21,7 @@ p.addParamValue('calib_version', 'Kid', @isstr); %can replace with 'Kid' for a c
 p.addParamValue('max_calib', 5, @isnumeric); %in case we want to NOT loop on the calibration forever.
 p.addParamValue('ExtendPractice', 1, @isnumeric);
 
-p.parse(SubjectID, Condition, ToExtend, varargin{:});
+p.parse(SubjectID, Condition, ToExtend, Set, varargin{:});
 inputs = p.Results;
 
 %*** Set the global variables
@@ -42,6 +43,7 @@ global KEYID %Keyboard stuff
 global CONDITION %Manner, Path, Action, or Effect
 global TOEXTEND %Extend or NoExtend
 global EXTENDPRACTICE %ExtendPractice or NoPractice %MK's not sure what this is for!
+global SET % 1 or 2, which set of four verbs will start
 
 if ~ischar(inputs.SubjectID)
     SUBJECT = num2str(inputs.SubjectID);
@@ -64,6 +66,7 @@ MAXCALIB = inputs.max_calib;
 USE_EYETRACKER = inputs.use_eyetracker;
 CONDITION = inputs.Condition;
 TOEXTEND = inputs.ToExtend;
+SET = inputs.Set;
 EXTENDPRACTICE = inputs.ExtendPractice;
 
 % Validate inputs
@@ -77,6 +80,10 @@ knownCond = strfind(ExtConditions, TOEXTEND);
 k = logical(sum(~cellfun(@isempty, knownCond)));
 assert(k, 'Use NoExtend or Extend for the extension (NoExtend is default)');
 
+Sets = {'Set1', 'Set2'};
+knownCond = strfind(Sets, SET);
+k = logical(sum(~cellfun(@isempty, knownCond)));
+assert(k, 'Use Set1 or Set2 for main exp');
 
 DATAFILE = AssignDataFile(); %will kick you out if the subjname has been used
 
@@ -95,6 +102,11 @@ Calib=SetCalibParams('x',[0.9 0.9 0.1 0.1 0.5],'y',[0.1 0.9 0.1 0.9 0.5]);
 
 %And set the boxes that movies and text will play during this experiment!
 [WINDOW_PARAMS, KEYID] = SetSpaceParameters(Calib);  %If you wanted to change the look & feel of your exp, create a local version of SetSpaceParams
+
+%Reset the background color for MPP exp (note, this doesn't set the color
+%used during calibration, just the experiment itself!)
+WINDOW_PARAMS.BGCOLOR = WINDOW_PARAMS.WHITE;
+
 %****************************
 % Connect to eye tracker
 %****************************
@@ -136,11 +148,11 @@ end
 % Calibration finished, go on to your experiment 
 %********************
 
-Screen('FillRect',EXPWIN, WINDOW_PARAMS.BLACK);
+Screen('FillRect',EXPWIN, WINDOW_PARAMS.BGCOLOR);
 Screen(EXPWIN,'Flip');
 
 disp(['Starting Experiment: ', EXPERIMENT]);
-
+disp(RESOURCEFOLDER);
 %---And the experiment runs here!
 Do_MPP_Exp();
 
