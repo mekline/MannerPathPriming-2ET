@@ -12,7 +12,7 @@ Also put the audio, audio_MPP2ET, & movies folders in RESOURCEFOLDER
 
 Current state: This is the ~3rd pilot version; major differnces between the pilot versions are the exact timing of the test movies and the naming schemes for each part of the trial. Purpose of pilot: fixing eyedata pipeline and testing that children make it through the session and learn at least individual verbs.
 
-
+TODO: Confirm that everything runs FROM the repo folder before deleting pilot/desktop version. (Running 1 pilot kid in the old folder first)
 
 
 
