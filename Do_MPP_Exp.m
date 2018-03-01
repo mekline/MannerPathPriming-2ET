@@ -122,6 +122,8 @@ try
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Save a header file to the data file so it will be easier to read!
    % WriteToDataFile({'header','asdf','putcolumnnameshere', 12}); %use curly braces, ANYthing could be in there!
+    %Since MK is someimes confused: WriteToDataFile is a common resource
+    %function!  Below, we use WriteMPPTrial.m for common format!
     
     WriteToDataFile({'SubjectNo',...
         'Date',...
@@ -175,9 +177,9 @@ try
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 2 TRIALS OF PRACTICE TRAINING
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%     for i=1:2
-%         NEW_Trial_Practice(i);
-%     end
+     for i=1:2
+         Trial_Practice(i);
+     end
   
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % N TRIALS OF WITHIN-FIELD PRIMING or VERB LEARNING
@@ -185,33 +187,36 @@ try
     
     %How many trials?
     ntrials = height(MAIN_ITEMS); 
+    %DEBUGGG
+    %ntrials = 2;
     
     %4 NoBias trials
     for i = 1:ntrials/2;
         disp(i)
-        Trial_Omnibus(i, 'WithBias'); %DEBUG
+        Trial_Omnibus(i, 'NoBias');
         expTrial = GetSecs;
-        expTime = expTrial - expStart;       
-        Write_Trial_to_File(i, MAIN_ITEMS);
+        expTime = expTrial - expStart;       %What does the expTime global do?
+        Write_MPP_Trial(i, MAIN_ITEMS);
     end
     
     %4 WithBias trials
     for i=(1+ntrials/2):ntrials
-        Trial_Main(i)
+        disp(i)
+        Trial_Omnibus(i,'WithBias');
         expTrial = GetSecs;
         expTime = expTrial - expStart;       
-        Write_Trial_to_File(i, MAIN_ITEMS);
+        Write_MPP_Trial(i, MAIN_ITEMS);
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % N TRIALS OF CROSS-FIELD TESTING
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    if TOEXTEND
+    if TOEXTEND == 'Extend'
         for i=(ntrials+1):(2*ntrials)
-            Trial_Omnibus('BiasOnly');
+            Trial_Omnibus(i, 'BiasOnly');
             expTrial = GetSecs;
             expTime = expTrial - expStart;
-            Write_Trial_to_File(i, EXT_ITEMS);
+            Write_MPP_Trial(i, EXT_ITEMS);
         end
     end
     

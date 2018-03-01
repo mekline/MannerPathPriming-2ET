@@ -152,7 +152,6 @@ Screen('FillRect',EXPWIN, WINDOW_PARAMS.BGCOLOR);
 Screen(EXPWIN,'Flip');
 
 disp(['Starting Experiment: ', EXPERIMENT]);
-disp(RESOURCEFOLDER);
 %---And the experiment runs here!
 Do_MPP_Exp();
 
