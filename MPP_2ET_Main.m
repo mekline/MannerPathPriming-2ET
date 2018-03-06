@@ -1,4 +1,4 @@
-function MPP_2ET_Main(SubjectID, Condition, ToExtend, Set, varargin)
+   function MPP_2ET_Main(SubjectID, Condition, ToExtend, Set, varargin)
 % The new MPP, for eyetracking 2yos. The new excitement is that
 % this version has refactored the common resources for PTB,
 % eyetracking, and common stimuli for easier/more economical
