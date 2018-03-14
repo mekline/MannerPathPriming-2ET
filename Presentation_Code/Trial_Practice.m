@@ -151,9 +151,9 @@ end
 % SAVE THE DATA
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%Interesting noises for non-boringness
+%Interesting noises & pix for non-boringness
 Play_Sound(bells,0);
-
+Show_Image([RESOURCEFOLDER '/rewardpix/cuteanimals.0' num2str(trialNo + 16) '.jpeg']);
 %Save gaze trial data as MAT, and add to the big CSV
 description = ['All_of_Practice_trial_' num2str(trialNo)]; %description of this timeperiod
 

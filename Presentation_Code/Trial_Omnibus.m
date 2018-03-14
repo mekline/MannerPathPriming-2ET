@@ -382,6 +382,7 @@ function [response] = Trial_Omnibus(trialNo, version)
     
     %Interesting noises for non-boringness
     Play_Sound(bells,0);
+    Show_Image([RESOURCEFOLDER '/rewardpix/cuteanimals.00' num2str(trialNo) '.jpeg']);
     
     %Save gaze trial data as MAT, and add to the big CSV
     description = ['All_of_Main_trial_' num2str(trialNo)]; %description of this timeperiod
