@@ -177,7 +177,8 @@ try
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % 2 TRIALS OF PRACTICE TRAINING
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-     for i=1:2
+    for i=1:1 %SHORTER VERSION, PILOT 3/19 
+    %for i=1:2
          Trial_Practice(i);
      end
   
@@ -190,8 +191,8 @@ try
     %DEBUGGG
     %ntrials = 2;
     
-    %4 NoBias trials
-    for i = 1:ntrials/2;
+    %for i = 1:ntrials/2;
+    for i=1:ntrials/4; %SHORTER PILOT 3/19
         disp(i)
         Trial_Omnibus(i, 'NoBias');
         expTrial = GetSecs;
