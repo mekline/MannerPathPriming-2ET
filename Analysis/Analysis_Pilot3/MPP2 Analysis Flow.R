@@ -98,6 +98,10 @@ for(ID in pData$SubjectID){
   
 }
 
+### AT this point you have:
+#GazeData
+#TimestampData
+
 ###############################
 # PROCESS/RECODE DATA
 ###############################
@@ -193,6 +197,10 @@ TimestampData <- TimestampData %>%
   select(-c(description, next_description))
 
 #Add labels to the GazeData!
+# TimestampData
+# GazeData
+# DatData
+# AllSubjData (partial)
 
 #DATA SUBSET FOR DEVELOPING THE FUNCTION!
 practiceSubjData = filter(AllSubjData, SubjectID == 'child_pilot_03202018')
