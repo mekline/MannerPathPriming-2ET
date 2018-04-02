@@ -12,6 +12,7 @@
 #Run these two lines the first time only to install eyetrackingR
 #install.packages("devtools")
 #devtools::install_github("jwdink/eyetrackingR")
+#install.packages("eyetrackingR")
 library("eyetrackingR")
 library("plyr")
 library("dplyr")
@@ -29,6 +30,7 @@ validate.names = function(df){
   names(rtn) = valid_column_names
   rtn
 }
+
 #=========================#
 
 
@@ -161,6 +163,7 @@ pract2 <- DatData %>%
 DatData <- bind_rows(DatData, pract1)  
 DatData <- bind_rows(DatData, pract2)  
 
+setwd(analysisDir)
 ###############################
 # MERGE DATA (ahhhh!)
 ###############################
@@ -205,10 +208,12 @@ TimestampData <- TimestampData %>%
                                   'TRIAL END', next_description)) %>%
   mutate(adjusted_end_time = ifelse(description == 'SameVerbTest_compareVideo2_end', 
                                  adjusted_start_time, adjusted_end_time)) %>%
-  mutate(segment_length_in_sec = (adjusted_end_time-adjusted_start_time)/100000)%>% #For checking things are the right length....
-  #Column cleanup:
-  mutate(trial_segment = paste(description, next_description, sep='-TO-'))%>%
-  select(-c(description, next_description))
+  mutate(segment_length_in_sec = (adjusted_end_time-adjusted_start_time)/1000000) #For checking things are the right length....
+
+#Column cleanup
+TimestampData <- TimestampData %>%
+  mutate(trial_sanitycheck = paste(description, next_description, sep='-TO-'))%>%
+  select(-c(next_description))
 
 
 #Now do a cool SQL merge to find the timestamp window that each gazepoint belongs to!
@@ -222,10 +227,10 @@ TimestampedGazeData = sqldf("select * from GazeData f1 inner join TimestampData 
 TimestampedGazeData <- TimestampedGazeData%>%
   validate.names() %>% #(See fn at beginning of file, handles duplicated names gen'd by sqldf)
   mutate(ExperimentPhase = phaseGaze) %>%
-  select("subjectID","ExperimentPhase", "trialNo","L_valid", "L_x","L_y","R_valid", "R_x",
+  select("subjectID","ExperimentPhase", "trialNo","L_valid", "L_x","L_y","R_valid", "R_x", "R_y",
          "stringexpStartTime","GazeDataStringTime",
          "adjusted_time", "adjusted_start_time","adjusted_end_time",
-         "segment_length_in_sec","trial_segment" )
+         "segment_length_in_sec","description" )
 
 #And merge on the Trial level data!
 
@@ -258,77 +263,63 @@ nrow(unique(AllData[c("subjectID", "ExperimentPhase","trialNo")]))
 #########################
 # FORMAT for eyetrackingr package
 #########################
+
 AllData <- AllData %>%
-  mutate(Trackloss = (R_valid| L_valid))%>%
+  mutate(Trackloss = !R_valid & !L_valid)%>%
   mutate(trialNo = as.numeric(trialNo))%>%
   mutate(trialNo = ifelse(ExperimentPhase == 'Main', trialNo, trialNo-100))%>%
-  mutate(dummyAOI = TRUE)
+  mutate(Gaze_x = rowMeans(cbind(R_x, L_x), na.rm=TRUE)) %>%
+  mutate(Gaze_y = rowMeans(cbind(R_y, L_y), na.rm=TRUE))
   
+#Add AOIs
+# LEFT- liberal
+# LEFT moviebox
+# RIGHT - liberal
+# RIGHT moviebox
+# Center moviebox
+#NOTE these AOIS are in relative numbers (0,0 to 1,1), and are accurate
+#for display on our 1280x1040 T60; but maybe not on yours (the PTB help
+#code has some pixel-based calculations!)
+aois = read.csv('aoi_t60_LionRoom.csv', stringsAsFactors = FALSE)
+for (i in 1:nrow(aois)) {
+  AllData = add_aoi(data=AllData, aoi_dataframe = aois[i,], 
+                x_col= "Gaze_x", y_col= "Gaze_y", 
+                aoi_name = aois[i,]$AOIName)}
 
-EyeTrackingData <- make_eyetrackingr_data(AllData, 
+ERData <- make_eyetrackingr_data(AllData, 
                                participant_column = "subjectID",
                                trial_column = "trialNo",
                                time_column = "adjusted_time",
                                trackloss_column = "Trackloss",
-                               aoi_columns = c('dummyAOI'),
+                               aoi_columns = c('Left_Box','Right_Box','Center_Box',"Left_Side","Right_Side"),
                                treat_non_aoi_looks_as_missing = FALSE)
 
-#Add AOIs
-# LEFT- liberal
-# Left moviebox
-# RIGHT - liberal
-# RIGHT moviebox
-# Center moviebox
-# 
-# 
-# 
-# colnames(df_111_practice)[which(names(df_111_practice) == "description")] <- "trialNo"
-# df_111_practice$L_valid <- as.factor(df_111_practice$L_valid)
-# df_111_practice$R_valid <- as.factor(df_111_practice$R_valid)
-# 
-# #defining a trackloss column
-# df_111_practice$Trackloss_column <- ifelse(df_111_practice$L_valid == '1' & df_111_practice$R_valid == '1', FALSE, 
-#                                     ifelse(df_111_practice$L_valid == '0' & df_111_practice$R_valid == '1', TRUE,
-#                                     ifelse(df_111_practice$L_valid == '1' & df_111_practice$R_valid == '0', TRUE,
-#                                     ifelse(df_111_practice$L_valid == '0' & df_111_practice$R_valid == '0', TRUE, 'Error'))))
-# 
-# df_111_practice$Trackloss_column <- as.logical(df_111_practice$Trackloss_column)
-# 
-# #
-# #averaging together L and R eyes
-# df_111_practice$X <- rowMeans(subset(df_111_practice, select = c(6, 9)), na.rm = TRUE)
-# df_111_practice$Y <- rowMeans(subset(df_111_practice, select = c(7, 10)), na.rm = TRUE)
-# 
-# #merging together dat_table and trials to get correctness
-# df_111_practice$trialNo <- as.factor(ifelse(df_111_practice$trialNo == "All_of_Practice_trial_1", "1", 
-#                                      ifelse(df_111_practice$trialNo == "All_of_Practice_trial_2", "2",
-#                                      ifelse(df_111_practice$trialNo == "All_of_Practice_trial_3", "3",
-#                                      ifelse(df_111_practice$trialNo == "All_of_Practice_trial_4", "4", "Error")))))
-# 
-# df_111_practice <- merge(df_111_practice, dat_table, by="trialNo")
-# 
-# #Making sure they're looking at the correct video or not
-# subjID_aoi <- read.csv("~/Documents/Github/MannerPathPriming-2ET/Analysis/subjID_aoi.csv", header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
-# subjID_aoi$trialNo <- as.factor(subjID_aoi$trialNo)
-# df_111_main_aoi <- add_aoi(df_111_main, aoi_dataframe = subjID_aoi, 'X', 'Y', aoi_name="Correct", x_min_col = "X_min",
-#                            x_max_col = "X_max", y_min_col = "Y_min", y_max_col = "Y_max")
-# 
-# #adding an AOI column for Incorrect looks to screen
-# df_111_practice$Incorrect <- ifelse(df_111_practice$Correct == TRUE, FALSE,
-#                              ifelse(df_111_practice$Correct == FALSE, TRUE, 'Error'))
-# df_111_practice$Incorrect <- as.logical(df_111_practice$Incorrect)
-# 
 
-#starting to use eyetrackingR
-data <- make_eyetrackingr_data(df_111_practice, 
-                               participant_column = "subjectID",
-                               trial_column = "trialNo",
-                               time_column = "system_time_stamp",
-                               trackloss_column = "Trackloss_column",
-                               aoi_columns = c("Correct", "Incorrect"),
-                               treat_non_aoi_looks_as_missing = TRUE
-)
+#########################
+# TESTS for eyetrackingr package (Don't skip!)
+#########################
 
+#During segments when a video is always playing on the right or left, we should see more
+#looks in those regions!!!!
+leftlooks = describe_data(ERData, describe_column = "Left_Box", group_columns = "description")
+rightlooks = describe_data(ERData, describe_column = "Right_Box", group_columns = "description")
+filter(bind_rows("Left_Box" = leftlooks, "Right_Box" = rightlooks, .id = 'AOI'), 
+       description == 'SameVerbTest_left_video' | description == 'SameVerbTest_right_video')
+
+#The descriptions of trackloss on each trial should make sense given what you know about the participants!
+TL_Descriptives = trackloss_analysis(ERData)
+View(TL_Descriptives)
+
+#########################
+# PLOTTING DATA (It's very exciting!)
+#########################
+
+
+#########################
+# DATA ANALYSIS (It's also very exciting!)
+#########################
+
+########
 #aggregating by subjectID to get a proportion of looks to screen by AOI, with only trial 5
 trial5 <- subset(data, trialNo == "5")
 data_summary <- describe_data(trial5, 
