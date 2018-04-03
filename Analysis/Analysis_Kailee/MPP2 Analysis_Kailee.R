@@ -195,9 +195,9 @@ TimestampData <- TimestampData %>%
 #Add labels to the GazeData!
 
 #DATA SUBSET FOR DEVELOPING THE FUNCTION!
-practiceSubjData = filter(AllSubjData, SubjectID == 'child_pilot_03202018')
-practiceTimestampData = filter(TimestampData, subjectID == 'child_pilot_03202018')
-practiceGazeData = filter(GazeData, subjectID == 'child_pilot_03202018', phaseGaze == 'Main', trialNo < 3)
+practiceSubjData = filter(AllSubjData, SubjectID == 'Adult_0323_1030am')
+practiceTimestampData = filter(TimestampData, subjectID == 'Adult_0323_1030am')
+practiceGazeData = filter(GazeData, subjectID == 'Adult_0323_1030am', phaseGaze == 'Main', trialNo < 3)
 practiceGazeDataLine = practiceGazeData[3000,]
 
 #This function takes a timepoint and a set of TimestampData
@@ -281,21 +281,21 @@ trial_time <- function(x) {
 
 
 #cleaning up the data to get it in the form I want
-colnames(df_111_practice)[which(names(df_111_practice) == "description")] <- "trialNo"
-df_111_practice$L_valid <- as.factor(df_111_practice$L_valid)
-df_111_practice$R_valid <- as.factor(df_111_practice$R_valid)
-df_111_practice$system_time_stamp <- df_111_practice$system_time_stamp - 1500000000000000
+colnames(Adult_0323_230pm)[which(names(Adult_0323_230pm) == "description")] <- "trialNo"
+Adult_0323_230pm$L_valid <- as.factor(Adult_0323_230pm$L_valid)
+Adult_0323_230pm$R_valid <- as.factor(Adult_0323_230pm$R_valid)
+Adult_0323_230pm$system_time_stamp <- Adult_0323_230pm$system_time_stamp - 1500000000000000
 
 #defining a trackloss column
-df_111_practice$Trackloss_column <- ifelse(df_111_practice$L_valid == '1' & df_111_practice$R_valid == '1', FALSE, 
-                                    ifelse(df_111_practice$L_valid == '0' & df_111_practice$R_valid == '1', TRUE,
-                                    ifelse(df_111_practice$L_valid == '1' & df_111_practice$R_valid == '0', TRUE,
-                                    ifelse(df_111_practice$L_valid == '0' & df_111_practice$R_valid == '0', TRUE, 'Error'))))
+Adult_0323_230pm$Trackloss_column <- ifelse(Adult_0323_230pm$L_valid == '1' & df_111_practice$R_valid == '1', FALSE, 
+                                    ifelse(Adult_0323_230pm$L_valid == '0' & df_111_practice$R_valid == '1', TRUE,
+                                    ifelse(Adult_0323_230pm$L_valid == '1' & df_111_practice$R_valid == '0', TRUE,
+                                    ifelse(Adult_0323_230pm$L_valid == '0' & df_111_practice$R_valid == '0', TRUE, 'Error'))))
 
 df_111_practice$Trackloss_column <- as.logical(df_111_practice$Trackloss_column)
 
 #read in timestamps
-df_timestamps <- read.csv("~/Documents/Github/MannerPathPriming-2ET/Data/Melissa_111/timestamps_MPPCREATION_Melissa_111.csv", header = TRUE, stringsAsFactors=FALSE, fileEncoding = "latin1")
+df_timestamps <- read.csv("~/Documents/Github/MannerPathPriming-2ET/Data/Kailee/Adult_0323_230pm/timestamps_MPPCREATION_Adult_0323_230pm.csv", header = TRUE, stringsAsFactors=FALSE, fileEncoding = "latin1")
 df_timestamps$subjectID <- as.factor(df_timestamps$subjectID)
 df_timestamps$system_time_stamp <- df_timestamps[,2] - 1500000000000000
 
