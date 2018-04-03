@@ -15,13 +15,13 @@
 #install.packages("eyetrackingR")
 library("eyetrackingR")
 library("plyr")
-library("dplyr")
 library("lme4")
 library("ggplot2")
 library("Matrix")
 library("tidyr")
 library("stringr")
 library("sqldf")
+library("dplyr")
 
 #=======CUSTOM FUNS=======#
 validate.names = function(df){
@@ -269,8 +269,11 @@ AllData <- AllData %>%
   mutate(trialNo = as.numeric(trialNo))%>%
   mutate(trialNo = ifelse(ExperimentPhase == 'Main', trialNo, trialNo-100))%>%
   mutate(Gaze_x = rowMeans(cbind(R_x, L_x), na.rm=TRUE)) %>%
-  mutate(Gaze_y = rowMeans(cbind(R_y, L_y), na.rm=TRUE))
+  mutate(Gaze_y = rowMeans(cbind(R_y, L_y), na.rm=TRUE)) %>%
+  separate(description, c('probeType','probeSegment'), extra = "merge")
   
+#Add by-probe time windows so that eyetrackingr can find them!
+
 #Add AOIs
 # LEFT- liberal
 # LEFT moviebox
@@ -295,6 +298,7 @@ ERData <- make_eyetrackingr_data(AllData,
                                treat_non_aoi_looks_as_missing = FALSE)
 
 
+
 #########################
 # TESTS for eyetrackingr package (Don't skip!)
 #########################
@@ -311,9 +315,21 @@ TL_Descriptives = trackloss_analysis(ERData)
 View(TL_Descriptives)
 
 #########################
-# PLOTTING DATA (It's very exciting!)
+# IN THE FUTURE, All subject descriptives should be calculated here so they can be reported!
 #########################
 
+#########################
+# SUBSETTING DATA (It's very exciting!)
+#########################
+#End goal of this section - get a DF that contains all the sameVerb and Bias sequences:
+#Left video, right video, both videos, both videos again, with interspersed audio. 
+
+ERData_zeroed = subset_by_window(ERData, window_start_col = "adjusted_start_time", window_end_col = "adjusted_end_time", rezero = TRUE)%>%
+  separate(description)
+
+#########################
+# IN THE FUTURE, All post-data-cleaning subject descriptives should be calculated here so they can be reported!
+#########################
 
 #########################
 # DATA ANALYSIS (It's also very exciting!)
