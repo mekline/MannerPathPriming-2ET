@@ -39,8 +39,8 @@ kids_to_process <- c('Adult_0322_1.30pm','Adult_0322_2_2pm',
                      'Adult_0323_1130am','Adult_0323_130pm',
                      'Adult_0323_2pm','Adult_0323_230pm')
 myRepo = 'C:/Users/kailee/Documents/GitHub/MannerPathPriming-2ET'
-analysisDir = paste(myRepo, '/Analysis/Analysis_Pilot3/',sep='')
-dataDir = paste(myRepo, '/Data/Pilot 3/',sep='')
+analysisDir = paste(myRepo, '/Analysis/Analysis_Kailee/',sep='')
+dataDir = paste(myRepo, '/Data/Kailee/',sep='')
 
 setwd(myRepo)
 
@@ -106,8 +106,8 @@ for(ID in pData$subjectID){
     TimestampData = bind_rows(TimestampData, myTimestampData)
     GazeData = bind_rows(GazeData, myGazeData)
   }
-  
-}
+}  
+
 
 ### AT this point you have:
 #GazeData
@@ -241,20 +241,20 @@ AllData <- merge(TimestampedGazeData, AllSubjData, by=c("subjectID", "Experiment
 #which should be the same number of rows as AllData, OR
 #slightly fewer rows than AllData, to account for kids
 #who have only one line (no gaze data).
-nrow(GazeData)
-nrow(TimestampedGazeData)
-nrow(AllData)
+nrow(GazeData) #53407
+nrow(TimestampedGazeData) #42944
+nrow(AllData) #42953
 
 
 #All participants, even those who contributed NO looking data,
 #should be in the dataset at this point"
-length(kids_to_process)
-length(unique(AllData$subjectID))
+length(kids_to_process)  #8 participants
+length(unique(AllData$subjectID)) #8 participants 
 
 
 #Similarly, all trials should be present:
-nrow(DatData)
-nrow(unique(AllData[c("subjectID", "ExperimentPhase","trialNo")]))
+nrow(DatData) #8 trials 
+nrow(unique(AllData[c("subjectID", "ExperimentPhase","trialNo")])) #15 
 
 #########################
 # FORMAT for eyetrackingr package
@@ -276,7 +276,7 @@ AllData <- AllData %>%
 #NOTE these AOIS are in relative numbers (0,0 to 1,1), and are accurate
 #for display on our 1280x1040 T60; but maybe not on yours (the PTB help
 #code has some pixel-based calculations!)
-aois = read.csv('aoi_t60_LionRoom.csv', stringsAsFactors = FALSE)
+aois = read.csv('aoi_t60_LionRoom_Kaileecopy.csv', stringsAsFactors = FALSE)
 for (i in 1:nrow(aois)) {
   AllData = add_aoi(data=AllData, aoi_dataframe = aois[i,], 
                 x_col= "Gaze_x", y_col= "Gaze_y", 
