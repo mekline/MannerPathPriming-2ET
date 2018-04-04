@@ -34,12 +34,20 @@ validate.names = function(df){
 #=========================#
 
 
-kids_to_process <- c('child_pilot_0306',
-                     'child_pilot_0314',
-                     'child_pilot_03162018',
+kids_to_process <- c(#'child_pilot_0306',
+                     #'child_pilot_0314',
+                     #'child_pilot_03162018',
+                     #'child_pilot_03202018',
+                     'pilot x2', #Pilotx2 is a good kid to include for testing because they have an oddly formatted name and no gazedata
                      'child_pilot_03202018',
-                     'pilot x2') #Pilotx2 is a good kid to include for testing because they have an oddly formatted name and no gazedata
-
+                     'child_pilot_03232018_3pmx2',
+                     'child_pilot_03232018_5pm',
+                     'child_pilot_032618_11am',
+                     'Theodora_Pilot_32618',
+                     'child_03272018_1130am',
+                     'Child_Pilot_03272018_4_2pm',
+                     'child_pilot_03282018_10_3am',
+                     'childpilot_032918')
 #Set your directories
 
 myRepo = '/Users/mekline/Dropbox/_Projects/MannerPath-2ET/MannerPathPriming-2ET Repo'
@@ -217,6 +225,7 @@ TimestampData <- TimestampData %>%
 
 
 #Now do a cool SQL merge to find the timestamp window that each gazepoint belongs to!
+#(Takes a while)
 TimestampedGazeData = sqldf("select * from GazeData f1 inner join TimestampData f2 
             on (f1.adjusted_time > f2.adjusted_start_time 
             and f1.adjusted_time<= f2.adjusted_end_time
@@ -266,14 +275,26 @@ nrow(unique(AllData[c("subjectID", "ExperimentPhase","trialNo")]))
 
 AllData <- AllData %>%
   mutate(Trackloss = !R_valid & !L_valid)%>%
+  mutate(Trackloss = ifelse(is.na(Trackloss),TRUE, Trackloss))%>%
   mutate(trialNo = as.numeric(trialNo))%>%
   mutate(trialNo = ifelse(ExperimentPhase == 'Main', trialNo, trialNo-100))%>%
   mutate(Gaze_x = rowMeans(cbind(R_x, L_x), na.rm=TRUE)) %>%
   mutate(Gaze_y = rowMeans(cbind(R_y, L_y), na.rm=TRUE)) %>%
   separate(description, c('probeType','probeSegment'), extra = "merge")
-  
-#Add by-probe time windows so that eyetrackingr can find them!
 
+#TEST all timebins (at least in the Main exp) should be the right length for their segment. Check for problems here
+segments <- AllData %>%
+  group_by(probeSegment, ExperimentPhase)%>%
+  dplyr::summarize(meanlen = mean(segment_length_in_sec, na.rm=TRUE))
+segments
+
+#Add by-probe time windows so that eyetrackingr can find them!
+AllData <- AllData %>%
+  dplyr::group_by(subjectID,trialNo,probeType) %>%
+  dplyr::mutate(start_time_by_probe = min(adjusted_start_time))%>%
+  dplyr::mutate(end_time_by_probe = max(adjusted_end_time))%>%
+  ungroup()
+  
 #Add AOIs
 # LEFT- liberal
 # LEFT moviebox
@@ -289,12 +310,20 @@ for (i in 1:nrow(aois)) {
                 x_col= "Gaze_x", y_col= "Gaze_y", 
                 aoi_name = aois[i,]$AOIName)}
 
+#Add Derived AOIS (using the known target side!)
+AllData <- AllData %>%
+  mutate(targetSide = ifelse(probeType == 'Bias', targetSideBias, targetSideTest))%>%
+  mutate(In_Target_Box = ifelse(targetSide == 'L', Left_Box, Right_Box))%>%
+  mutate(In_Target_Side = ifelse(targetSide == 'L', Left_Side, Right_Side))
+
 ERData <- make_eyetrackingr_data(AllData, 
                                participant_column = "subjectID",
                                trial_column = "trialNo",
                                time_column = "adjusted_time",
                                trackloss_column = "Trackloss",
-                               aoi_columns = c('Left_Box','Right_Box','Center_Box',"Left_Side","Right_Side"),
+                               aoi_columns = c('Left_Box','Right_Box',
+                                               'Center_Box','Left_Side','Right_Side',
+                                               'In_Target_Box','In_Target_Side'),
                                treat_non_aoi_looks_as_missing = FALSE)
 
 
@@ -305,10 +334,10 @@ ERData <- make_eyetrackingr_data(AllData,
 
 #During segments when a video is always playing on the right or left, we should see more
 #looks in those regions!!!!
-leftlooks = describe_data(ERData, describe_column = "Left_Box", group_columns = "description")
-rightlooks = describe_data(ERData, describe_column = "Right_Box", group_columns = "description")
+leftlooks = describe_data(ERData, describe_column = "Left_Box", group_columns = "probeSegment")
+rightlooks = describe_data(ERData, describe_column = "Right_Box", group_columns = "probeSegment")
 filter(bind_rows("Left_Box" = leftlooks, "Right_Box" = rightlooks, .id = 'AOI'), 
-       description == 'SameVerbTest_left_video' | description == 'SameVerbTest_right_video')
+       probeSegment == 'left_video' | probeSegment == 'right_video')
 
 #The descriptions of trackloss on each trial should make sense given what you know about the participants!
 TL_Descriptives = trackloss_analysis(ERData)
@@ -319,17 +348,71 @@ View(TL_Descriptives)
 #########################
 
 #########################
-# SUBSETTING DATA (It's very exciting!)
+# SUBSETTING DATA
 #########################
-#End goal of this section - get a DF that contains all the sameVerb and Bias sequences:
-#Left video, right video, both videos, both videos again, with interspersed audio. 
 
-ERData_zeroed = subset_by_window(ERData, window_start_col = "adjusted_start_time", window_end_col = "adjusted_end_time", rezero = TRUE)%>%
-  separate(description)
+ERData_zeroed = subset_by_window(ERData, window_start_col = "start_time_by_probe", window_end_col = "end_time_by_probe", rezero = TRUE)
+
+Probe_Data = filter(ERData_zeroed, probeType == 'SameVerbTest' | probeType == 'Bias')
+Probe_Data <- clean_by_trackloss(data = Probe_Data, trial_prop_thresh = .25)
+
 
 #########################
 # IN THE FUTURE, All post-data-cleaning subject descriptives should be calculated here so they can be reported!
 #########################
+#Assess Trackloss
+trackloss_clean <- trackloss_analysis(data = Probe_Data)
+trackloss_clean_subjects <- unique(trackloss_clean[, c('subjectID','TracklossForParticipant')])
+mean(1 - trackloss_clean_subjects$TracklossForParticipant)
+sd(1- trackloss_clean_subjects$TracklossForParticipant)
+
+final_summary <- describe_data(Probe_Data, 'Left_Box', c('subjectID','Condition'))
+mean(final_summary$NumTrials)
+sd(final_summary$NumTrials)
+
+
+#########################
+# GRAPHS (It's very exciting!)
+#########################
+
+SV_Looks <- filter(Probe_Data, probeType == 'SameVerbTest', ExperimentPhase == 'Main',
+                  probeSegment %in% c('left_video','right_video'))
+SV_Data1 <- filter(Probe_Data, probeType == 'SameVerbTest', ExperimentPhase == 'Main',
+                   probeSegment %in% c('compareVideo1_start','compareVideo1_still'))
+SV_Data2 <- filter(Probe_Data, probeType == 'SameVerbTest', ExperimentPhase == 'Main',
+                   probeSegment %in% c('compareVideo2_start','compareVideo2_still'))
+
+#View(select(SV_Data1,c(subjectID, trialNo, probeType, adjusted_time,probeSegment)))
+#View(select(SV_Looks,c(subjectID, trialNo, probeType, adjusted_time,probeSegment)))
+
+SV_time_looks <- make_time_sequence_data(SV_Looks, time_bin_size = 10000, 
+                                         predictor_columns = c("Condition"),
+                                         aois = "Left_Side",
+                                         summarize_by = "subjectID")
+SV_time_Data1 <- make_time_sequence_data(SV_Data1, time_bin_size = 10000, 
+                                         predictor_columns = c("Condition"),
+                                         aois = c("In_Target_Side"),
+                                         summarize_by = "subjectID")
+SV_time_Data2 <- make_time_sequence_data(SV_Data2, time_bin_size = 10000, 
+                                         predictor_columns = c("Condition"),
+                                         aois = c("In_Target_Side"),
+                                         summarize_by = "subjectID")
+
+SV_alltime = bind_rows("LR" = SV_time_looks, 
+                       "Data1" = SV_time_Data1,
+                       "Data2" = SV_time_Data2,.id='ResponseWindow')
+
+SV_forgraph <- SV_alltime %>%
+  mutate(ResponseWindow = factor(ResponseWindow))%>%
+  mutate(ResponseWindow = factor(ResponseWindow, levels(ResponseWindow)[c(3,1,2)])) %>%
+  mutate(Time_in_Sec = Time/1000000)
+
+
+ggplot(data = SV_forgraph, aes(y=Prop,x=Time_in_Sec,color=Condition)) +
+  geom_smooth() +
+  facet_wrap(~ResponseWindow, scales = "free_x") +
+  geom_line(y=0.5, color='black')
+  
 
 #########################
 # DATA ANALYSIS (It's also very exciting!)
