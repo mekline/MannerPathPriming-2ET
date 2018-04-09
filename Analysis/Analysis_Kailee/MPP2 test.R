@@ -719,27 +719,27 @@ sd(final_summary$NumTrials)
 
 
 
-SV_Looks <- filter(Probe_Data, probeType == 'SameVerbTest', ExperimentPhase == 'Main',
+SV_LooksBias <- filter(Probe_Data, probeType == 'Bias', ExperimentPhase == 'Main',
                    
                    probeSegment %in% c('left_video','right_video'))
 
-SV_Data1 <- filter(Probe_Data, probeType == 'SameVerbTest', ExperimentPhase == 'Main',
+SV_Data3 <- filter(Probe_Data, probeType == 'Bias', ExperimentPhase == 'Main',
                    
                    probeSegment %in% c('compareVideo1_start','compareVideo1_still'))
 
-SV_Data2 <- filter(Probe_Data, probeType == 'SameVerbTest', ExperimentPhase == 'Main',
+SV_Data4 <- filter(Probe_Data, probeType == 'Bias', ExperimentPhase == 'Main',
                    
                    probeSegment %in% c('compareVideo2_start','compareVideo2_still'))
 
 
 
 #View(select(SV_Data1,c(subjectID, trialNo, probeType, adjusted_time,probeSegment)))
-View(select(SV_Data1,c(subjectID, trialNo, probeType, adjusted_time,probeSegment)))
+View(select(SV_Data3,c(subjectID, trialNo, probeType, adjusted_time,probeSegment)))
 #View(select(SV_Looks,c(subjectID, trialNo, probeType, adjusted_time,probeSegment)))
 
 
 
-SV_time_looks <- make_time_sequence_data(SV_Looks, time_bin_size = 10000, 
+SV_time_looksBias <- make_time_sequence_data(SV_LooksBias, time_bin_size = 10000, 
                                          
                                          predictor_columns = c("Condition"),
                                          
@@ -747,7 +747,7 @@ SV_time_looks <- make_time_sequence_data(SV_Looks, time_bin_size = 10000,
                                          
                                          summarize_by = "subjectID")
 
-SV_time_Data1 <- make_time_sequence_data(SV_Data1, time_bin_size = 10000, 
+SV_time_Data3 <- make_time_sequence_data(SV_Data3, time_bin_size = 10000, 
                                          
                                          predictor_columns = c("Condition"),
                                          
@@ -755,7 +755,7 @@ SV_time_Data1 <- make_time_sequence_data(SV_Data1, time_bin_size = 10000,
                                          
                                          summarize_by = "subjectID")
 
-SV_time_Data2 <- make_time_sequence_data(SV_Data2, time_bin_size = 10000, 
+SV_time_Data4 <- make_time_sequence_data(SV_Data4, time_bin_size = 10000, 
                                          
                                          predictor_columns = c("Condition"),
                                          
@@ -765,15 +765,15 @@ SV_time_Data2 <- make_time_sequence_data(SV_Data2, time_bin_size = 10000,
 
 
 
-SV_alltime = bind_rows("LR" = SV_time_looks, 
+SV_alltimeBias = bind_rows("LRBias" = SV_time_looksBias, 
                        
-                       "Data1" = SV_time_Data1,
+                       "Data3" = SV_time_Data3,
                        
-                       "Data2" = SV_time_Data2,.id='ResponseWindow')
+                       "Data4" = SV_time_Data4,.id='ResponseWindow')
 
 
 
-SV_forgraph <- SV_alltime %>%
+SV_forgraph <- SV_alltimeBias %>%
   
   mutate(ResponseWindow = factor(ResponseWindow))%>%
   
@@ -793,8 +793,8 @@ ggplot(data = SV_forgraph, aes(y=Prop,x=Time_in_Sec,color=Condition)) +
   
   geom_line(y=0.5, color='black')
 
-
-
+save (SV_alltime, file = "Kailee_Mandarinspeaker_alltime.RData")
+save (SV_alltimeBias, file = "Kailee_Mandarinspeaker_alltimeBias.RData")
 
 
 #########################
