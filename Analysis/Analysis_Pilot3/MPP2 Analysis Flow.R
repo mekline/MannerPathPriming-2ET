@@ -22,6 +22,8 @@ library("tidyr")
 library("stringr")
 library("sqldf")
 library("dplyr")
+library("bootstrap")
+library("testthat")
 
 #=======CUSTOM FUNS=======#
 validate.names = function(df){
@@ -31,6 +33,19 @@ validate.names = function(df){
   rtn
 }
 
+mean.na.rm <- function(mylist){
+  return(mean(mylist, na.rm=TRUE))
+}
+
+bootup <- function(mylist){
+  foo <- bootstrap(mylist, 1000, mean.na.rm)
+  return(quantile(foo$thetastar, 0.975)[1])
+}
+bootdown <- function(mylist){
+  foo <- bootstrap(mylist, 1000, mean.na.rm)
+  return(quantile(foo$thetastar, 0.025)[1])
+}
+
 #=========================#
 
 
@@ -38,7 +53,7 @@ kids_to_process <- c('child_pilot_0306',
                      'child_pilot_0314',
                      'child_pilot_03162018',
                      'child_pilot_03202018',
-                     'pilot x2', #Pilotx2 is a good kid to include for testing because they have an oddly formatted name and no gazedata
+                     'pilot x2', 
                      'child_pilot_03202018',
                      'child_pilot_03232018_3pmx2',
                      'child_pilot_03232018_5pm',
@@ -47,7 +62,9 @@ kids_to_process <- c('child_pilot_0306',
                      'child_03272018_1130am',
                      'Child_Pilot_03272018_4_2pm',
                      'child_pilot_03282018_10_3am',
-                     'childpilot_032918')
+                     'childpilot_032918',
+                     'child_pilot_04022018_10am',
+                     'child_04092018_9am')
 #Set your directories
 
 myRepo = '/Users/mekline/Dropbox/_Projects/MannerPath-2ET/MannerPathPriming-2ET Repo'
@@ -314,7 +331,8 @@ for (i in 1:nrow(aois)) {
 AllData <- AllData %>%
   mutate(targetSide = ifelse(probeType == 'Bias', targetSideBias, targetSideTest))%>%
   mutate(In_Target_Box = ifelse(targetSide == 'L', Left_Box, Right_Box))%>%
-  mutate(In_Target_Side = ifelse(targetSide == 'L', Left_Side, Right_Side))
+  mutate(In_Target_Side = ifelse(targetSide == 'L', Left_Side, Right_Side)) %>%
+  mutate(In_Manner_Side = ifelse(Condition == "Manner", In_T))
 
 ERData <- make_eyetrackingr_data(AllData, 
                                participant_column = "subjectID",
@@ -375,6 +393,10 @@ sd(final_summary$NumTrials)
 # GRAPHS (It's very exciting!)
 #########################
 
+#Filter here to just the first two (you saw these at home!)
+#Probe_Data_Old <- Probe_Data
+#Probe_Data <- filter(Probe_Data, trialNo == "5"|trialNo =="6"| trialNo =="7" |trialNo =="8")
+
 SV_Looks <- filter(Probe_Data, probeType == 'SameVerbTest', ExperimentPhase == 'Main',
                   probeSegment %in% c('left_video','right_video'))
 SV_Data1 <- filter(Probe_Data, probeType == 'SameVerbTest', ExperimentPhase == 'Main',
@@ -408,12 +430,87 @@ SV_forgraph <- SV_alltime %>%
   mutate(Time_in_Sec = Time/1000000)
   
 
-
 ggplot(data = SV_forgraph, aes(y=Prop,x=Time_in_Sec,color=Condition)) +
   geom_smooth(span=0.5, method="loess") +
   facet_wrap(~ResponseWindow, scales = "free_x") +
   geom_line(y=0.5, color='black')
   
+
+#And do some for a bar graph! - Bins of 2 seconds
+SV_time_looks <- make_time_sequence_data(SV_Looks, time_bin_size = 2000000, 
+                                         predictor_columns = c("Condition"),
+                                         aois = "Left_Side",
+                                         summarize_by = "subjectID")
+SV_time_Data1 <- make_time_sequence_data(SV_Data1, time_bin_size = 2000000, 
+                                         predictor_columns = c("Condition"),
+                                         aois = c("In_Target_Side"),
+                                         summarize_by = "subjectID")
+SV_time_Data2 <- make_time_sequence_data(SV_Data2, time_bin_size = 2000000, 
+                                         predictor_columns = c("Condition"),
+                                         aois = c("In_Target_Side"),
+                                         summarize_by = "subjectID")
+
+SV_alltime_bargraph = bind_rows("LR" = SV_time_looks, 
+                       "Data1" = SV_time_Data1,
+                       "Data2" = SV_time_Data2,.id='ResponseWindow')
+
+SV_forgraph_bargraph <- SV_alltime_bargraph %>%
+  mutate(ResponseWindow = factor(ResponseWindow))%>%
+  mutate(ResponseWindow = factor(ResponseWindow, levels(ResponseWindow)[c(3,1,2)])) %>%
+  mutate(Time_in_Sec = Time/1000000) %>%
+  filter(!is.na(Prop))%>%
+  filter(SamplesTotal > 90)%>%
+  group_by(Condition, TimeBin, Time_in_Sec, ResponseWindow)%>%
+  dplyr::summarize(themean = mean(Prop, na.rm=TRUE), ci_up = bootup(Prop), ci_down = bootdown(Prop))
+
+ggplot(data = SV_forgraph_bargraph, aes(y=themean,x=Time_in_Sec,fill=Condition)) +
+  geom_bar(position=position_dodge(), stat="identity") +
+  geom_errorbar(aes(ymin=ci_down, ymax=ci_up), colour="black", width=.1, position=position_dodge(1.5)) + #Why point 9? Hell if I know!
+  facet_wrap(~ResponseWindow, scales = "free_x") +
+  geom_line(y=0.5, color='black')
+
+
+#######Bias
+SV_Looks <- filter(Probe_Data, probeType == 'Bias', ExperimentPhase == 'Main',
+                   probeSegment %in% c('left_video','right_video'))
+SV_Data1 <- filter(Probe_Data, probeType == 'Bias', ExperimentPhase == 'Main',
+                   probeSegment %in% c('compareVideo1_start','compareVideo1_still'))
+SV_Data2 <- filter(Probe_Data, probeType == 'Bias', ExperimentPhase == 'Main',
+                   probeSegment %in% c('compareVideo2_start','compareVideo2_still'))
+
+
+#And do some for a bar graph! - Bins of 2 seconds
+SV_time_looks <- make_time_sequence_data(SV_Looks, time_bin_size = 2000000, 
+                                         predictor_columns = c("Condition"),
+                                         aois = "Left_Side",
+                                         summarize_by = "subjectID")
+SV_time_Data1 <- make_time_sequence_data(SV_Data1, time_bin_size = 2000000, 
+                                         predictor_columns = c("Condition"),
+                                         aois = c("In_Target_Side"),   #IS THIS A BUG
+                                         summarize_by = "subjectID")
+SV_time_Data2 <- make_time_sequence_data(SV_Data2, time_bin_size = 2000000, 
+                                         predictor_columns = c("Condition"),
+                                         aois = c("In_Target_Side"),
+                                         summarize_by = "subjectID")
+
+SV_alltime_bargraph = bind_rows("LR" = SV_time_looks, 
+                                "Data1" = SV_time_Data1,
+                                "Data2" = SV_time_Data2,.id='ResponseWindow')
+
+SV_forgraph_bargraph <- SV_alltime_bargraph %>%
+  mutate(ResponseWindow = factor(ResponseWindow))%>%
+  mutate(ResponseWindow = factor(ResponseWindow, levels(ResponseWindow)[c(3,1,2)])) %>%
+  mutate(Time_in_Sec = Time/1000000) %>%
+  filter(!is.na(Prop))%>%
+  filter(SamplesTotal > 90)%>%
+  group_by(Condition, TimeBin, Time_in_Sec, ResponseWindow)%>%
+  dplyr::summarize(themean = mean(Prop, na.rm=TRUE), ci_up = bootup(Prop), ci_down = bootdown(Prop))
+
+ggplot(data = SV_forgraph_bargraph, aes(y=themean,x=Time_in_Sec,fill=Condition)) +
+  geom_bar(position=position_dodge(), stat="identity") +
+  geom_errorbar(aes(ymin=ci_down, ymax=ci_up), colour="black", width=.1, position=position_dodge(1.5)) + #Why point 9? Hell if I know!
+  facet_wrap(~ResponseWindow, scales = "free_x") +
+  geom_line(y=0.5, color='black')
 
 #########################
 # DATA ANALYSIS (It's also very exciting!)
