@@ -34,10 +34,10 @@ validate.names = function(df){
 #=========================#
 
 
-kids_to_process <- c(#'child_pilot_0306',
-                     #'child_pilot_0314',
-                     #'child_pilot_03162018',
-                     #'child_pilot_03202018',
+kids_to_process <- c('child_pilot_0306',
+                     'child_pilot_0314',
+                     'child_pilot_03162018',
+                     'child_pilot_03202018',
                      'pilot x2', #Pilotx2 is a good kid to include for testing because they have an oddly formatted name and no gazedata
                      'child_pilot_03202018',
                      'child_pilot_03232018_3pmx2',
@@ -406,10 +406,11 @@ SV_forgraph <- SV_alltime %>%
   mutate(ResponseWindow = factor(ResponseWindow))%>%
   mutate(ResponseWindow = factor(ResponseWindow, levels(ResponseWindow)[c(3,1,2)])) %>%
   mutate(Time_in_Sec = Time/1000000)
+  
 
 
 ggplot(data = SV_forgraph, aes(y=Prop,x=Time_in_Sec,color=Condition)) +
-  geom_smooth() +
+  geom_smooth(span=0.5, method="loess") +
   facet_wrap(~ResponseWindow, scales = "free_x") +
   geom_line(y=0.5, color='black')
   
