@@ -116,7 +116,7 @@ for(ID in pData$subjectID){
   myDatData <- read.csv(myDatFile, stringsAsFactors = FALSE)
   
   myTimestampData <- read.csv(myTimestampFile, stringsAsFactors = FALSE)
-   
+  
   myGazeData <- data.frame(NULL)
   
   for (f in myMainGazeFiles){
@@ -181,8 +181,8 @@ DatData <- DatData %>%
   mutate(ExperimentPhase = 'Main') %>%
   mutate(targetSideBias = ifelse(Condition == 'Manner', mannerSideBias,pathSideBias)) %>%
   mutate(targetSideTest = ifelse(Condition == 'Manner', mannerSideTest, pathSideTest))
-  
-  
+
+
 #Manually add Pratice lines to the Dat files - parameters always the same! Target on the right for trial 1, target on left for trial 2
 #NOTE: This may add a trial the child didn't actually do (ie if second practice trial
 #wasn't run, the new version), but this will be fine bc it won't correspond to any timestamps
@@ -217,7 +217,7 @@ dr = nrow(DatData)
 AllSubjData <- merge(DatData, pData, by="subjectID") %>%
   mutate(trialNo = ifelse(ExperimentPhase == 'Main', as.numeric(trialNo), as.numeric(trialNo)-100)) %>%
   filter(!(Experiment == 'Pilot3 - NEW - SHORT'& trialNo == -98))
-  
+
 
 expect_equal(length(unique(AllSubjData$subjectID)), length(kids_to_process))
 ar = nrow(AllSubjData)
@@ -243,7 +243,7 @@ GazeData <- GazeData %>%
   select(-c(device_time_stamp, system_time_stamp, expStartTime)) %>%
   separate(description, c("x","y","z", "w", "trialNo")) %>% 
   select(-c(x,y,z,w))
-  
+
 #Reshape TimestampData
 TimestampData = merge(TimestampData, startTime, by = c("subjectID"))
 TimestampData <- TimestampData %>%
@@ -260,9 +260,9 @@ TimestampData <- TimestampData %>%
   select(-timeGroupings) %>%
   #Doing some cleanup on those bad edge cases
   mutate(next_description = ifelse(description == 'SameVerbTest_compareVideo2_end', 
-                                  'TRIAL END', next_description)) %>%
+                                   'TRIAL END', next_description)) %>%
   mutate(adjusted_end_time = ifelse(description == 'SameVerbTest_compareVideo2_end', 
-                                 adjusted_start_time, adjusted_end_time)) %>%
+                                    adjusted_start_time, adjusted_end_time)) %>%
   mutate(segment_length_in_sec = (adjusted_end_time-adjusted_start_time)/1000000) #For checking things are the right length....
 
 #Column cleanup
@@ -296,11 +296,11 @@ DatData <- DatData %>% #Unneccessary except for checksums below
 #Note that this operation should NOT drop any GazeData observations. 
 # This drops lines :( TimestampedGazeData = sqldf("select * from GazeData f1 inner join TimestampData f2 
 TimestampedGazeData = sqldf("select * from GazeData f1 outer left join TimestampData f2 
-            on (f1.adjusted_time > f2.adjusted_start_time 
-            and f1.adjusted_time<= f2.adjusted_end_time
-            and f1.subjectID == f2.subjectID
-            and f1.PhaseGaze == f2.PhaseTimestamp
-            and f1.trialNo == f2.trialNo) ")
+                            on (f1.adjusted_time > f2.adjusted_start_time 
+                            and f1.adjusted_time<= f2.adjusted_end_time
+                            and f1.subjectID == f2.subjectID
+                            and f1.PhaseGaze == f2.PhaseTimestamp
+                            and f1.trialNo == f2.trialNo) ")
 
 TimestampedGazeData <- TimestampedGazeData%>%
   validate.names() %>% #(See fn at beginning of file, handles duplicated names gen'd by sqldf)
@@ -346,7 +346,7 @@ AllData <- AllData %>%
   dplyr::mutate(start_time_by_probe = min(adjusted_start_time))%>%
   dplyr::mutate(end_time_by_probe = max(adjusted_end_time))%>%
   ungroup()
-  
+
 #Add AOIs
 # LEFT- liberal
 # LEFT moviebox
@@ -359,8 +359,8 @@ AllData <- AllData %>%
 aois = read.csv('aoi_t60_LionRoom.csv', stringsAsFactors = FALSE)
 for (i in 1:nrow(aois)) {
   AllData = add_aoi(data=AllData, aoi_dataframe = aois[i,], 
-                x_col= "Gaze_x", y_col= "Gaze_y", 
-                aoi_name = aois[i,]$AOIName)}
+                    x_col= "Gaze_x", y_col= "Gaze_y", 
+                    aoi_name = aois[i,]$AOIName)}
 
 #Add Derived AOIS (using the known target side!)
 AllData <- AllData %>%
@@ -378,16 +378,16 @@ AllData <- AllData %>%
   filter(!(subjectID =='child_pilot_03282018_10_3am'& trialNo ==6 & adjusted_time ==493068505))
 
 ERData <- make_eyetrackingr_data(AllData, 
-                               participant_column = "subjectID",
-                               trial_column = "trialNo",
-                               time_column = "adjusted_time",
-                               trackloss_column = "Trackloss",
-                               aoi_columns = c('Left_Box','Right_Box',
-                                               'Center_Box','Left_Side','Right_Side',
-                                               'In_Target_Box','In_Target_Side',
-                                               'In_NonTarget_Box','In_NonTarget_Side',
-                                               'In_Manner_Box','In_Manner_Side'),
-                               treat_non_aoi_looks_as_missing = FALSE)
+                                 participant_column = "subjectID",
+                                 trial_column = "trialNo",
+                                 time_column = "adjusted_time",
+                                 trackloss_column = "Trackloss",
+                                 aoi_columns = c('Left_Box','Right_Box',
+                                                 'Center_Box','Left_Side','Right_Side',
+                                                 'In_Target_Box','In_Target_Side',
+                                                 'In_NonTarget_Box','In_NonTarget_Side',
+                                                 'In_Manner_Box','In_Manner_Side'),
+                                 treat_non_aoi_looks_as_missing = FALSE)
 
 ####
 ####
@@ -407,7 +407,7 @@ ERData <- make_eyetrackingr_data(AllData,
 leftlooks = describe_data(ERData, describe_column = "Left_Box", group_columns = "probeSegment")
 rightlooks = describe_data(ERData, describe_column = "Right_Box", group_columns = "probeSegment")
 checklooks = filter(bind_rows("Left_Box" = leftlooks, "Right_Box" = rightlooks, .id = 'AOI'), 
-       probeSegment == 'left_video' | probeSegment == 'right_video')
+                    probeSegment == 'left_video' | probeSegment == 'right_video')
 expect_true(all.equal(checklooks$Mean, c(1, 0, 0, 1), tolerance = 0.15))
 
 #The descriptions of trackloss on each trial should make sense given what you know about the participants!
@@ -451,28 +451,28 @@ sd(final_summary$NumTrials)
 
 MakeSpaghetti <- function(eyedata, pt, ep){
   these_LR_looks <- filter(eyedata, probeType == pt, ExperimentPhase == ep,
-                          probeSegment %in% c('left_video','right_video'))
+                           probeSegment %in% c('left_video','right_video'))
   these_comp1 <- filter(eyedata, probeType == pt, ExperimentPhase == ep,
                         probeSegment %in% c('compareVideo1_start','compareVideo1_still'))
   these_comp2 <- filter(eyedata, probeType == pt, ExperimentPhase == ep,
                         probeSegment %in% c('compareVideo2_start','compareVideo2_still'))
-
+  
   LR_seq <- make_time_sequence_data(these_LR_looks, time_bin_size = 100000, 
-                                         predictor_columns = c("Condition"),
-                                         aois = "Left_Side",
-                                         summarize_by = "subjectID")
+                                    predictor_columns = c("Condition"),
+                                    aois = "Left_Side",
+                                    summarize_by = "subjectID")
   comp1_seq <- make_time_sequence_data(these_comp1, time_bin_size = 100000, 
-                                         predictor_columns = c("Condition"),
-                                         aois = c("In_Manner_Side"),
-                                         summarize_by = "subjectID")
+                                       predictor_columns = c("Condition"),
+                                       aois = c("In_Manner_Side"),
+                                       summarize_by = "subjectID")
   comp2_seq <- make_time_sequence_data(these_comp2, time_bin_size = 100000, 
-                                         predictor_columns = c("Condition"),
-                                         aois = c("In_Manner_Side"),
-                                         summarize_by = "subjectID")
+                                       predictor_columns = c("Condition"),
+                                       aois = c("In_Manner_Side"),
+                                       summarize_by = "subjectID")
   
   this_seqdata = bind_rows("LR" = LR_seq, 
-                       "Comp1" = comp1_seq,
-                       "Comp2" = comp2_seq,.id='ResponseWindow')
+                           "Comp1" = comp1_seq,
+                           "Comp2" = comp2_seq,.id='ResponseWindow')
   
   this_seqdata <- this_seqdata %>%
     mutate(ResponseWindow = factor(ResponseWindow))%>%
@@ -481,8 +481,8 @@ MakeSpaghetti <- function(eyedata, pt, ep){
     filter(!is.na(Prop))%>%
     group_by(Condition, ResponseWindow, TimeBin, Time_in_Sec) %>%
     dplyr::summarize(themean = mean(Prop, na.rm=TRUE))
-
-   
+  
+  
   print('get here!')
   
   this_plot <- ggplot(data = this_seqdata, aes(y=themean,x=Time_in_Sec,color=Condition)) +
@@ -492,7 +492,7 @@ MakeSpaghetti <- function(eyedata, pt, ep){
     geom_line(y=0.5, color='black')
   
   return(list(this_seqdata, this_plot))
-
+  
 }
 
 
@@ -510,9 +510,9 @@ foo
 ############################
 
 df_111_main <- data.frame(Date=as.Date(character()),
-                              File=character(), 
-                              User=character(), 
-                              stringsAsFactors=FALSE) 
+                          File=character(), 
+                          User=character(), 
+                          stringsAsFactors=FALSE) 
 for(file in file.names_main){
   temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
   df_111_main <-rbind(df_111_main, temp)
@@ -526,9 +526,9 @@ df_111_main$system_time_stamp <- df_111_main$system_time_stamp - 150000000000000
 
 #defining a trackloss column
 df_111_main$Trackloss_column <- as.factor(ifelse(df_111_main$L_valid == '1' & df_111_main$R_valid == '1', TRUE, 
-                                         ifelse(df_111_main$L_valid == '0' & df_111_main$R_valid == '1', FALSE,
-                                         ifelse(df_111_main$L_valid == '1' & df_111_main$R_valid == '0', FALSE,
-                                         ifelse(df_111_main$L_valid == '0' & df_111_main$R_valid == '0', FALSE, 'Error')))))
+                                                 ifelse(df_111_main$L_valid == '0' & df_111_main$R_valid == '1', FALSE,
+                                                        ifelse(df_111_main$L_valid == '1' & df_111_main$R_valid == '0', FALSE,
+                                                               ifelse(df_111_main$L_valid == '0' & df_111_main$R_valid == '0', FALSE, 'Error')))))
 
 
 #read in timestamps
@@ -546,9 +546,9 @@ df_111_main$Y <- rowMeans(subset(df_111_main, select = c(7, 10)), na.rm = TRUE)
 
 #merging together dat_table and trials to get correctness
 df_111_main$trialNo <- as.factor(ifelse(df_111_main$trialNo == "All_of_Main_trial_5", "5", 
-                                 ifelse(df_111_main$trialNo == "All_of_Main_trial_6", "6",
-                                 ifelse(df_111_main$trialNo == "All_of_Main_trial_7", "7",
-                                 ifelse(df_111_main$trialNo == "All_of_Main_trial_8", "8", "Error")))))
+                                        ifelse(df_111_main$trialNo == "All_of_Main_trial_6", "6",
+                                               ifelse(df_111_main$trialNo == "All_of_Main_trial_7", "7",
+                                                      ifelse(df_111_main$trialNo == "All_of_Main_trial_8", "8", "Error")))))
 df_111_main_aoi$Trackloss_column <- as.logical(df_111_main_aoi$Trackloss_column)
 
 df_111_main <- merge(df_111_main, dat_table, by="trialNo")
@@ -557,23 +557,23 @@ df_111_main <- merge(df_111_main, dat_table, by="trialNo")
 df_111_main_aoi %>%
   group_by(Condition, subjectID, trialNo) %>% 
   mutate(correctBias = ifelse(Condition == 'Path' & pathSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, TRUE,
-                   ifelse(Condition == 'Path' & pathSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, TRUE,
-                   ifelse(Condition == 'Manner' & mannerSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, TRUE,
-                   ifelse(Condition == 'Manner' & mannerSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, TRUE, FALSE))))) %>% 
+                              ifelse(Condition == 'Path' & pathSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, TRUE,
+                                     ifelse(Condition == 'Manner' & mannerSideBias == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, TRUE,
+                                            ifelse(Condition == 'Manner' & mannerSideBias == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, TRUE, FALSE))))) %>% 
   mutate(correctTest = ifelse(Condition == 'Path' & pathSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, TRUE,
-                       ifelse(Condition == 'Path' & pathSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, TRUE,
-                       ifelse(Condition == 'Manner' & mannerSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, TRUE,
-                       ifelse(Condition == 'Manner' & mannerSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, TRUE, FALSE))))) -> df_111_main_aoi
+                              ifelse(Condition == 'Path' & pathSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, TRUE,
+                                     ifelse(Condition == 'Manner' & mannerSideTest == "L" & X < 0.605 & X > 0.25 & Y > 0.1963 & Y < 0.6313, TRUE,
+                                            ifelse(Condition == 'Manner' & mannerSideTest == "R" & X < 1.250 & X > 0.67 & Y > 0.1963 & Y < 0.6313, TRUE, FALSE))))) -> df_111_main_aoi
 
 #adding an AOI column for Incorrect looks BIAS to screen
 df_111_main_aoi$incorrectBias <- ifelse(df_111_main_aoi$correctBias == TRUE, FALSE,
-                                 ifelse(df_111_main_aoi$correctBias == FALSE, TRUE, 'Error'))
+                                        ifelse(df_111_main_aoi$correctBias == FALSE, TRUE, 'Error'))
 
 df_111_main_aoi$incorrectBias <- as.logical(df_111_main_aoi$incorrectBias)
 
 #adding an AOI column for Incorrect looks TEST to screen
 df_111_main_aoi$incorrectTest <- ifelse(df_111_main_aoi$correctTest == TRUE, FALSE,
-                                 ifelse(df_111_main_aoi$correctTest == FALSE, TRUE, 'Error'))
+                                        ifelse(df_111_main_aoi$correctTest == FALSE, TRUE, 'Error'))
 
 df_111_main_aoi$incorrectTest <- as.logical(df_111_main_aoi$incorrectTest)
 
@@ -610,9 +610,9 @@ ggsave("melissa_path_main_trials.png")
 
 #reading in extend trial CSVs
 df_111_extend <- data.frame(Date=as.Date(character()),
-                          File=character(), 
-                          User=character(), 
-                          stringsAsFactors=FALSE) 
+                            File=character(), 
+                            User=character(), 
+                            stringsAsFactors=FALSE) 
 for(file in file.names_extend){
   temp <- read.csv(file, header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
   df_111_extend <-rbind(df_111_extend, temp)
@@ -626,9 +626,9 @@ df_111_extend$system_time_stamp <- df_111_extend$system_time_stamp - 15000000000
 
 #defining a trackloss column
 df_111_extend$Trackloss_column <- as.factor(ifelse(df_111_extend$L_valid == '1' & df_111_extend$R_valid == '1', TRUE, 
-                                         ifelse(df_111_extend$L_valid == '0' & df_111_extend$R_valid == '1', FALSE,
-                                         ifelse(df_111_extend$L_valid == '1' & df_111_extend$R_valid == '0', FALSE,
-                                         ifelse(df_111_extend$L_valid == '0' & df_111_extend$R_valid == '0', FALSE, 'Error')))))
+                                                   ifelse(df_111_extend$L_valid == '0' & df_111_extend$R_valid == '1', FALSE,
+                                                          ifelse(df_111_extend$L_valid == '1' & df_111_extend$R_valid == '0', FALSE,
+                                                                 ifelse(df_111_extend$L_valid == '0' & df_111_extend$R_valid == '0', FALSE, 'Error')))))
 
 a <- lapply(df_111_extend$system_time_stamp, trial_time)
 df_111_extend$Trial_description <- a
@@ -639,13 +639,13 @@ df_111_extend$Y <- rowMeans(subset(df_111_extend, select = c(7, 10)), na.rm = TR
 
 #merging together dat_table and trials to get correctness
 df_111_extend$trialNo <- as.factor(ifelse(df_111_extend$trialNo == "All_of_Extend_trial_5", "13", 
-                                ifelse(df_111_extend$trialNo == "All_of_Extend_trial_6", "14",
-                                ifelse(df_111_extend$trialNo == "All_of_Extend_trial_7", "7",
-                                ifelse(df_111_extend$trialNo == "All_of_Extend_trial_8", "8",
-                                ifelse(df_111_extend$trialNo == "All_of_Extend_trial_1", "9",
-                                ifelse(df_111_extend$trialNo == "All_of_Extend_trial_2", "10",
-                                ifelse(df_111_extend$trialNo == "All_of_Extend_trial_3", "11",
-                                ifelse(df_111_extend$trialNo == "All_of_Extend_trial_4", "12", "Error")))))))))
+                                          ifelse(df_111_extend$trialNo == "All_of_Extend_trial_6", "14",
+                                                 ifelse(df_111_extend$trialNo == "All_of_Extend_trial_7", "7",
+                                                        ifelse(df_111_extend$trialNo == "All_of_Extend_trial_8", "8",
+                                                               ifelse(df_111_extend$trialNo == "All_of_Extend_trial_1", "9",
+                                                                      ifelse(df_111_extend$trialNo == "All_of_Extend_trial_2", "10",
+                                                                             ifelse(df_111_extend$trialNo == "All_of_Extend_trial_3", "11",
+                                                                                    ifelse(df_111_extend$trialNo == "All_of_Extend_trial_4", "12", "Error")))))))))
 
 df_111_extend <- merge(df_111_extend, dat_table, by="trialNo")
 
@@ -653,18 +653,18 @@ df_111_extend <- merge(df_111_extend, dat_table, by="trialNo")
 subjID_aoi_extend <- read.csv("~/Documents/Github/MannerPathPriming-2ET/Analysis/subjID_aoi_extend.csv", header = TRUE, stringsAsFactors=FALSE, fileEncoding="latin1")
 subjID_aoi_extend$trialNo <- as.factor(subjID_aoi_extend$trialNo)
 df_111_extend_aoi <- add_aoi(df_111_extend, aoi_dataframe = subjID_aoi_extend, 'X', 'Y', aoi_name="Correct", x_min_col = "X_min",
-                           x_max_col = "X_max", y_min_col = "Y_min", y_max_col = "Y_max")
+                             x_max_col = "X_max", y_min_col = "Y_min", y_max_col = "Y_max")
 
 #adding an AOI column for Incorrect looks to screen
 df_111_extend_aoi$Incorrect <- ifelse(df_111_extend_aoi$Correct == TRUE, FALSE,
-                                    ifelse(df_111_extend_aoi$Correct == FALSE, TRUE, 'Error'))
+                                      ifelse(df_111_extend_aoi$Correct == FALSE, TRUE, 'Error'))
 df_111_extend_aoi$Incorrect <- as.logical(df_111_extend_aoi$Incorrect)
 
 #defining a trackloss column
 df_111_extend_aoi$Trackloss_column <- ifelse(df_111_extend_aoi$L_valid == '1' & df_111_extend_aoi$R_valid == '1', FALSE, 
-                                           ifelse(df_111_extend_aoi$L_valid == '0' & df_111_extend_aoi$R_valid == '1', TRUE,
-                                                  ifelse(df_111_extend_aoi$L_valid == '1' & df_111_extend_aoi$R_valid == '0', TRUE,
-                                                         ifelse(df_111_extend_aoi$L_valid == '0' & df_111_extend_aoi$R_valid == '0', TRUE, 'Error'))))
+                                             ifelse(df_111_extend_aoi$L_valid == '0' & df_111_extend_aoi$R_valid == '1', TRUE,
+                                                    ifelse(df_111_extend_aoi$L_valid == '1' & df_111_extend_aoi$R_valid == '0', TRUE,
+                                                           ifelse(df_111_extend_aoi$L_valid == '0' & df_111_extend_aoi$R_valid == '0', TRUE, 'Error'))))
 df_111_extend_aoi$Trackloss_column <- as.logical(df_111_extend_aoi$Trackloss_column)
 #starting to use eyetrackingR
 data <- make_eyetrackingr_data(df_111_extend_aoi, 
@@ -693,5 +693,3 @@ ggplot(data=response_window_agg_by_sub, aes(x=AOI, y=Prop)) +
   scale_x_discrete(breaks=c("Correct", "Incorrect"),
                    labels=c("Outcome", "Action"))
 ggsave("extendtrials_melissa_path.png")
-
-
