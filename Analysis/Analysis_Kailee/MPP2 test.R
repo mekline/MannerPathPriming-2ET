@@ -597,8 +597,12 @@ AllData <- AllData %>%
   
   mutate(In_Target_Box = ifelse(targetSide == 'L', Left_Box, Right_Box))%>%
   
-  mutate(In_Target_Side = ifelse(targetSide == 'L', Left_Side, Right_Side))
+  mutate(In_Target_Side = ifelse(targetSide == 'L', Left_Side, Right_Side))%>%
 
+mutate(In_NonTarget_Box = ifelse(targetSide == 'R', Left_Box, Right_Box))%>%
+  mutate(In_NonTarget_Side = ifelse(targetSide == 'R', Left_Side, Right_Side)) %>%
+  mutate(In_Manner_Box = ifelse(Condition == "Manner", In_Target_Box, In_NonTarget_Box)) %>%
+  mutate(In_Manner_Side = ifelse(Condition == "Manner", In_Target_Side, In_NonTarget_Side))
 
 
 ERData <- make_eyetrackingr_data(AllData, 
@@ -615,8 +619,10 @@ ERData <- make_eyetrackingr_data(AllData,
                                                  
                                                  'Center_Box','Left_Side','Right_Side',
                                                  
-                                                 'In_Target_Box','In_Target_Side'),
-                                 
+                                                 'In_Target_Box','In_Target_Side',
+                             
+                                 'In_NonTarget_Box','In_NonTarget_Side',
+                                 'In_Manner_Box','In_Manner_Side'),
                                  treat_non_aoi_looks_as_missing = FALSE)
 
 
@@ -708,9 +714,58 @@ mean(final_summary$NumTrials)
 sd(final_summary$NumTrials)
 
 
+#some extra stuff to play with from the newest R code#
+MakeSpaghetti <- function(eyedata, pt, ep){
+  these_LR_looks <- filter(eyedata, probeType == pt, ExperimentPhase == ep,
+                           probeSegment %in% c('left_video','right_video'))
+  these_comp1 <- filter(eyedata, probeType == pt, ExperimentPhase == ep,
+                        probeSegment %in% c('compareVideo1_start','compareVideo1_still'))
+  these_comp2 <- filter(eyedata, probeType == pt, ExperimentPhase == ep,
+                        probeSegment %in% c('compareVideo2_start','compareVideo2_still'))
+  
+  LR_seq <- make_time_sequence_data(these_LR_looks, time_bin_size = 100000, 
+                                    predictor_columns = c("Condition"),
+                                    aois = "Left_Side",
+                                    summarize_by = "subjectID")
+  comp1_seq <- make_time_sequence_data(these_comp1, time_bin_size = 100000, 
+                                       predictor_columns = c("Condition"),
+                                       aois = c("In_Target_Side"),
+                                       summarize_by = "subjectID")
+  comp2_seq <- make_time_sequence_data(these_comp2, time_bin_size = 100000, 
+                                       predictor_columns = c("Condition"),
+                                       aois = c("In_Target_Side"),
+                                       summarize_by = "subjectID")
+  
+  this_seqdata = bind_rows("LR" = LR_seq, 
+                           "Comp1" = comp1_seq,
+                           "Comp2" = comp2_seq,.id='ResponseWindow')
+  
+  this_seqdata <- this_seqdata %>%
+    mutate(ResponseWindow = factor(ResponseWindow))%>%
+    mutate(ResponseWindow = factor(ResponseWindow, levels(ResponseWindow)[c(3,1,2)])) %>%
+    mutate(Time_in_Sec = Time/1000000) %>%
+    filter(!is.na(Prop))%>%
+    group_by(Condition, ResponseWindow, TimeBin, Time_in_Sec) %>%
+    dplyr::summarize(themean = mean(Prop, na.rm=TRUE))
+  
+  
+  print('get here!')
+  
+  this_plot <- ggplot(data = this_seqdata, aes(y=themean,x=Time_in_Sec,color=Condition)) +
+    geom_line(stat="identity") +
+    #geom_errorbar(aes(ymin=ci_down, ymax=ci_up), colour="black", width=.1, position=position_dodge(1.5)) + #Why point 9? Hell if I know!
+    facet_wrap(~ResponseWindow, scales = "free_x") +
+    geom_line(y=0.5, color='black')
+  
+  return(list(this_seqdata, this_plot))
+  
+}
 
-
-
+#Run this function, then print to the console to see the graph!
+foo = MakeSpaghetti(Probe_Data, 'SameVerbTest','Main')
+foo = MakeSpaghetti(Probe_Data, 'Bias','Main')
+foo
+#new stuff ends here. below is the old R code but works also fine 
 #########################
 
 # GRAPHS (It's very exciting!)
@@ -784,6 +839,49 @@ SV_forgraph <- SV_alltimeBias %>%
 
 
 
+###play with the plot, y axis is correction rates### 
+####if you want to show individual performance throughout the experiment 
+SV_Data1 <- filter(Probe_Data, probeType == 'SameVerbTest', ExperimentPhase == 'Main',
+                   
+                   probeSegment %in% c('compareVideo1_start','compareVideo1_still'))
+
+SV_Data2 <- filter(Probe_Data, probeType == 'SameVerbTest', ExperimentPhase == 'Main',
+                   
+                   probeSegment %in% c('compareVideo2_start','compareVideo2_still'))
+SV_time_Data1 <- make_time_sequence_data(SV_Data1, time_bin_size = 10000, 
+                                         
+                                         predictor_columns = c("Condition"),
+                                         
+                                         aois = c("In_Target_Side"),
+                                         
+                                         summarize_by = "subjectID")
+
+SV_time_Data2 <- make_time_sequence_data(SV_Data2, time_bin_size = 10000, 
+                                         
+                                         predictor_columns = c("Condition"),
+                                         
+                                         aois = c("In_Target_Side"),
+                                         
+                                         summarize_by = "subjectID")
+SV_alltimeBias = bind_rows("LRBias" = SV_time_looksBias, 
+                           
+                           "Data1" = SV_time_Data1,
+                           
+                           "Data2" = SV_time_Data2,
+                           "Data3" = SV_time_Data3,
+                           "Data4" = SV_time_Data4,
+                        
+                           .id='ResponseWindow')
+
+
+
+SV_forgraph <- SV_alltimeBias %>%
+  
+  mutate(ResponseWindow = factor(ResponseWindow))%>%
+  
+  mutate(ResponseWindow = factor(ResponseWindow, levels(ResponseWindow)[c(3,1,2)])) %>%
+  
+  mutate(Time_in_Sec = Time/1000000)
 
 ggplot(data = SV_forgraph, aes(y=Prop,x=Time_in_Sec,color=Condition)) +
   
@@ -793,8 +891,116 @@ ggplot(data = SV_forgraph, aes(y=Prop,x=Time_in_Sec,color=Condition)) +
   
   geom_line(y=0.5, color='black')
 
-save (SV_alltime, file = "Kailee_Mandarinspeaker_alltime.RData")
-save (SV_alltimeBias, file = "Kailee_Mandarinspeaker_alltimeBias.RData")
+
+######to show average performance of all bias trials 
+
+ggplot(data = SV_forgraph, aes(y=Prop,x=Time_in_Sec,color=Condition)) +
+  
+  geom_smooth() +
+  
+  facet_wrap(~ResponseWindow, scales = "free_x") +
+  
+  geom_line(y=0.5, color='black')
+#####to show performance of different trials did not work 
+SV_time_looksBias <- make_time_sequence_data(SV_LooksBias, time_bin_size = 10000, 
+                                             
+                                             predictor_columns = c("Condition"),
+                                             
+                                             aois = "Left_Side",
+                                             
+                                             summarize_by = "trialNo")
+
+SV_time_Data3 <- make_time_sequence_data(SV_Data3, time_bin_size = 10000, 
+                                         
+                                         predictor_columns = c("Condition"),
+                                         
+                                         aois = c("In_Target_Side"),
+                                         
+                                         summarize_by = "trialNo")
+
+SV_time_Data4 <- make_time_sequence_data(SV_Data4, time_bin_size = 10000, 
+                                         
+                                         predictor_columns = c("Condition"),
+                                         
+                                         aois = c("In_Target_Side"),
+                                         
+                                         summarize_by = "trialNo")
+
+
+
+SV_alltimeBias = bind_rows("LRBias" = SV_time_looksBias, 
+                           
+                           "Data3" = SV_time_Data3,
+                           
+                           "Data4" = SV_time_Data4,.id='trialNo')
+
+
+
+SV_forgraph <- SV_alltimeBias %>%
+  
+  mutate(ResponseWindow = factor(ResponseWindow))%>%
+  
+  mutate(ResponseWindow = factor(ResponseWindow, levels(ResponseWindow)[c(3,1,2)])) %>%
+  
+  mutate(Time_in_Sec = Time/1000000)
+ggplot(data = SV_forgraph, aes(y=Prop,x=Time_in_Sec,color=Condition)) +
+  
+  geom_smooth() +
+  
+  facet_wrap(~trialNo, scales = "free_x") +
+  
+  geom_line(y=0.5, color='black')
+
+#####try to compare bias test with same verb test in trial 5-8
+Probe_data2 <- filter(Probe_Data, trialNo == '5'| trialNo =='6'|trialNo == '7'|trialNo =='8')
+
+SV_Data5 <- filter(Probe_Data, probeType == 'Bias', ExperimentPhase == 'Main',
+                   
+                   probeSegment %in% c('compareVideo2_start','compareVideo2_still'))
+
+SV_Data6 <- filter(Probe_data2, probeType == 'SameVerbTest', ExperimentPhase == 'Main',
+                   
+                   probeSegment %in% c('compareVideo2_start','compareVideo2_still'))
+
+SV_time_Data5 <- make_time_sequence_data(SV_Data5, time_bin_size = 10000, 
+                                         
+                                         predictor_columns = c("Condition"),
+                                         
+                                         aois = c("In_Target_Side"),
+                                         
+                                         summarize_by = "subjectID")
+
+SV_time_Data6 <- make_time_sequence_data(SV_Data6, time_bin_size = 10000, 
+                                         
+                                         predictor_columns = c("Condition"),
+                                         
+                                         aois = c("In_Target_Side"),
+                                         
+                                         summarize_by = "subjectID")
+
+
+
+SV_alltimeBias = bind_rows("Data5" = SV_time_Data5,
+                           
+                           "Data6" = SV_time_Data6,.id='ResponseWindow')
+
+
+
+SV_forgraph <- SV_alltimeBias %>%
+  
+  mutate(ResponseWindow = factor(ResponseWindow))%>%
+  
+  mutate(ResponseWindow = factor(ResponseWindow, levels(ResponseWindow)[c(3,1,2)])) %>%
+  
+  mutate(Time_in_Sec = Time/1000000)
+
+ggplot(data = SV_forgraph, aes(y=Prop,x=Time_in_Sec,color=Condition)) +
+  
+  geom_smooth() +
+  
+  facet_wrap(~ResponseWindow, scales = "free_x") +
+  
+  geom_line(y=0.5, color='black')
 
 
 #########################

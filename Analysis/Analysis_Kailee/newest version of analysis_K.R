@@ -52,26 +52,16 @@ se <- function(mylist){
 #=========================#
 
 
-kids_to_process <- c('child_pilot_0306',
-                     'child_pilot_0314',
-                     'child_pilot_03162018',
-                     'child_pilot_03202018',
-                     'pilot x2', 
-                     'child_pilot_03232018_3pmx2',
-                     'child_pilot_03232018_5pm',
-                     'child_pilot_032618_11am',
-                     'Theodora_Pilot_32618',
-                     'child_03272018_1130am',
-                     'Child_Pilot_03272018_4_2pm',
-                     'Child_Pilot_03282018_10_3am',
-                     'childpilot_032918',
-                     'child_pilot_04022018_10am',
-                     'child_04092018_9am')
+kids_to_process <- c('Adult_0322_1.30pm','Adult_0322_2_2pm', 
+                     'Adult_0323_1030am','Adult_0323_11am_4',
+                     'Adult_0323_1130am','Adult_0323_130pm',
+                     'Adult_0323_2pm','Adult_0323_230pm')
 #Set your directories
 
-myRepo = '/Users/mekline/Dropbox/_Projects/MannerPath-2ET/MannerPathPriming-2ET Repo'
-analysisDir = paste(myRepo, '/Analysis/Analysis_Pilot3/',sep='')
-dataDir = paste(myRepo, '/Data/Pilot 3/',sep='')
+myRepo = 'C:/Users/kailee/Documents/GitHub/MannerPathPriming-2ET'
+analysisDir = paste(myRepo, '/Analysis/Analysis_Kailee/',sep='')
+dataDir = paste(myRepo, '/Data/Kailee/',sep='')
+
 
 ########
 context('Check that directory was set correctly and participant file loads!')
@@ -207,7 +197,7 @@ DatData <- bind_rows(DatData, pract2)
 expect_equal(sum(tr, gr, dr) + 2*length(kids_to_process), 
              sum(nrow(DatData), nrow(GazeData), nrow(TimestampData))) 
 
-#Update correct DatData length
+#Update correct DatData length #64 L
 dr = nrow(DatData)
 ###############################
 # MERGE DATA (ahhhh!)
@@ -216,7 +206,7 @@ dr = nrow(DatData)
 #Merge all subject- and trial-level data, dropping fake trials!
 AllSubjData <- merge(DatData, pData, by="subjectID") %>%
   mutate(trialNo = ifelse(ExperimentPhase == 'Main', as.numeric(trialNo), as.numeric(trialNo)-100)) %>%
-  filter(!(Experiment == 'Pilot3 - NEW - SHORT'& trialNo == -98))
+  filter(!(Experiment == 'Adult'& trialNo == -98))
 
 
 expect_equal(length(unique(AllSubjData$subjectID)), length(kids_to_process))
@@ -356,7 +346,7 @@ AllData <- AllData %>%
 #NOTE these AOIS are in relative numbers (0,0 to 1,1), and are accurate
 #for display on our 1280x1040 T60; but maybe not on yours (the PTB help
 #code has some pixel-based calculations!)
-aois = read.csv('aoi_t60_LionRoom.csv', stringsAsFactors = FALSE)
+aois = read.csv('aoi_t60_LionRoom_Kaileecopy.csv', stringsAsFactors = FALSE)
 for (i in 1:nrow(aois)) {
   AllData = add_aoi(data=AllData, aoi_dataframe = aois[i,], 
                     x_col= "Gaze_x", y_col= "Gaze_y", 
@@ -387,9 +377,8 @@ ERData <- make_eyetrackingr_data(AllData,
                                                  'In_Target_Box','In_Target_Side',
                                                  'In_NonTarget_Box','In_NonTarget_Side',
                                                  'In_Manner_Box','In_Manner_Side'),
-                                 treat_non_aoi_looks_as_missing = FALSE)
+                              treat_non_aoi_looks_as_missing = FALSE)
 
-####
 ####
 #NOTE: A waring that 'your dataset has a column called Time' may occur (I used this for hour of testing on days
 #where we had multiple kids'); This is fine, as described in the message that column will be renamed/saved
