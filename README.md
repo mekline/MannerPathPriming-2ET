@@ -15,4 +15,5 @@ Current state: This is the ~3rd pilot version; major differnces between the pilo
 TODO: Confirm that everything runs FROM the repo folder before deleting pilot/desktop version. (Running 1 pilot kid in the old folder first)
 
 
+Here's a test commit. 
 
